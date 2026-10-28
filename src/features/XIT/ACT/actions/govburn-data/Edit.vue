@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import TextInput from '@src/components/forms/TextInput.vue';
 
@@ -23,7 +24,7 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Planet" :error="planetError">
-    <TextInput v-model="planet" placeholder="Natural ID or name" />
+  <Active :label="t('act.f.planet')" :error="planetError">
+    <TextInput v-model="planet" :placeholder="t('act.gbd.placeholder')" />
   </Active>
 </template>

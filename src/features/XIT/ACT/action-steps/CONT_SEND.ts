@@ -18,6 +18,7 @@ import {
   saveConditions,
 } from '@src/features/XIT/ACT/action-steps/cont-utils';
 import { billQuantities, MaterialBill } from '@src/features/XIT/ACT/material-bill';
+import { t } from '@src/i18n';
 
 interface Data {
   packageName: string;
@@ -47,8 +48,9 @@ export const CONT_SEND = act.addActionStep<Data>({
   totalMaterials: data => billQuantities(data.materials, (_, quantity) => quantity > 0),
   description: data => {
     const materialCount = Object.keys(data.materials).length;
-    const payment = data.payment !== 0 ? ` for ${fixed0(data.payment)} ${data.currency}` : '';
-    return `Create contract draft (${fixed0(materialCount)} materials)${payment}`;
+    const payment =
+      data.payment !== 0 ? t('act.cont.forPayment', fixed0(data.payment), data.currency) : '';
+    return t('act.cont.shipDraft', fixed0(materialCount), payment);
   },
   execute: async ctx => {
     const { data, log, setStatus, requestTile, waitAct, complete } = ctx;
@@ -64,18 +66,24 @@ export const CONT_SEND = act.addActionStep<Data>({
       }
       const material = materialsStore.getByTicker(ticker);
       if (!material) {
-        log.warning(`Material ${ticker} not found, skipping`);
+        log.warning(t('act.cont.matSkip', ticker));
         continue;
       }
       totalTonnage += material.weight * amount;
       materialDetails.push({ ticker, amount });
     }
 
-    assert(materialDetails.length > 0, 'Material group has no materials to ship');
+    assert(materialDetails.length > 0, t('act.cont.noMaterials'));
 
     if (data.payment > 0 && totalTonnage > 0) {
       log.info(
-        `Total: ${fixed2(totalTonnage)}t, ${fixed0(data.payment)} ${data.currency} (${fixed0(data.payment / totalTonnage)} ${data.currency}/t)`,
+        t(
+          'act.cont.total',
+          fixed2(totalTonnage),
+          fixed0(data.payment),
+          data.currency,
+          fixed0(data.payment / totalTonnage),
+        ),
       );
     }
 
@@ -87,7 +95,7 @@ export const CONT_SEND = act.addActionStep<Data>({
 
     const newDraft = await createNewDraft(ctx, listTile);
 
-    setStatus(`Loading draft ${newDraft.naturalId}...`);
+    setStatus(t('act.cont.loadingDraft', newDraft.naturalId));
     const draftTile = await requestTile(`CONTD ${newDraft.naturalId}`);
     if (!draftTile) {
       return;
@@ -110,7 +118,7 @@ export const CONT_SEND = act.addActionStep<Data>({
     await setDraftNameAndPreamble(ctx, anchor, contractName, preambleText);
 
     // Save draft details (name/preamble).
-    await waitAct('Save draft details?');
+    await waitAct(t('act.cont.saveDetailsAsk'));
     await saveDraftDetails(ctx, draftTile, newDraft.naturalId);
 
     const templateSelect = await openTemplate(ctx, anchor);
@@ -124,67 +132,64 @@ export const CONT_SEND = act.addActionStep<Data>({
     if (data.payment > 0 && materialDetails.length > 0) {
       const pricePerCommodity = Math.round(data.payment / materialDetails.length);
       const priceInput = findPriceInput(anchor);
-      assert(priceInput, 'Could not find price input');
+      assert(priceInput, t('act.cont.noPrice'));
       selectAndChangeInputValue(priceInput, String(pricePerCommodity));
       log.info(
-        `Price set: ${fixed0(pricePerCommodity)} ${data.currency}/commodity x${fixed0(materialDetails.length)} = ${fixed0(pricePerCommodity * materialDetails.length)} ${data.currency} total`,
+        t(
+          'act.cont.priceSet',
+          fixed0(pricePerCommodity),
+          data.currency,
+          fixed0(materialDetails.length),
+          fixed0(pricePerCommodity * materialDetails.length),
+        ),
       );
     }
 
     // Set origin address.
     const addressContainers = _$$(anchor, C.AddressSelector.container);
 
-    assert(
-      addressContainers.length >= 1 && data.contOrigin !== undefined,
-      'Could not find origin control',
-    );
-    await waitAct(`Set origin to ${data.contOrigin}?`);
+    assert(addressContainers.length >= 1 && data.contOrigin !== undefined, t('act.cont.noOrigin'));
+    await waitAct(t('act.cont.setOriginAsk', data.contOrigin));
     const originSet = await selectAddress(addressContainers[0], data.contOrigin);
-    assert(originSet, `Could not select origin: ${data.contOrigin}`);
-    log.info(`Origin set: ${data.contOrigin}`);
+    assert(originSet, t('act.cont.originFailed', data.contOrigin));
+    log.info(t('act.cont.originSet', data.contOrigin));
 
     // Set destination address.
-    assert(
-      addressContainers.length >= 2 && data.contDest !== undefined,
-      'Could not find destination control',
-    );
-    await waitAct(`Set destination to ${data.contDest}?`);
+    assert(addressContainers.length >= 2 && data.contDest !== undefined, t('act.cont.noDest'));
+    await waitAct(t('act.cont.setDestAsk', data.contDest));
     const destSet = await selectAddress(addressContainers[1], data.contDest);
-    assert(destSet, `Could not select destination: ${data.contDest}`);
-    log.info(`Destination set: ${data.contDest}`);
+    assert(destSet, t('act.cont.destFailed', data.contDest));
+    log.info(t('act.cont.destSet', data.contDest));
 
     if (data.autoProvisionStoreId !== undefined) {
-      setStatus('Setting auto-provision store...');
+      setStatus(t('act.cont.settingStore'));
       // The store options only populate once the origin address resolves.
       const storeSelect = await pollUntil(() => {
         const select = _$(anchor, C.StoreSelect.container) as HTMLSelectElement | undefined;
         return select !== undefined && select.options.length > 1 ? select : undefined;
       }, 5000);
-      assert(storeSelect, 'Auto-provision store select did not appear');
+      assert(storeSelect, t('act.cont.noStoreSelect'));
 
       const normalizedId = data.autoProvisionStoreId.replaceAll('-', '');
       const optionIndex = Array.from(storeSelect.options).findIndex(
         x => x.value === data.autoProvisionStoreId || x.value === normalizedId,
       );
-      assert(
-        optionIndex >= 0,
-        `Could not find auto-provision store option: ${data.autoProvisionStoreId}`,
-      );
+      assert(optionIndex >= 0, t('act.cont.noStoreOption', data.autoProvisionStoreId));
       changeSelectIndex(storeSelect, optionIndex);
-      log.info(`Auto-provision store set: ${storeSelect.options[optionIndex].text}`);
+      log.info(t('act.cont.storeSet', storeSelect.options[optionIndex].text));
     }
 
     setDeadline(ctx, anchor, data.daysToFulfill);
 
     // Apply template.
-    await waitAct('Apply template?');
+    await waitAct(t('act.cont.applyTemplateAsk'));
     await applyTemplate(ctx, anchor, newDraft.naturalId);
 
     // Save conditions, after the player has reviewed them.
-    await waitAct('Save conditions?');
+    await waitAct(t('act.cont.saveCondAsk'));
     await saveConditions(ctx, draftTile, newDraft.naturalId);
 
-    log.success(`Contract draft ${newDraft.naturalId} ready to send`);
+    log.success(t('act.cont.ready', newDraft.naturalId));
     complete();
   },
 });

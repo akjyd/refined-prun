@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import TextInput from '@src/components/forms/TextInput.vue';
 import { objectId } from '@src/utils/object-id';
@@ -40,14 +41,14 @@ defineExpose({ validate, save });
 
 <template>
   <template v-for="(pair, i) in materials" :key="objectId(pair)">
-    <Active :label="`Material Ticker #${i + 1}`">
+    <Active :label="t('act.f.tickerN', i + 1)">
       <TextInput v-model="pair[0]" />
     </Active>
-    <Active :label="`Material Amount #${i + 1}`">
+    <Active :label="t('act.manual.amountN', i + 1)">
       <NumberInput v-model="pair[1]" />
     </Active>
   </template>
   <Commands>
-    <PrunButton primary @click="onAddClick">ADD MATERIAL</PrunButton>
+    <PrunButton primary @click="onAddClick">{{ t('act.manual.addMaterial') }}</PrunButton>
   </Commands>
 </template>

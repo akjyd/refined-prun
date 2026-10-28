@@ -10,10 +10,11 @@ import {
   displayLocationValue,
   resolveLocation,
 } from '@src/features/XIT/ACT/actions/cont-locations';
+import { t } from '@src/i18n';
 
 act.addAction<Config>({
   type: 'CONT Ship',
-  shortDescription: 'Create a shipping contract draft',
+  shortDescription: t('act.cship.short'),
   description: (action, config) => {
     if (!action.group || !action.contOrigin || !action.contDest) {
       return '--';
@@ -21,17 +22,17 @@ act.addAction<Config>({
 
     const origin =
       action.contOrigin === configurableValue
-        ? (config?.origin ?? 'configured location')
+        ? (config?.origin ?? t('act.f.configuredLocation'))
         : displayLocationValue(action.contOrigin);
     const dest =
       action.contDest === configurableValue
-        ? (config?.destination ?? 'configured location')
+        ? (config?.destination ?? t('act.f.configuredLocation'))
         : displayLocationValue(action.contDest);
 
     const payment = action.paymentPerTon ?? 0;
-    const paymentStr = payment > 0 ? ` @ ${fixed02(payment)}/t` : '';
+    const paymentStr = payment > 0 ? t('act.cship.perTon', fixed02(payment)) : '';
 
-    return `Send contract for [${action.group}] from ${origin} to ${dest}${paymentStr}`;
+    return t('act.cship.desc', action.group, origin, dest, paymentStr);
   },
   editComponent: Edit,
   configureComponent: Configure,
@@ -52,13 +53,13 @@ act.addAction<Config>({
     const assert: AssertFn = ctx.assert;
 
     const materials = await getMaterialGroup(data.group);
-    assert(materials, 'Invalid material group');
+    assert(materials, t('act.f.invalidGroup'));
 
     const contOrigin = resolveLocation(data.contOrigin, config?.origin, getMaterialGroupPlanet);
-    assert(contOrigin, 'Invalid origin');
+    assert(contOrigin, t('act.f.invalidOrigin'));
 
     const contDest = resolveLocation(data.contDest, config?.destination, getMaterialGroupPlanet);
-    assert(contDest, 'Invalid destination');
+    assert(contDest, t('act.f.invalidDest'));
 
     const paymentPerTon = Number(data.paymentPerTon ?? 0);
     const daysToFulfill = data.daysToFulfill ?? 3;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import Passive from '@src/components/forms/Passive.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
@@ -95,19 +96,19 @@ watchEffect(() => {
 
 <template>
   <form>
-    <Active v-if="data.contOrigin === configurableValue" label="From">
+    <Active v-if="data.contOrigin === configurableValue" :label="t('act.f.from')">
       <SelectInput v-model="config.origin" :options="locations" />
     </Active>
-    <Passive v-else label="From">
+    <Passive v-else :label="t('act.f.from')">
       <span>{{ displayLocationValue(data.contOrigin) }}</span>
     </Passive>
-    <Active v-if="data.contDest === configurableValue" label="To">
+    <Active v-if="data.contDest === configurableValue" :label="t('act.f.to')">
       <SelectInput v-model="config.destination" :options="locations" />
     </Active>
-    <Passive v-else label="To">
+    <Passive v-else :label="t('act.f.to')">
       <span>{{ displayLocationValue(data.contDest) }}</span>
     </Passive>
-    <Active v-if="data.autoProvision" label="Auto-provision">
+    <Active v-if="data.autoProvision" :label="t('act.cship.autoProvision')">
       <SelectInput v-model="config.autoProvisionStoreId" :options="storeOptions" />
     </Active>
   </form>

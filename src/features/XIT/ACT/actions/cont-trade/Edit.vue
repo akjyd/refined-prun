@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import NumericInput from '@src/components/forms/NumericInput.vue';
@@ -34,7 +35,7 @@ const groupTargetOptions = computed(() =>
   pkg.groups
     .filter(x => x.name && x.planet)
     .map(x => ({
-      label: `[${x.name}] target`,
+      label: t('act.f.groupTarget', x.name!),
       value: `${groupTargetPrefix}${x.name}`,
     })),
 );
@@ -80,23 +81,23 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Material Group">
+  <Active :label="t('act.f.group')">
     <SelectInput v-model="materialGroup" :options="materialGroups" />
   </Active>
 
-  <Active label="Trade Type">
-    <SelectInput v-model="tradeType" :options="tradeTypes" />
+  <Active :label="t('act.ctrade.type')">
+    <SelectInput v-model="tradeType" :options="tOptions(tradeTypes)" />
   </Active>
 
-  <Active label="Location">
-    <SelectInput v-model="contLocation" :options="locationOptions" />
+  <Active :label="t('act.f.location')">
+    <SelectInput v-model="contLocation" :options="tOptions(locationOptions)" />
   </Active>
 
-  <Active label="Currency">
+  <Active :label="t('act.f.currency')">
     <SelectInput v-model="currency" :options="currencies" />
   </Active>
 
-  <Active label="Days to Fulfill">
+  <Active :label="t('act.f.daysToFulfill')">
     <NumericInput v-model="daysToFulfill" :min="minContractDays" :max="maxContractDays" :step="1" />
   </Active>
 </template>

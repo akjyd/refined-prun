@@ -11,6 +11,7 @@ import { fixed0 } from '@src/utils/format';
 import { contractDraftsStore } from '@src/infrastructure/prun-api/data/contract-drafts';
 import { ActionStepExecuteContext, AssertFn } from '@src/features/XIT/ACT/shared-types';
 import { maxContractDays, minContractDays } from '@src/features/XIT/ACT/actions/cont-limits';
+import { t } from '@src/i18n';
 
 // Truncate generated text to the game's form limits to avoid field rejection.
 const maxNameLength = 50;
@@ -54,24 +55,24 @@ export async function createNewDraft(ctx: ActionStepExecuteContext<unknown>, til
   const assert: AssertFn = ctx.assert;
   const { log, setStatus } = ctx;
 
-  setStatus('Looking for Create New button...');
+  setStatus(t('act.cont.lookingCreate'));
 
   const findCreateButton = () => findButton(anchor, L.ContractDrafts.actions.create());
 
   const createBtn = await pollUntil(findCreateButton, 10000);
-  assert(createBtn, 'Could not find "Create New" button');
+  assert(createBtn, t('act.cont.noCreate'));
 
   const beforeIds = new Set((contractDraftsStore.all.value ?? []).map(x => x.naturalId));
   await clickElement(createBtn);
   await ctx.waitActionFeedback(tile);
 
-  setStatus('Waiting for draft to be created...');
+  setStatus(t('act.cont.waitDraft'));
   const newDraft = await pollUntil(
     () => (contractDraftsStore.all.value ?? []).find(x => !beforeIds.has(x.naturalId)),
     8000,
   );
-  assert(newDraft, 'Timed out waiting for new contract draft');
-  log.info(`New draft created: ${newDraft.naturalId}`);
+  assert(newDraft, t('act.cont.noNewDraft'));
+  log.info(t('act.cont.newDraft', newDraft.naturalId));
   return newDraft;
 }
 
@@ -87,19 +88,19 @@ export async function setDraftNameAndPreamble(
   const assert: AssertFn = ctx.assert;
   const { log, setStatus } = ctx;
 
-  setStatus('Setting contract name...');
+  setStatus(t('act.cont.settingName'));
 
   // Use a timeout; await $() would hang if the form never renders.
   const nameInput = await pollUntil(() => _$(anchor, 'input'), 5000);
-  assert(nameInput, 'Could not find name input');
+  assert(nameInput, t('act.cont.noName'));
   selectAndChangeInputValue(nameInput, truncate(name, maxNameLength));
-  log.info(`Name set: ${name}`);
+  log.info(t('act.cont.nameSet', name));
 
   const preambleInput = _$(anchor, 'textarea');
-  assert(preambleInput, 'Could not find preamble input');
+  assert(preambleInput, t('act.cont.noPreamble'));
   focusElement(preambleInput);
   changeTextAreaValue(preambleInput, truncate(preamble, maxPreambleLength));
-  log.info('Preamble set');
+  log.info(t('act.cont.preambleSet'));
 }
 
 /**
@@ -115,17 +116,14 @@ export async function saveDraftDetails(
   const assert: AssertFn = ctx.assert;
   const { log, setStatus } = ctx;
 
-  setStatus('Saving draft details...');
+  setStatus(t('act.cont.savingDetails'));
 
   const before = contractDraftsStore.getByNaturalId(draftId);
   // Compare the form's actual values because the game may reformat them.
   const name = _$(anchor, 'input')?.value;
   const preamble = _$(anchor, 'textarea')?.value;
   const saveBtn = findButton(anchor, L.ContractDraft.action.save());
-  assert(
-    saveBtn && !saveBtn.classList.contains(C.Button.disabled),
-    'Draft details save button is missing or disabled',
-  );
+  assert(saveBtn && !saveBtn.classList.contains(C.Button.disabled), t('act.cont.saveDisabled'));
   await clickElement(saveBtn);
   await ctx.waitActionFeedback(tile);
 
@@ -135,8 +133,8 @@ export async function saveDraftDetails(
       draft !== undefined && draft !== before && draft.name === name && draft.preamble === preamble
     );
   }, 8000);
-  assert(saved, 'Draft details were not saved');
-  log.info('Draft details saved');
+  assert(saved, t('act.cont.notSaved'));
+  log.info(t('act.cont.detailsSaved'));
 }
 
 /**
@@ -146,20 +144,20 @@ export async function openTemplate(ctx: ActionStepExecuteContext<unknown>, ancho
   const assert: AssertFn = ctx.assert;
   const { setStatus } = ctx;
 
-  setStatus('Opening template selection...');
+  setStatus(t('act.cont.openingTemplate'));
 
   const templateBtn = await pollUntil(
     () => findButton(anchor, L.ContractDraft.action.template()),
     5000,
   );
-  assert(templateBtn, 'Could not find "Select Template" button');
+  assert(templateBtn, t('act.cont.noTemplateBtn'));
   await clickElement(templateBtn);
 
   const templateSelect = await pollUntil(() => {
     const container = _$(anchor, C.TemplateSelection.templateTypeSelect);
     return container === undefined ? undefined : _$(container, 'select');
   }, 5000);
-  assert(templateSelect, 'Could not find template type select');
+  assert(templateSelect, t('act.cont.noTemplateSelect'));
   return templateSelect;
 }
 
@@ -177,9 +175,9 @@ export function selectTemplateType(
   const assert: AssertFn = ctx.assert;
   const mapped = templateValueMap[templateValue] ?? templateValue;
   const index = Array.from(templateSelect.options).findIndex(x => x.value === mapped);
-  assert(index >= 0, `Template "${templateValue}" not found in the template select`);
+  assert(index >= 0, t('act.cont.noTemplate', templateValue));
   changeSelectIndex(templateSelect, index);
-  ctx.log.info(`Selected "${templateValue}" template`);
+  ctx.log.info(t('act.cont.templateSelected', templateValue));
 }
 
 export async function setCurrency(
@@ -194,10 +192,10 @@ export async function setCurrency(
     () => _$$(anchor, 'select').find(x => Array.from(x.options).some(o => o.value === currency)),
     3000,
   );
-  assert(currencySelect, `Could not find currency select for ${currency}`);
+  assert(currencySelect, t('act.cont.noCurrency', currency));
   const index = Array.from(currencySelect.options).findIndex(x => x.value === currency);
   changeSelectIndex(currencySelect, index);
-  log.info(`Currency set to ${currency}`);
+  log.info(t('act.cont.currencySet', currency));
 }
 
 export interface MaterialEntry {
@@ -223,7 +221,7 @@ export async function addMaterials(
   const assert: AssertFn = ctx.assert;
   const { log, setStatus } = ctx;
 
-  setStatus('Adding materials to template...');
+  setStatus(t('act.cont.addingMaterials'));
 
   const findAddButton = () =>
     _$$(anchor, 'button').find(
@@ -237,23 +235,23 @@ export async function addMaterials(
 
     if (i > 0) {
       const addBtn = findAddButton();
-      assert(addBtn, `Could not find add button for ${material.ticker}`);
+      assert(addBtn, t('act.cont.noAddBtn', material.ticker));
       await clickElement(addBtn);
     }
 
     // Select by index: extra template rows make the last row an unsafe target.
     const group = await pollUntil(() => _$$(anchor, C.TemplateSelection.group).at(i), 2000);
-    assert(group, `Could not find group for ${material.ticker}`);
+    assert(group, t('act.cont.noGroup', material.ticker));
 
     const amountInput = _$$(group, 'input').find(x => x.inputMode === 'numeric');
-    assert(amountInput, `Could not find amount input for ${material.ticker}`);
+    assert(amountInput, t('act.cont.noAmountFor', material.ticker));
     selectAndChangeInputValue(amountInput, String(material.amount));
 
     const matSelector = _$(group, C.MaterialSelector.container);
-    assert(matSelector, `Could not find material selector for ${material.ticker}`);
+    assert(matSelector, t('act.cont.noMatSelector', material.ticker));
     const selected = await selectMaterialInMaterialSelector(matSelector, material.ticker);
-    assert(selected, `Could not select material ${material.ticker}`);
-    log.info(`Added: ${material.ticker} x${fixed0(material.amount)}`);
+    assert(selected, t('act.cont.noSelect', material.ticker));
+    log.info(t('act.cont.added', material.ticker, fixed0(material.amount)));
 
     options?.setPrice?.(group, material.ticker);
   }
@@ -268,13 +266,13 @@ export function setDeadline(ctx: ActionStepExecuteContext<unknown>, anchor: Elem
 
   assert(
     Number.isInteger(days) && days >= minContractDays && days <= maxContractDays,
-    `Deadline must be from ${minContractDays} to ${maxContractDays} days`,
+    t('act.cont.deadlineRange', minContractDays, maxContractDays),
   );
 
   const deadlineInput = _$$(anchor, 'input').find(x => x.name === 'deadline');
-  assert(deadlineInput, 'Could not find deadline input');
+  assert(deadlineInput, t('act.cont.noDeadline'));
   selectAndChangeInputValue(deadlineInput, String(days));
-  log.info(`Deadline set: ${fixed0(days)} days`);
+  log.info(t('act.cont.deadlineSet', fixed0(days)));
 }
 
 /**
@@ -289,16 +287,16 @@ export async function applyTemplate(
   const assert: AssertFn = ctx.assert;
   const { log, setStatus } = ctx;
 
-  setStatus('Applying template...');
+  setStatus(t('act.cont.applyingTemplate'));
 
   const applyBtn = await pollUntil(
     () => findButton(anchor, L.TemplateSelection.action.template()),
     5000,
   );
-  assert(applyBtn, 'Could not find "Apply Template" button');
+  assert(applyBtn, t('act.cont.noApply'));
   assert(
     !applyBtn.disabled && !applyBtn.classList.contains(C.Button.disabled),
-    'Template form is invalid',
+    t('act.cont.templateInvalid'),
   );
 
   const before = contractDraftsStore.getByNaturalId(draftId);
@@ -308,8 +306,8 @@ export async function applyTemplate(
     const draft = contractDraftsStore.getByNaturalId(draftId);
     return draft !== undefined && draft !== before && draft.conditions.length > 0;
   }, 8000);
-  assert(applied, 'Template conditions were not received');
-  log.info('Template applied');
+  assert(applied, t('act.cont.notApplied'));
+  log.info(t('act.cont.templateApplied'));
 }
 
 /**
@@ -324,7 +322,7 @@ export async function saveConditions(
   const assert: AssertFn = ctx.assert;
   const { log, setStatus } = ctx;
 
-  setStatus('Saving conditions...');
+  setStatus(t('act.cont.savingCond'));
 
   const before = contractDraftsStore.getByNaturalId(draftId);
   const condSaveBtn = _$$(anchor, C.Button.btn).findLast(
@@ -332,7 +330,7 @@ export async function saveConditions(
   );
   assert(
     condSaveBtn && !condSaveBtn.classList.contains(C.Button.disabled),
-    'Conditions save button is missing or disabled',
+    t('act.cont.condSaveDisabled'),
   );
   await clickElement(condSaveBtn);
   await ctx.waitActionFeedback(tile);
@@ -346,6 +344,6 @@ export async function saveConditions(
       draft.conditions.length > 0
     );
   }, 8000);
-  assert(saved, 'Contract conditions were not saved');
-  log.info('Conditions saved');
+  assert(saved, t('act.cont.condNotSaved'));
+  log.info(t('act.cont.condSaved'));
 }

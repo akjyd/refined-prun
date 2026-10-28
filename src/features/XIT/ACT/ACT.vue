@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { useXitParameters } from '@src/hooks/use-xit-parameters';
 import ActionPackageList from '@src/features/XIT/ACT/ActionPackageList.vue';
 import ActionPackageEditor from '@src/features/XIT/ACT/EditActionPackage.vue';
@@ -23,7 +24,7 @@ const pkg = computed(() => userData.actionPackages.find(x => x.global.name === p
 
 <template>
   <ActionPackageList v-if="parameters.length === 1" />
-  <div v-else-if="!pkg">Action package "{{ pkgName }}" not found.</div>
+  <div v-else-if="!pkg">{{ t('act.pkgNotFound', pkgName ?? '') }}</div>
   <ActionPackageEditor v-else-if="edit" :pkg="pkg" />
   <ExecuteActionPackage v-else :pkg="pkg" />
 </template>

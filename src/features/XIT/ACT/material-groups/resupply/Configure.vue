@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import Active from '@src/components/forms/Active.vue';
 import NumberInput from '@src/components/forms/NumberInput.vue';
@@ -119,32 +120,32 @@ const shipName = computed(() => {
 
 <template>
   <form>
-    <Active v-if="data.planet === configurableValue" label="Planet">
+    <Active v-if="data.planet === configurableValue" :label="t('act.f.planet')">
       <SelectInput v-model="config.planet" :options="planets" />
     </Active>
     <Active
       v-if="data.days === configurableValue"
-      label="Days"
-      tooltip="The number of days of supplies to refill the planet with.">
+      :label="t('act.resupply.days')"
+      :tooltip="t('act.resupply.daysTip')">
       <NumberInput v-model="config.days" float />
     </Active>
   </form>
-  <Active label="Materials" tooltip="Which materials to include in the resupply group.">
-    <SelectInput v-model="materialFilter" :options="materialFilterOptions" />
+  <Active :label="t('act.resupply.materials')" :tooltip="t('act.resupply.materialsTip')">
+    <SelectInput v-model="materialFilter" :options="tOptions(materialFilterOptions)" />
   </Active>
   <div :class="$style.totals">
     <template v-if="totals">
-      <span>Total Weight </span>
+      <span>{{ t('act.run.totalWeight') }}</span>
       <span :class="$style.value">{{ fixed02(totals.weight) }}t</span>
-      <span>, Total Volume </span>
+      <span>{{ t('act.run.totalVolume') }}</span>
       <span :class="$style.value">{{ fixed02(totals.volume) }}m³</span>
     </template>
     <template v-else>
-      <span>Total Weight --, Total Volume --</span>
+      <span>{{ t('act.resupply.noTotals') }}</span>
     </template>
   </div>
   <div v-if="data.days === configurableValue" :class="$style.fitRow">
-    <span>Fit to Ship</span>
+    <span>{{ t('act.resupply.fit') }}</span>
     <PrunButton
       v-for="ship in shipSizes"
       :key="ship.id"
@@ -154,7 +155,7 @@ const shipName = computed(() => {
       {{ ship.id }}
     </PrunButton>
     <div v-if="shipName && shipFree" :class="$style.fitSelected">
-      <span>Fit Selected</span>
+      <span>{{ t('act.resupply.fitSelected') }}</span>
       <PrunButton primary :disabled="!canFit" @click="fitToShip(shipFree.weight, shipFree.volume)">
         {{ shipName.slice(0, 12) }}
       </PrunButton>

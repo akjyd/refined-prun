@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import NumericInput from '@src/components/forms/NumericInput.vue';
@@ -23,7 +24,7 @@ const groupTargetOptions = computed(() =>
   pkg.groups
     .filter(x => x.name && x.planet)
     .map(x => ({
-      label: `[${x.name}] target`,
+      label: t('act.f.groupTarget', x.name!),
       value: `${groupTargetPrefix}${x.name}`,
     })),
 );
@@ -78,31 +79,31 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Material Group">
+  <Active :label="t('act.f.group')">
     <SelectInput v-model="materialGroup" :options="materialGroups" />
   </Active>
 
-  <Active label="Origin">
-    <SelectInput v-model="contOrigin" :options="locationOptions" />
+  <Active :label="t('act.f.origin')">
+    <SelectInput v-model="contOrigin" :options="tOptions(locationOptions)" />
   </Active>
 
-  <Active label="Destination">
-    <SelectInput v-model="contDest" :options="locationOptions" />
+  <Active :label="t('act.f.destination')">
+    <SelectInput v-model="contDest" :options="tOptions(locationOptions)" />
   </Active>
 
-  <Active label="Currency">
+  <Active :label="t('act.f.currency')">
     <SelectInput v-model="currency" :options="currencies" />
   </Active>
 
-  <Active label="Payment per Ton">
+  <Active :label="t('act.cship.payPerTon')">
     <NumericInput v-model="paymentPerTon" :min="0" :step="1" placeholder="0" />
   </Active>
 
-  <Active label="Days to Fulfill">
+  <Active :label="t('act.f.daysToFulfill')">
     <NumericInput v-model="daysToFulfill" :min="minContractDays" :max="maxContractDays" :step="1" />
   </Active>
 
-  <Active label="Auto-provision">
-    <RadioItem v-model="autoProvision">enable auto-provision</RadioItem>
+  <Active :label="t('act.cship.autoProvision')">
+    <RadioItem v-model="autoProvision">{{ t('act.cship.autoProvisionToggle') }}</RadioItem>
   </Active>
 </template>

@@ -4,6 +4,7 @@ import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { getEntityNameFromAddress } from '@src/infrastructure/prun-api/data/addresses';
 import { comparePlanets } from '@src/util';
 import { configurableValue, groupTargetPrefix } from '@src/features/XIT/ACT/shared-types';
+import { t } from '@src/i18n';
 
 /** Contract endpoints with player storage, shared by CONT actions and configure forms. */
 export function useContLocations() {
@@ -56,7 +57,7 @@ export function displayLocationValue(value: string | undefined) {
     return '--';
   }
   if (value.startsWith(groupTargetPrefix)) {
-    return `[${value.slice(groupTargetPrefix.length)}] target`;
+    return t('act.f.groupTarget', value.slice(groupTargetPrefix.length));
   }
   return value;
 }

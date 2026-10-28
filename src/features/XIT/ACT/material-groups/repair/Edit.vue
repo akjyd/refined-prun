@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNameFromAddress } from '@src/infrastructure/prun-api/data/addresses';
@@ -49,18 +50,15 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Planet" :error="planetError">
-    <SelectInput v-model="planet" :options="planets" />
+  <Active :label="t('act.f.planet')" :error="planetError">
+    <SelectInput v-model="planet" :options="tOptions(planets)" />
   </Active>
-  <Active
-    label="Day Threshold"
-    tooltip="All buildings older than this threshold will be repaired.
-     If no number is provided all buildings are repaired.">
+  <Active :label="t('act.repair.threshold')" :tooltip="t('act.repair.thresholdTipEdit')">
     <NumberInput v-model="days" optional float />
   </Active>
   <Active
-    label="Time Offset"
-    tooltip="The number of days in the future this repair will be conducted."
+    :label="t('act.repair.offset')"
+    :tooltip="t('act.repair.offsetTip')"
     :error="advanceDaysError">
     <NumberInput v-model="advanceDays" float />
   </Active>

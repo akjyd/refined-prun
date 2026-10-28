@@ -6,6 +6,7 @@ import { convertToPlanetNaturalId } from '@src/core/planet-natural-id';
 import { selectAddress } from '@src/infrastructure/prun-ui/utils/select-address';
 import { resizeSplitWindow, splitOwnerId } from '@src/infrastructure/prun-ui/companion-buffer';
 import { sfcStageWindowSize } from '@src/features/XIT/ACT/action-steps/sfc-stage-layout';
+import { t } from '@src/i18n';
 
 interface Data {
   shipId: string;
@@ -20,17 +21,17 @@ export const OPEN_SFC = act.addActionStep<Data>({
   type: 'OPEN_SFC',
   description: data => {
     const ship = shipsStore.getById(data.shipId);
-    const shipLabel = ship?.name ?? ship?.registration ?? 'unknown ship';
+    const shipLabel = ship?.name ?? ship?.registration ?? t('act.step.unknownShip');
     return data.destination
-      ? `Open SFC for ${shipLabel}, set destination to ${getPlanetName(data.destination)}`
-      : `Open SFC for ${shipLabel}`;
+      ? t('act.sfc.openTo', shipLabel, getPlanetName(data.destination) ?? data.destination)
+      : t('act.sfc.open', shipLabel);
   },
   execute: async ctx => {
     const { data, log, isFirstOfType, requestTile, waitAct, complete } = ctx;
     const assert: AssertFn = ctx.assert;
 
     const ship = shipsStore.getById(data.shipId);
-    assert(ship, 'Ship not found');
+    assert(ship, t('act.step.shipNotFound'));
 
     const tile = await requestTile(`SFC ${ship.registration}`, {
       actDelayMs: isFirstOfType ? 0 : flightSubmitGapMs,
@@ -42,15 +43,13 @@ export const OPEN_SFC = act.addActionStep<Data>({
     const destinationName = data.destination ? getPlanetName(data.destination) : undefined;
 
     if (data.destination) {
-      await waitAct('Set destination?');
+      await waitAct(t('act.sfc.setAsk'));
       const container = await $(tile.anchor, C.AddressSelector.container);
       const naturalId = convertToPlanetNaturalId(data.destination) ?? data.destination;
       if (await selectAddress(container, naturalId)) {
-        log.info(`Destination set: ${destinationName} - submit the flight in SFC`);
+        log.info(t('act.sfc.set', destinationName));
       } else {
-        log.warning(
-          `Could not set destination to ${destinationName} - select it manually, then submit the flight`,
-        );
+        log.warning(t('act.sfc.setFailed', destinationName));
       }
     }
 

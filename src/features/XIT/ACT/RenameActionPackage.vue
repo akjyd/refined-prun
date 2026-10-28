@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import SectionDescription from '@src/components/SectionDescription.vue';
@@ -27,17 +28,16 @@ function onCreateClick() {
 
 <template>
   <div :class="C.DraftConditionEditor.form">
-    <SectionHeader>Rename Action Package</SectionHeader>
+    <SectionHeader>{{ t('act.rename.title') }}</SectionHeader>
     <SectionDescription>
-      WARNING: Renaming an action package will break all existing tile links to it (including this
-      one). You can see the full list of your action packages in XIT ACT.
+      {{ t('act.rename.warning') }}
     </SectionDescription>
     <form>
-      <Active label="Name" :error="nameError">
+      <Active :label="t('act.common.name')" :error="nameError">
         <TextInput v-model="newName" />
       </Active>
       <Commands>
-        <PrunButton primary @click="onCreateClick">RENAME</PrunButton>
+        <PrunButton primary @click="onCreateClick">{{ t('act.common.rename') }}</PrunButton>
       </Commands>
     </form>
   </div>

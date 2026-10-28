@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { objectId } from '@src/utils/object-id';
 import NumberInput from '@src/components/forms/NumberInput.vue';
 import PrunButton from '@src/components/PrunButton.vue';
@@ -20,21 +21,21 @@ function onAddClick() {
 
 <template>
   <div :class="C.DraftConditionEditor.form">
-    <SectionHeader>Edit Price Limits</SectionHeader>
+    <SectionHeader>{{ t('act.cxbuy.editLimits') }}</SectionHeader>
     <form>
       <template v-for="(pair, i) in priceLimits" :key="objectId(pair)">
-        <Active :label="`Material Ticker #${i + 1}`">
+        <Active :label="t('act.f.tickerN', i + 1)">
           <TextInput v-model="pair[0]" />
         </Active>
-        <Active :label="`Price Limit #${i + 1}`">
+        <Active :label="t('act.cxbuy.limitN', i + 1)">
           <NumberInput v-model="pair[1]" float />
         </Active>
       </template>
       <Commands>
-        <PrunButton primary @click="onAddClick">ADD</PrunButton>
+        <PrunButton primary @click="onAddClick">{{ t('act.common.add') }}</PrunButton>
       </Commands>
       <Commands>
-        <PrunButton primary @click="emit('close')">CLOSE</PrunButton>
+        <PrunButton primary @click="emit('close')">{{ t('act.f.close') }}</PrunButton>
       </Commands>
     </form>
   </div>

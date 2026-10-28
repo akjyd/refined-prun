@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import Passive from '@src/components/forms/Passive.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
@@ -31,10 +32,10 @@ watchEffect(() => {
 
 <template>
   <form>
-    <Active v-if="data.contLocation === configurableValue" label="Location">
+    <Active v-if="data.contLocation === configurableValue" :label="t('act.f.location')">
       <SelectInput v-model="config.location" :options="locations" />
     </Active>
-    <Passive v-else label="Location">
+    <Passive v-else :label="t('act.f.location')">
       <span>{{ displayLocationValue(data.contLocation) }}</span>
     </Passive>
   </form>

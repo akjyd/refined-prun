@@ -1,3 +1,4 @@
+import { t } from '@src/i18n';
 export type LogTag = null | 'INFO' | 'ACTION' | 'SUCCESS' | 'ERROR' | 'SKIP' | 'WARNING' | 'CANCEL';
 
 export type LogPart = { text: string; yellow?: boolean };
@@ -51,7 +52,7 @@ export class Logger {
     } else {
       this.error(e as string);
     }
-    this.error(`Action Package execution failed due to a runtime error`);
-    this.error(`Please report this error to the extension developer`);
+    this.error(t('act.run.runtimeError'));
+    this.error(t('act.run.reportError'));
   }
 }

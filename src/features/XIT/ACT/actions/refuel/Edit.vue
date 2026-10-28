@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import { serializeStorage, storageSort } from '@src/features/XIT/ACT/actions/utils';
@@ -35,12 +36,10 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Origin">
-    <SelectInput v-model="origin" :options="storages" />
+  <Active :label="t('act.f.origin')">
+    <SelectInput v-model="origin" :options="tOptions(storages)" />
   </Active>
-  <Active
-    label="Buy Missing Fuel"
-    tooltip="Whether the fuel will be bought if there is not enough stock (CX warehouse only).">
-    <RadioItem v-model="buyMissingFuel">buy fuel</RadioItem>
+  <Active :label="t('act.refuel.buy')" :tooltip="t('act.refuel.buyTip')">
+    <RadioItem v-model="buyMissingFuel">{{ t('act.refuel.buyToggle') }}</RadioItem>
   </Active>
 </template>

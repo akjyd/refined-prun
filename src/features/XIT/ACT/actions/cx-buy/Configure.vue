@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import RadioItem from '@src/components/forms/RadioItem.vue';
@@ -14,14 +15,11 @@ config.exchange ??= exchanges[0];
 
 <template>
   <form>
-    <Active
-      v-if="data.skippable"
-      label="Skip CX Buy"
-      tooltip="Whether to skip purchasing materials and only perform the transfer.">
-      <RadioItem v-model="config.skip">skip cx buy</RadioItem>
+    <Active v-if="data.skippable" :label="t('act.cxbuy.skip')" :tooltip="t('act.cxbuy.skipTip')">
+      <RadioItem v-model="config.skip">{{ t('act.cxbuy.skipToggle') }}</RadioItem>
     </Active>
-    <Active v-if="!config.skip" label="Exchange">
-      <SelectInput v-model="config.exchange" :options="exchanges" />
+    <Active v-if="!config.skip" :label="t('act.f.exchange')">
+      <SelectInput v-model="config.exchange" :options="tOptions(exchanges)" />
     </Active>
   </form>
 </template>

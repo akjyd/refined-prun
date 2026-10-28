@@ -12,17 +12,22 @@ import {
   getEntityNameFromAddress,
   getEntityNaturalIdFromAddress,
 } from '@src/infrastructure/prun-api/data/addresses';
+import { t } from '@src/i18n';
 
 act.addMaterialGroup<Config>({
   type: 'Resupply',
-  shortDescription: 'Calculate consumables needed based on burn rate',
+  shortDescription: t('act.resupply.short'),
   description: data => {
     if (!data.planet || data.days === undefined) {
       return '--';
     }
 
     const daysLabel = data.days === configurableValue ? '?' : data.days;
-    return `Resupply ${data.planet} with ${daysLabel} day${data.days == 1 ? '' : 's'} of supplies`;
+    return t(
+      data.days == 1 ? 'act.resupply.desc1' : 'act.resupply.descN',
+      data.planet,
+      String(daysLabel),
+    );
   },
   editComponent: Edit,
   configureComponent: Configure,
@@ -32,10 +37,10 @@ act.addMaterialGroup<Config>({
     (data.days !== configurableValue || config.days !== undefined),
   generateMaterialBill: async ({ data, config, log, setStatus }) => {
     if (!data.planet) {
-      log.error('Missing resupply planet');
+      log.error(t('act.resupply.noPlanet'));
     }
     if (data.days === undefined) {
-      log.error('Missing resupply days');
+      log.error(t('act.resupply.noDays'));
     }
 
     const planet = data.planet === configurableValue ? config.planet : data.planet;
@@ -47,7 +52,7 @@ act.addMaterialGroup<Config>({
           : parseFloat(data.days as string);
     const site = sitesStore.getByPlanetNaturalIdOrName(planet);
     if (!site) {
-      log.error(`Base is not present on ${data.planet}`);
+      log.error(t('act.resupply.noBase', data.planet ?? ''));
     }
 
     if (!site || days === undefined || isNaN(days)) {
@@ -59,7 +64,7 @@ act.addMaterialGroup<Config>({
     if (workforce.value === undefined || production.value === undefined) {
       const name =
         getEntityNameFromAddress(site.address) ?? getEntityNaturalIdFromAddress(site.address);
-      setStatus(`Loading ${name} burn data...`);
+      setStatus(t('act.resupply.loading', name ?? ''));
       await watchWhile(
         toRef(() => workforce.value === undefined || production.value === undefined),
       );

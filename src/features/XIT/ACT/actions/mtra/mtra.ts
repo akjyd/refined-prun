@@ -13,10 +13,11 @@ import { AssertFn, configurableValue } from '@src/features/XIT/ACT/shared-types'
 import { generateAgentIds } from '@src/features/XIT/ACT/agent-sync';
 import { getPlanetName } from '@src/core/planet-name';
 import { buildOffloadPackage } from '@src/features/XIT/ACT/actions/mtra/offload-package';
+import { t, tValue } from '@src/i18n';
 
 act.addAction<Config>({
   type: 'MTRA',
-  shortDescription: 'Transfer materials between storages at the same location',
+  shortDescription: t('act.mtrab.short'),
   description: (action, config) => {
     if (!action.group || !action.origin || !action.dest) {
       return '--';
@@ -24,16 +25,16 @@ act.addAction<Config>({
 
     const origin =
       action.origin == configurableValue
-        ? (config?.origin ?? 'configured location')
+        ? (config?.origin ?? t('act.f.configuredLocation'))
         : action.origin;
     const dest =
       action.dest == configurableValue
-        ? (config?.destination ?? 'configured location')
+        ? (config?.destination ?? t('act.f.configuredLocation'))
         : action.dest;
     if (dest === CX_BUY_ONLY_DEST) {
-      return `CX Buy only [${action.group}] from ${origin} (no transfer)`;
+      return t('act.mtrab.cxOnly', action.group, tValue(origin));
     }
-    return `Transfer group [${action.group}] from ${origin} to ${dest}`;
+    return t('act.mtrab.desc', action.group, origin, dest);
   },
   editComponent: Edit,
   configureComponent: Configure,
@@ -60,12 +61,12 @@ act.addAction<Config>({
 
     // Assert-narrowed locals (rebound so nested helpers keep the non-undefined type).
     const maybeMaterials = await getMaterialGroup(data.group);
-    assert(maybeMaterials, 'Invalid material group');
+    assert(maybeMaterials, t('act.f.invalidGroup'));
     const materials = maybeMaterials;
 
     const serializedOrigin = data.origin === configurableValue ? config?.origin : data.origin;
     const maybeOrigin = deserializeStorage(serializedOrigin);
-    assert(maybeOrigin, 'Invalid origin');
+    assert(maybeOrigin, t('act.f.invalidOrigin'));
     const origin = maybeOrigin;
 
     const serializedDest = data.dest === configurableValue ? config?.destination : data.dest;
@@ -73,11 +74,11 @@ act.addAction<Config>({
       return;
     }
     const maybeDest = deserializeStorage(serializedDest);
-    assert(maybeDest, 'Invalid destination');
+    assert(maybeDest, t('act.f.invalidDest'));
     const dest = maybeDest;
 
     const isSameLocation = atSameLocation(origin, dest);
-    assert(isSameLocation, 'Origin and destination are not at the same location');
+    assert(isSameLocation, t('act.mtrab.notSame'));
 
     // A finishOnly action emits JSON, agent posts, and SFC after all ships' load actions.
     // The matching load action already emitted the transfers.
@@ -98,7 +99,7 @@ act.addAction<Config>({
           x => (materials[x.quantity!.material.ticker]?.quantity ?? 0) >= x.quantity!.amount,
         );
       if (fullCargoOffload) {
-        log.info('Group covers the entire cargo hold - unloading via SHPI instead of MTRA');
+        log.info(t('act.mtrab.viaShpi'));
         emitStep(SHPI_UNLOAD({ shipId: origin.addressableId }));
       } else {
         for (const ticker of Object.keys(materials)) {
@@ -158,7 +159,7 @@ act.addAction<Config>({
           for (const name of [...new Set([...printGroups, ...agentGroups])]) {
             const groupMats = await getMaterialGroup(name);
             if (!groupMats) {
-              log.warning(`Skipping offload for missing material group [${name}]`);
+              log.warning(t('act.mtrab.skipOffload', name));
               continue;
             }
             const groupPlanet = getMaterialGroupPlanet(name);

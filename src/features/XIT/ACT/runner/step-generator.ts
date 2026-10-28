@@ -8,6 +8,7 @@ import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { act } from '@src/features/XIT/ACT/act-registry';
+import { t } from '@src/i18n';
 
 interface StepGeneratorOptions {
   log: Logger;
@@ -79,7 +80,7 @@ export class StepGenerator {
       }
     }
     if (steps.length === 0) {
-      this.log.error('No actions were generated');
+      this.log.error(t('act.run.noActions'));
       fail = true;
     }
     return { steps, fail };
@@ -91,26 +92,24 @@ export class StepGenerator {
     name: string | undefined,
   ): string | undefined {
     if (!name) {
-      this.log.error('Missing material group');
+      this.log.error(t('act.run.missingGroup'));
       return undefined;
     }
     const group = pkg.groups.find(x => x.name === name);
     if (!group) {
-      this.log.error('Unrecognized material group');
+      this.log.error(t('act.run.unknownGroup'));
       return undefined;
     }
     const planet = group.planet;
     if (!planet) {
-      this.log.warning(
-        `Material group [${name}] has no planet configured; SFC destination will not be filled`,
-      );
+      this.log.warning(t('act.run.groupNoPlanetSfc', name));
       return undefined;
     }
     if (planet === configurableValue) {
       const groupConfig = config.materialGroups[name] ?? {};
       const configuredPlanet = (groupConfig as { planet?: string }).planet;
       if (!configuredPlanet) {
-        this.log.error(`Material group [${name}] planet not configured`);
+        this.log.error(t('act.run.groupNoPlanet', name));
         return undefined;
       }
       return configuredPlanet;
@@ -124,22 +123,22 @@ export class StepGenerator {
     name: string | undefined,
   ) {
     if (!name) {
-      this.log.error('Missing material group');
+      this.log.error(t('act.run.missingGroup'));
       return undefined;
     }
     const group = pkg.groups.find(x => x.name === name);
     if (!group) {
-      this.log.error('Unrecognized material group');
+      this.log.error(t('act.run.unknownGroup'));
       return undefined;
     }
 
     const info = act.getMaterialGroupInfo(group.type);
     if (!info) {
-      this.log.error('Unrecognized material group type');
+      this.log.error(t('act.run.unknownGroupType'));
       return undefined;
     }
 
-    this.options.onStatusChanged(`Generating material bill for ${group.name}...`);
+    this.options.onStatusChanged(t('act.run.generatingBill', group.name ?? ''));
     const groupConfig = config.materialGroups[name] ?? {};
     return await info.generateMaterialBill({
       data: group,

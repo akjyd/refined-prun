@@ -10,20 +10,21 @@ import './material-groups/repair/repair';
 import './material-groups/resupply/resupply';
 
 import ACT from '@src/features/XIT/ACT/ACT.vue';
+import { t } from '@src/i18n';
 
 xit.add({
   command: ['ACT', 'ACTION'],
   name: parameters => {
     if (parameters.length === 0) {
-      return 'ACTION PACKAGES';
+      return t('act.title.list');
     }
     if (parameters[0].toUpperCase() == 'GEN' || parameters[0].toUpperCase() == 'EDIT') {
-      return 'EDIT ACTION PACKAGE';
+      return t('act.title.edit');
     }
-    return 'EXECUTE ACTION PACKAGE';
+    return t('act.title.execute');
   },
-  description: 'Allows to automate certain tasks.',
-  optionalParameters: 'GEN and/or Action Name',
+  description: t('act.description'),
+  optionalParameters: t('act.parameters'),
   contextItems: parameters => (parameters.length > 0 ? [{ cmd: 'XIT ACT' }] : []),
   component: () => ACT,
 });

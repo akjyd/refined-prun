@@ -7,10 +7,11 @@ import { fixed0, fixed02 } from '@src/utils/format';
 import { fillAmount } from '@src/features/XIT/ACT/actions/cx-buy/utils';
 import { AssertFn, configurableValue } from '@src/features/XIT/ACT/shared-types';
 import { userData } from '@src/store/user-data';
+import { t } from '@src/i18n';
 
 act.addAction<Config>({
   type: 'CX Buy',
-  shortDescription: 'Buy materials from a commodity exchange',
+  shortDescription: t('act.cxbuy.short'),
   description: (action, config) => {
     if (!action.group || !action.exchange) {
       return '--';
@@ -18,9 +19,9 @@ act.addAction<Config>({
 
     const exchange =
       action.exchange === configurableValue
-        ? (config?.exchange ?? 'configured exchange')
+        ? (config?.exchange ?? t('act.f.configuredExchange'))
         : action.exchange;
-    return 'Buying group ' + action.group + ' from ' + exchange;
+    return t('act.cxbuy.desc', action.group, exchange);
   },
   editComponent: Edit,
   configureComponent: Configure,
@@ -40,10 +41,10 @@ act.addAction<Config>({
     const buyPartial = data.buyPartial ?? false;
 
     const materials = await getMaterialGroup(data.group);
-    assert(materials, 'Invalid material group');
+    assert(materials, t('act.f.invalidGroup'));
 
     const exchange = data.exchange === configurableValue ? config.exchange : data.exchange;
-    assert(exchange, 'Missing exchange');
+    assert(exchange, t('act.cxbuy.noExchange'));
 
     // Take out materials in CX inventory if requested
     if ((data.useCXInv ?? true) && exchange) {
@@ -75,7 +76,7 @@ act.addAction<Config>({
       const { quantity: amount, price } = materials[ticker];
       const priceLimit = price ?? data.priceLimits?.[ticker] ?? Infinity;
       if (isNaN(priceLimit)) {
-        log.error('Non-numerical price limit on ' + ticker);
+        log.error(t('act.cxbuy.nanLimit', ticker));
         continue;
       }
 
@@ -85,13 +86,18 @@ act.addAction<Config>({
 
       if (filled && filled.amount < amount && !allowUnfilled) {
         const leftover = amount - filled.amount;
-        let message =
-          `${fixed0(leftover)} ${ticker} will not be bought on ${exchange} ` +
-          `(${fixed0(filled.amount)} of ${fixed0(amount)} available`;
+        let message = t(
+          'act.cxpo.shortage',
+          fixed0(leftover),
+          ticker,
+          exchange,
+          fixed0(filled.amount),
+          fixed0(amount),
+        );
         if (isFinite(priceLimit)) {
-          message += ` with price limit ${fixed02(priceLimit)}/u`;
+          message += t('act.cxpo.shortageLimit', fixed02(priceLimit));
         }
-        message += ')';
+        message += t('act.common.closeParen');
         log.warning(message);
         if (filled.amount === 0) {
           continue;

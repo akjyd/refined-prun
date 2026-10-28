@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import { Config } from '@src/features/XIT/ACT/actions/mtra/config';
@@ -39,7 +40,7 @@ watchEffect(() => {
 function getOptions(storages: PrunApi.Store[]) {
   const options = storages.map(serializeStorage).map(x => ({ label: x, value: x }));
   if (options.length === 0) {
-    options.push({ label: 'No locations available', value: undefined! });
+    options.push({ label: t('act.f.noLocations'), value: undefined! });
   }
   return options;
 }
@@ -47,7 +48,7 @@ function getOptions(storages: PrunApi.Store[]) {
 
 <template>
   <form>
-    <Active label="From">
+    <Active :label="t('act.f.from')">
       <SelectInput v-model="config.origin" :options="originOptions" />
     </Active>
   </form>

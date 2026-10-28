@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tType } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Active from '@src/components/forms/Active.vue';
@@ -19,7 +20,7 @@ const emit = defineEmits<{ (e: 'close'): void }>();
 const name = ref(group.name ?? '');
 const nameError = ref(false);
 
-const typeOptions = act.getMaterialGroupTypes();
+const typeOptions = act.getMaterialGroupTypes().map(x => ({ label: tType(x), value: x }));
 const type = ref(group.type);
 
 const shortDescription = computed(() => act.getMaterialGroupInfo(type.value)?.shortDescription);
@@ -47,20 +48,22 @@ function onSaveClick() {
 
 <template>
   <div :class="C.DraftConditionEditor.form">
-    <SectionHeader>{{ add ? 'Add' : 'Edit' }} Material Group</SectionHeader>
+    <SectionHeader>{{ add ? t('act.edit.addGroup') : t('act.edit.editGroup') }}</SectionHeader>
     <form>
-      <Active label="Type">
+      <Active :label="t('act.common.type')">
         <SelectInput v-model="type" :options="typeOptions" />
       </Active>
-      <Passive v-if="shortDescription" label="Description">
+      <Passive v-if="shortDescription" :label="t('act.common.description')">
         <span>{{ shortDescription }}</span>
       </Passive>
-      <Active label="Name" :error="nameError">
+      <Active :label="t('act.common.name')" :error="nameError">
         <TextInput v-model="name" />
       </Active>
       <Component :is="editFormComponent" v-if="editFormComponent" ref="editForm" :group="group" />
       <Commands>
-        <PrunButton primary @click="onSaveClick">{{ add ? 'ADD' : 'SAVE' }}</PrunButton>
+        <PrunButton primary @click="onSaveClick">{{
+          add ? t('act.common.add') : t('act.common.save')
+        }}</PrunButton>
       </Commands>
     </form>
   </div>

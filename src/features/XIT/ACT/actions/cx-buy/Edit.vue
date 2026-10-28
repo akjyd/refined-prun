@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import Commands from '@src/components/forms/Commands.vue';
 import PrunButton from '@src/components/PrunButton.vue';
@@ -60,28 +61,22 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Material Group">
+  <Active :label="t('act.f.group')">
     <SelectInput v-model="materialGroup" :options="materialGroups" />
   </Active>
-  <Active label="Exchange">
-    <SelectInput v-model="exchange" :options="exchanges" />
+  <Active :label="t('act.f.exchange')">
+    <SelectInput v-model="exchange" :options="tOptions(exchanges)" />
   </Active>
-  <Commands label="Price Limits">
-    <PrunButton primary @click="onEditPriceLimitsClick">EDIT</PrunButton>
+  <Commands :label="t('act.cxbuy.priceLimits')">
+    <PrunButton primary @click="onEditPriceLimitsClick">{{ t('act.f.edit') }}</PrunButton>
   </Commands>
-  <Active
-    label="Buy Partial"
-    tooltip="Limit the purchase quantity to the stock available within your price limit when the package starts.">
-    <RadioItem v-model="buyPartial">buy partial</RadioItem>
+  <Active :label="t('act.cxbuy.buyPartial')" :tooltip="t('act.cxbuy.buyPartialTip')">
+    <RadioItem v-model="buyPartial">{{ t('act.cxbuy.buyPartialToggle') }}</RadioItem>
   </Active>
-  <Active
-    label="Allow Unfilled"
-    tooltip="Create a full bid order even if there is not enough stock on the CX.">
-    <RadioItem v-model="allowUnfilled">allow unfilled</RadioItem>
+  <Active :label="t('act.cxbuy.allowUnfilled')" :tooltip="t('act.cxbuy.allowUnfilledTip')">
+    <RadioItem v-model="allowUnfilled">{{ t('act.cxbuy.allowUnfilledToggle') }}</RadioItem>
   </Active>
-  <Active
-    label="Use CX Inventory"
-    tooltip="Whether to use stock in the CX warehouse when calculating how much needs to be bought.">
-    <RadioItem v-model="useCXInv">use cx inventory</RadioItem>
+  <Active :label="t('act.cxbuy.useCXInv')" :tooltip="t('act.cxbuy.useCXInvTip')">
+    <RadioItem v-model="useCXInv">{{ t('act.cxbuy.useCXInvToggle') }}</RadioItem>
   </Active>
 </template>

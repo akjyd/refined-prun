@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import ActionBar from '@src/components/ActionBar.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
@@ -51,8 +52,8 @@ function onImportClick(ev: Event) {
 
 function onDeleteClick(ev: Event, pkg: UserData.ActionPackageData) {
   showConfirmationOverlay(ev, () => removeArrayElement(userData.actionPackages, pkg), {
-    message: `Are you sure you want to delete the action package "${pkg.global.name}"?`,
-    confirmLabel: 'DELETE',
+    message: t('act.list.confirmDelete', pkg.global.name),
+    confirmLabel: t('act.common.delete'),
   });
 }
 
@@ -67,25 +68,29 @@ function paramName(pkg: UserData.ActionPackageData) {
 
 <template>
   <ActionBar>
-    <div v-if="showQuickstart">Click here if you don't<br />know what to do!</div>
+    <div v-if="showQuickstart"
+      >{{ t('act.list.quickstartHint1') }}<br />{{ t('act.list.quickstartHint2') }}</div
+    >
     <div v-if="showQuickstart">→</div>
-    <PrunButton v-if="showQuickstart" primary @click="onQuickstartClick">QUICKSTART</PrunButton>
-    <PrunButton primary @click="onCreateClick">CREATE NEW</PrunButton>
-    <PrunButton primary @click="onImportClick">IMPORT</PrunButton>
+    <PrunButton v-if="showQuickstart" primary @click="onQuickstartClick">{{
+      t('act.list.quickstart')
+    }}</PrunButton>
+    <PrunButton primary @click="onCreateClick">{{ t('act.list.createNew') }}</PrunButton>
+    <PrunButton primary @click="onImportClick">{{ t('act.common.import') }}</PrunButton>
   </ActionBar>
   <table>
     <thead>
       <tr>
         <GripHeaderCell />
-        <th>Name</th>
-        <th>Execute</th>
-        <th>Edit</th>
-        <th>Delete</th>
+        <th>{{ t('act.common.name') }}</th>
+        <th>{{ t('act.list.colExecute') }}</th>
+        <th>{{ t('act.list.colEdit') }}</th>
+        <th>{{ t('act.list.colDelete') }}</th>
       </tr>
     </thead>
     <tbody v-if="userData.actionPackages.length === 0">
       <tr>
-        <td colspan="5">No action packages.</td>
+        <td colspan="5">{{ t('act.list.empty') }}</td>
       </tr>
     </tbody>
     <tbody v-else v-draggable="[actionPackages, grip.draggable]">
@@ -98,16 +103,18 @@ function paramName(pkg: UserData.ActionPackageData) {
         </td>
         <td>
           <PrunButton primary @click="showBuffer(`XIT ACT_${paramName(pkg)}`)">
-            EXECUTE
+            {{ t('act.common.execute') }}
           </PrunButton>
         </td>
         <td>
           <PrunButton primary @click="showBuffer(`XIT ACT_EDIT_${paramName(pkg)}`)">
-            EDIT
+            {{ t('act.common.edit') }}
           </PrunButton>
         </td>
         <td>
-          <PrunButton dark inline @click="onDeleteClick($event, pkg)">delete</PrunButton>
+          <PrunButton dark inline @click="onDeleteClick($event, pkg)">{{
+            t('act.common.deleteSmall')
+          }}</PrunButton>
         </td>
       </tr>
     </tbody>

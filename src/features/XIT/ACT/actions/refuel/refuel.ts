@@ -20,15 +20,16 @@ import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { clamp } from '@src/utils/clamp';
 import { Logger } from '@src/features/XIT/ACT/runner/logger';
+import { t } from '@src/i18n';
 
 act.addAction<Config>({
   type: 'Refuel',
-  shortDescription: 'Refuel all ships docked near a storage',
+  shortDescription: t('act.refuel.short'),
   description: action => {
     if (action.origin === allExchangesValue) {
-      return 'Refuel all ships docked at exchanges';
+      return t('act.refuel.allDesc');
     }
-    return action.origin ? 'Refuel all ships near ' + action.origin : '--';
+    return action.origin ? t('act.refuel.nearDesc', action.origin) : '--';
   },
   editComponent: Edit,
   configureComponent: Configure,
@@ -43,15 +44,15 @@ act.addAction<Config>({
     const assert: AssertFn = ctx.assert;
 
     const stlMaterial = materialsStore.getByTicker('SF');
-    assert(stlMaterial, 'SF material not found');
+    assert(stlMaterial, t('act.refuel.noSF'));
 
     const ftlMaterial = materialsStore.getByTicker('FF');
-    assert(ftlMaterial, 'FF material not found');
+    assert(ftlMaterial, t('act.refuel.noFF'));
 
     if (data.origin === allExchangesValue) {
       const origins = getRefuelOrigins().filter(isCXWarehouse);
       if (origins.length === 0) {
-        log.warning('No exchange warehouses found');
+        log.warning(t('act.refuel.noWarehouses'));
         return;
       }
       for (const origin of origins) {
@@ -62,7 +63,7 @@ act.addAction<Config>({
 
     const serializedOrigin = data.origin === configurableValue ? config?.origin : data.origin;
     const origin = deserializeStorage(serializedOrigin);
-    assert(origin, 'Invalid origin');
+    assert(origin, t('act.f.invalidOrigin'));
 
     refuelFromOrigin(origin, data, stlMaterial, ftlMaterial, log, emitStep);
   },
@@ -87,7 +88,7 @@ function refuelFromOrigin(
     storagesStore.getByType('FTL_FUEL_STORE')?.filter(x => atSameLocation(x, origin)) ?? [];
 
   if (dockedStl.length === 0 && dockedFtl.length === 0) {
-    log.info(`No ships are docked near ${originName}`);
+    log.info(t('act.refuel.noShips', originName));
     return;
   }
 
@@ -95,7 +96,7 @@ function refuelFromOrigin(
   const totalFtlRefuel = sumBy(dockedFtl, x => calculateRefuelAmount(x, ftlMaterial));
 
   if (totalFtlRefuel === 0 && totalStlRefuel === 0) {
-    log.info(`No ships need refueling near ${originName}`);
+    log.info(t('act.refuel.noNeed', originName));
     return;
   }
 
@@ -113,7 +114,7 @@ function refuelFromOrigin(
       );
     }
     if (presentStlFuel < totalStlRefuel) {
-      log.warning(`Not enough SF at ${originName}. Some ships will not be refueled.`);
+      log.warning(t('act.refuel.notEnough', 'SF', originName));
     }
   }
 
@@ -131,7 +132,7 @@ function refuelFromOrigin(
       );
     }
     if (presentFtlFuel < totalFtlRefuel) {
-      log.warning(`Not enough FF at ${originName}. Some ships will not be refueled.`);
+      log.warning(t('act.refuel.notEnough', 'FF', originName));
     }
   }
 

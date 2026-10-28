@@ -6,6 +6,7 @@ import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { watchWhile } from '@src/utils/watch';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { AssertFn } from '@src/features/XIT/ACT/shared-types';
+import { t } from '@src/i18n';
 
 interface Data {
   from: string;
@@ -25,15 +26,15 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
   description: data => {
     const from = storagesStore.getById(data.from);
     const to = storagesStore.getById(data.to);
-    const fromName = from ? serializeStorage(from) : 'NOT FOUND';
-    const toName = to ? serializeStorage(to) : 'NOT FOUND';
+    const fromName = from ? serializeStorage(from) : t('act.mtra.notFound');
+    const toName = to ? serializeStorage(to) : t('act.mtra.notFound');
     if (data.loadAll) {
-      return `Transfer all ${data.ticker} from ${fromName} to ${toName}`;
+      return t('act.mtra.all', data.ticker, fromName, toName);
     }
     if (data.playerReview) {
-      return `Transfer up to ${fixed0(data.amount)} ${data.ticker} from ${fromName} to ${toName} (adjust in MTRA)`;
+      return t('act.mtra.upTo', fixed0(data.amount), data.ticker, fromName, toName);
     }
-    return `Transfer ${fixed0(data.amount)} ${data.ticker} from ${fromName} to ${toName}`;
+    return t('act.mtra.exact', fixed0(data.amount), data.ticker, fromName, toName);
   },
   execute: async ctx => {
     const { data, log, setStatus, requestTile, waitAct, waitActionFeedback, complete, skip, fail } =
@@ -41,32 +42,32 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
     const assert: AssertFn = ctx.assert;
     const { ticker, amount, loadAll, playerReview } = data;
     const from = storagesStore.getById(data.from);
-    assert(from, 'Origin inventory not found');
+    assert(from, t('act.mtra.noOrigin'));
     const to = storagesStore.getById(data.to);
-    assert(to, 'Destination inventory not found');
+    assert(to, t('act.mtra.noDest'));
 
     if (!from.items.find(x => x.quantity?.material.ticker === ticker)) {
-      log.warning(`No ${ticker} was transferred (not present in origin)`);
+      log.warning(t('act.mtra.notPresent', ticker));
       skip();
       return;
     }
 
     // Data.amount is only a snapshot estimate for loadAll totals/description.
     if (!loadAll && amount <= 0) {
-      log.warning(`No ${ticker} was transferred (target amount is 0)`);
+      log.warning(t('act.mtra.zero', ticker));
       skip();
       return;
     }
 
     const material = materialsStore.getByTicker(ticker);
-    assert(material, `Unknown material ${ticker}`);
+    assert(material, t('act.step.unknownMaterial', ticker));
 
     // Check if we can fit a single unit. MTRA will be unusable otherwise.
     const epsilon = 0.000001;
     const canFitWeight = to.weightCapacity - to.weightLoad - material.weight + epsilon >= 0;
     const canFitVolume = to.volumeCapacity - to.volumeLoad - material.volume + epsilon >= 0;
     if (!canFitWeight || !canFitVolume) {
-      log.warning(`No ${ticker} was transferred (no space)`);
+      log.warning(t('act.mtra.noSpace', ticker));
       skip();
       return;
     }
@@ -78,12 +79,12 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
       return;
     }
 
-    setStatus('Setting up MTRA buffer...');
+    setStatus(t('act.mtra.setup'));
     const container = await $(tile.anchor, C.MaterialSelector.container);
 
     const ok = await selectMaterialInMaterialSelector(container, ticker);
     if (!ok) {
-      fail(`Ticker ${ticker} not found in the material selector`);
+      fail(t('act.mtra.noTicker', ticker));
       return;
     }
 
@@ -93,11 +94,11 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
     const maxAmount = Math.max(...sliderNumbers);
     const allInputs = _$$(tile.anchor, 'input');
     const amountInput = allInputs[1];
-    assert(amountInput !== undefined, 'Amount input not found');
+    assert(amountInput !== undefined, t('act.mtra.noAmount'));
 
     if (loadAll) {
       if (maxAmount === 0) {
-        log.warning(`No ${ticker} was transferred (nothing available)`);
+        log.warning(t('act.mtra.nothing', ticker));
         skip();
         return;
       }
@@ -105,7 +106,7 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
     } else {
       if (amount > maxAmount) {
         if (maxAmount === 0) {
-          log.warning(`No ${ticker} was transferred (nothing available)`);
+          log.warning(t('act.mtra.nothing', ticker));
           skip();
           return;
         }
@@ -113,8 +114,7 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
         if (!playerReview) {
           const leftover = amount - maxAmount;
           log.warning(
-            `${fixed0(leftover)} ${ticker} not transferred ` +
-              `(${fixed0(maxAmount)} of ${fixed0(amount)} transferred)`,
+            t('act.mtra.partial', fixed0(leftover), ticker, fixed0(maxAmount), fixed0(amount)),
           );
         }
       }
@@ -124,11 +124,11 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
     const transferButton = await $(tile.anchor, C.Button.btn);
 
     if (playerReview) {
-      await waitAct(`Adjust ${ticker} amount in MTRA, then ACT (or SKIP)`, { actDelayMs: 2000 });
+      await waitAct(t('act.mtra.adjust', ticker), { actDelayMs: 2000 });
       // Use whatever amount the player left in the input - do not rewrite it.
       const reviewed = Number(amountInput.value);
       if (!Number.isFinite(reviewed) || reviewed <= 0) {
-        log.warning(`No ${ticker} was transferred (player amount is 0)`);
+        log.warning(t('act.mtra.playerZero', ticker));
         skip();
         return;
       }
@@ -148,7 +148,7 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
     const currentAmount = destinationAmount.value;
     await clickElement(transferButton);
     await waitActionFeedback(tile);
-    setStatus('Waiting for storage update...');
+    setStatus(t('act.step.waitStorage'));
     await watchWhile(() => destinationAmount.value === currentAmount);
 
     complete();

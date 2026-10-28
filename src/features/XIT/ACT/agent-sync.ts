@@ -14,6 +14,7 @@ import {
   getEntityNameFromAddress,
 } from '@src/infrastructure/prun-api/data/addresses';
 import dayjs from 'dayjs';
+import { t } from '@src/i18n';
 
 const readyMaxAgeMs = dayjs.duration(5, 'days').asMilliseconds();
 
@@ -290,7 +291,7 @@ export function generateAgentMessageId(reserved?: ReadonlySet<string>) {
       return id;
     }
   }
-  throw new Error('All 26 agent message ids for today are in use.');
+  throw new Error(t('act.sync.idsFull'));
 }
 
 // Use a plain id for one package or numbered ids for a chain ("a3-1" … "a3-n").
@@ -319,18 +320,14 @@ export async function buildAgentPackageMessage(
   const resolvedId = id ?? generateAgentMessageId();
   const collision = findSyncCodeCollision(pkg);
   if (collision !== undefined) {
-    throw new Error(
-      `Action package can't sync: "${collision}" matches a sync short code - rename it.`,
-    );
+    throw new Error(t('act.sync.collision', collision));
   }
   const { p } = compactActionPackageForSync(pkg);
   // Place `i` right after k/v so it stays near the front of the raw chat message.
   const envelope: AgentSyncEnvelope = { k: 'ap', v: 1, i: resolvedId, p };
   const text = JSON.stringify(envelope);
   if (text.length > maxMessageLength) {
-    throw new Error(
-      `Action package too large to sync (${text.length} > ${maxMessageLength} chars).`,
-    );
+    throw new Error(t('act.sync.tooLarge', text.length, maxMessageLength));
   }
   return { id: resolvedId, text };
 }

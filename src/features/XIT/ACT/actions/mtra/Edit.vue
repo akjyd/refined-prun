@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
@@ -38,13 +39,13 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Material Group">
+  <Active :label="t('act.f.group')">
     <SelectInput v-model="materialGroup" :options="materialGroups" />
   </Active>
-  <Active label="Origin">
-    <SelectInput v-model="origin" :options="storages" />
+  <Active :label="t('act.f.origin')">
+    <SelectInput v-model="origin" :options="tOptions(storages)" />
   </Active>
-  <Active label="Destination">
-    <SelectInput v-model="destination" :options="storages" />
+  <Active :label="t('act.f.destination')">
+    <SelectInput v-model="destination" :options="tOptions(storages)" />
   </Active>
 </template>

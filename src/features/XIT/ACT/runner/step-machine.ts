@@ -5,6 +5,7 @@ import { TileAllocator } from '@src/features/XIT/ACT/runner/tile-allocator';
 import { waitActionFeedback } from '@src/infrastructure/prun-ui/utils/action-feedback';
 import { sleep } from '@src/utils/sleep';
 import { closeAgentChannelSession } from '@src/infrastructure/prun-ui/agent-channel-messaging';
+import { t } from '@src/i18n';
 
 interface StepMachineOptions {
   tile: PrunTile;
@@ -75,7 +76,7 @@ export class StepMachine {
     if (!this.ensureRunning()) {
       return;
     }
-    this.log.cancel('Action Package execution canceled');
+    this.log.cancel(t('act.run.canceled'));
     this.stop();
   }
 
@@ -88,7 +89,7 @@ export class StepMachine {
 
   private async startNext() {
     if (this.steps.length === 0) {
-      this.log.success('Action Package execution completed');
+      this.log.success(t('act.run.completed'));
       this.stop();
       return;
     }
@@ -114,21 +115,21 @@ export class StepMachine {
           await this.waitAct(status, opts);
         },
         waitActionFeedback: async tile => {
-          this.options.onStatusChanged('Waiting for action feedback...');
+          this.options.onStatusChanged(t('act.run.waitFeedback'));
           const { result, message } = await waitActionFeedback(tile.frame, {
             autoConfirm: true,
             dismissSuccess: true,
             timeoutMs: actionFeedbackTimeoutMs,
           });
           if (result === 'cancel') {
-            log.cancel('Action Package execution canceled');
+            log.cancel(t('act.run.canceled'));
             this.stop();
             throw ExecutionStopped;
           }
           if (result === 'error') {
             log.error(message);
             log.error(description ?? info.description(next));
-            log.error('Action Package execution failed');
+            log.error(t('act.run.failed'));
             this.stop();
             throw ExecutionStopped;
           }
@@ -148,7 +149,7 @@ export class StepMachine {
           if (message) {
             log.error(message);
           }
-          log.error('Action Package execution failed');
+          log.error(t('act.run.failed'));
           this.stop();
           throw ExecutionStopped;
         },
@@ -176,11 +177,11 @@ export class StepMachine {
     if (tile !== undefined) {
       return tile;
     }
-    await this.waitAct(`Open ${command}`, opts);
-    this.options.onStatusChanged(`Opening ${command}...`);
+    await this.waitAct(t('act.run.open', command), opts);
+    this.options.onStatusChanged(t('act.run.opening', command));
     tile = await this.options.tileAllocator.requestTile(command);
     if (tile === undefined) {
-      this.log.error(`Failed to open ${command}`);
+      this.log.error(t('act.run.openFailed', command));
       this.stop();
       throw ExecutionStopped;
     }
@@ -207,7 +208,7 @@ export class StepMachine {
 
   private ensureRunning() {
     if (!this.isRunning) {
-      this.log.error('Action Package is not running');
+      this.log.error(t('act.run.notRunning'));
     }
     return this.isRunning;
   }

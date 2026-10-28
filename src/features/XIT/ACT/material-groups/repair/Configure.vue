@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import SelectInput from '@src/components/forms/SelectInput.vue';
 import NumberInput from '@src/components/forms/NumberInput.vue';
 import Active from '@src/components/forms/Active.vue';
@@ -40,19 +41,19 @@ if (data.advanceDays === configurableValue && config.advanceDays === undefined) 
 
 <template>
   <form>
-    <Active v-if="data.planet === configurableValue" label="Planet">
+    <Active v-if="data.planet === configurableValue" :label="t('act.f.planet')">
       <SelectInput v-model="config.planet" :options="planets" />
     </Active>
     <Active
       v-if="data.days === configurableValue"
-      label="Day Threshold"
-      tooltip="All buildings older than this threshold will be repaired.">
+      :label="t('act.repair.threshold')"
+      :tooltip="t('act.repair.thresholdTip')">
       <NumberInput v-model="config.days" float />
     </Active>
     <Active
       v-if="data.advanceDays === configurableValue"
-      label="Time Offset"
-      tooltip="The number of days in the future this repair will be conducted.">
+      :label="t('act.repair.offset')"
+      :tooltip="t('act.repair.offsetTip')">
       <NumberInput v-model="config.advanceDays" float />
     </Active>
   </form>

@@ -4,6 +4,7 @@ import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { clickElement } from '@src/util';
 import { AssertFn } from '@src/features/XIT/ACT/shared-types';
 import { watchWhile } from '@src/utils/watch';
+import { t } from '@src/i18n';
 
 interface Data {
   shipId: string;
@@ -13,8 +14,8 @@ export const SHPI_UNLOAD = act.addActionStep<Data>({
   type: 'SHPI_UNLOAD',
   description: data => {
     const ship = shipsStore.getById(data.shipId);
-    const shipLabel = ship?.name ?? ship?.registration ?? 'unknown ship';
-    return `Unload all cargo from ${shipLabel}`;
+    const shipLabel = ship?.name ?? ship?.registration ?? t('act.step.unknownShip');
+    return t('act.shpi.unload', shipLabel);
   },
   totalMaterials: data => {
     const ship = shipsStore.getById(data.shipId);
@@ -38,7 +39,7 @@ export const SHPI_UNLOAD = act.addActionStep<Data>({
     const assert: AssertFn = ctx.assert;
 
     const ship = shipsStore.getById(data.shipId);
-    assert(ship, 'Ship not found');
+    assert(ship, t('act.step.shipNotFound'));
 
     const tile = await requestTile(`SHPI ${ship.registration}`);
     if (!tile) {
@@ -57,10 +58,10 @@ export const SHPI_UNLOAD = act.addActionStep<Data>({
     });
     const before = totalQuantity.value;
 
-    await waitAct(`Unload all cargo from ${ship.name ?? ship.registration}?`);
+    await waitAct(t('act.shpi.unloadAsk', ship.name ?? ship.registration));
     await clickElement(button);
     await waitActionFeedback(tile);
-    setStatus('Waiting for storage update...');
+    setStatus(t('act.step.waitStorage'));
     await watchWhile(() => totalQuantity.value === before);
 
     complete();

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tValue } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import Passive from '@src/components/forms/Passive.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
@@ -55,7 +56,7 @@ const originIsCXWarehouse = computed(() => {
 const destinationOptions = computed(() => {
   const options = getOptions(destinationStorages.value);
   if (originIsCXWarehouse.value) {
-    options.push({ label: CX_BUY_ONLY_DEST, value: CX_BUY_ONLY_DEST });
+    options.push({ label: tValue(CX_BUY_ONLY_DEST), value: CX_BUY_ONLY_DEST });
   }
   return options;
 });
@@ -100,7 +101,7 @@ watchEffect(() => {
 function getOptions(storages: PrunApi.Store[]) {
   const options = storages.map(serializeStorage).map(x => ({ label: x, value: x }));
   if (options.length === 0) {
-    options.push({ label: 'No locations available', value: undefined! });
+    options.push({ label: t('act.f.noLocations'), value: undefined! });
   }
   return options;
 }
@@ -108,16 +109,16 @@ function getOptions(storages: PrunApi.Store[]) {
 
 <template>
   <form>
-    <Active v-if="data.origin === configurableValue" label="From">
+    <Active v-if="data.origin === configurableValue" :label="t('act.f.from')">
       <SelectInput v-model="config.origin" :options="originOptions" />
     </Active>
-    <Passive v-else label="From">
+    <Passive v-else :label="t('act.f.from')">
       <span>{{ data.origin }}</span>
     </Passive>
-    <Active v-if="data.dest === configurableValue" label="To">
+    <Active v-if="data.dest === configurableValue" :label="t('act.f.to')">
       <SelectInput v-model="config.destination" :options="destinationOptions" />
     </Active>
-    <Passive v-else label="To">
+    <Passive v-else :label="t('act.f.to')">
       <span>{{ data.dest }}</span>
     </Passive>
   </form>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tType } from '@src/i18n';
 import Header from '@src/components/Header.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Commands from '@src/components/forms/Commands.vue';
@@ -39,8 +40,8 @@ function onEditMaterialGroupClick(e: Event, group: UserData.MaterialGroupData) {
 
 function onDeleteMaterialGroupClick(e: Event, group: UserData.MaterialGroupData) {
   showConfirmationOverlay(e, () => removeArrayElement(pkg.groups, group), {
-    message: `Are you sure you want to delete the material group "${group.name ?? '--'}"?`,
-    confirmLabel: 'DELETE',
+    message: t('act.edit.confirmDeleteGroup', group.name ?? '--'),
+    confirmLabel: t('act.common.delete'),
   });
 }
 
@@ -63,8 +64,8 @@ function onEditActionClick(e: Event, action: UserData.ActionData) {
 
 function onDeleteActionClick(e: Event, action: UserData.ActionData) {
   showConfirmationOverlay(e, () => removeArrayElement(pkg.actions, action), {
-    message: `Are you sure you want to delete the action "${action.name ?? '--'}"?`,
-    confirmLabel: 'DELETE',
+    message: t('act.edit.confirmDeleteAction', action.name ?? '--'),
+    confirmLabel: t('act.common.delete'),
   });
 }
 
@@ -79,9 +80,7 @@ function getActionDescription(action: UserData.ActionData) {
 }
 
 function validatePackageName(name: string) {
-  return isValidPackageName(name)
-    ? true
-    : 'Invalid action package name. Use only letters, numbers, spaces, periods, and hyphens.';
+  return isValidPackageName(name) ? true : t('act.edit.invalidName');
 }
 
 function onRenameClick(ev: Event) {
@@ -107,34 +106,34 @@ function onExportClick() {
     editable
     :validate="validatePackageName"
     :class="$style.header" />
-  <SectionHeader>Material Groups</SectionHeader>
+  <SectionHeader>{{ t('act.edit.groups') }}</SectionHeader>
   <table>
     <thead>
       <tr>
         <GripHeaderCell />
-        <th>Type</th>
-        <th>Name</th>
-        <th>Content</th>
+        <th>{{ t('act.common.type') }}</th>
+        <th>{{ t('act.common.name') }}</th>
+        <th>{{ t('act.common.content') }}</th>
         <th />
       </tr>
     </thead>
     <tbody v-if="pkg.groups.length === 0">
       <tr>
-        <td colspan="4" :class="$style.emptyRow">No groups yet.</td>
+        <td colspan="4" :class="$style.emptyRow">{{ t('act.edit.noGroups') }}</td>
       </tr>
     </tbody>
     <tbody v-else v-draggable="[pkg.groups, grip.draggable]">
       <tr v-for="group in pkg.groups" :key="objectId(group)">
         <GripCell />
-        <td>{{ group.type }}</td>
+        <td>{{ tType(group.type) }}</td>
         <td>{{ group.name || '--' }}</td>
         <td>{{ getMaterialGroupDescription(group) }}</td>
         <td>
           <PrunButton dark inline @click="onEditMaterialGroupClick($event, group)">
-            edit
+            {{ t('act.common.editSmall') }}
           </PrunButton>
           <PrunButton dark inline @click="onDeleteMaterialGroupClick($event, group)">
-            delete
+            {{ t('act.common.deleteSmall') }}
           </PrunButton>
         </td>
       </tr>
@@ -142,53 +141,57 @@ function onExportClick() {
   </table>
   <form :class="$style.sectionCommands">
     <Commands>
-      <PrunButton primary @click="onAddMaterialGroupClick">ADD</PrunButton>
+      <PrunButton primary @click="onAddMaterialGroupClick">{{ t('act.common.add') }}</PrunButton>
     </Commands>
   </form>
-  <SectionHeader>Actions</SectionHeader>
+  <SectionHeader>{{ t('act.edit.actions') }}</SectionHeader>
   <table>
     <thead>
       <tr>
         <GripHeaderCell />
-        <th>Type</th>
-        <th>Name</th>
-        <th>Content</th>
+        <th>{{ t('act.common.type') }}</th>
+        <th>{{ t('act.common.name') }}</th>
+        <th>{{ t('act.common.content') }}</th>
         <th />
       </tr>
     </thead>
     <tbody v-if="pkg.actions.length === 0">
       <tr>
-        <td colspan="4" :class="$style.emptyRow">No actions yet.</td>
+        <td colspan="4" :class="$style.emptyRow">{{ t('act.edit.noActions') }}</td>
       </tr>
     </tbody>
     <tbody v-else v-draggable="[pkg.actions, grip.draggable]">
       <tr v-for="action in pkg.actions" :key="objectId(action)">
         <GripCell />
-        <td>{{ action.type }}</td>
+        <td>{{ tType(action.type) }}</td>
         <td>{{ action.name || '--' }}</td>
         <td>{{ getActionDescription(action) }}</td>
         <td>
-          <PrunButton dark inline @click="onEditActionClick($event, action)">edit</PrunButton>
-          <PrunButton dark inline @click="onDeleteActionClick($event, action)">delete</PrunButton>
+          <PrunButton dark inline @click="onEditActionClick($event, action)">{{
+            t('act.common.editSmall')
+          }}</PrunButton>
+          <PrunButton dark inline @click="onDeleteActionClick($event, action)">{{
+            t('act.common.deleteSmall')
+          }}</PrunButton>
         </td>
       </tr>
     </tbody>
   </table>
   <form :class="$style.sectionCommands">
     <Commands>
-      <PrunButton primary @click="onAddActionClick">ADD</PrunButton>
+      <PrunButton primary @click="onAddActionClick">{{ t('act.common.add') }}</PrunButton>
     </Commands>
   </form>
-  <SectionHeader>Commands</SectionHeader>
+  <SectionHeader>{{ t('act.edit.commands') }}</SectionHeader>
   <form>
-    <Commands label="Rename">
-      <PrunButton primary @click="onRenameClick">RENAME</PrunButton>
+    <Commands :label="t('act.edit.rename')">
+      <PrunButton primary @click="onRenameClick">{{ t('act.common.rename') }}</PrunButton>
     </Commands>
-    <Commands label="Execute">
-      <PrunButton primary @click="onExecuteClick">EXECUTE</PrunButton>
+    <Commands :label="t('act.edit.execute')">
+      <PrunButton primary @click="onExecuteClick">{{ t('act.common.execute') }}</PrunButton>
     </Commands>
-    <Commands label="Export">
-      <PrunButton primary @click="onExportClick">EXPORT</PrunButton>
+    <Commands :label="t('act.edit.export')">
+      <PrunButton primary @click="onExportClick">{{ t('act.edit.exportButton') }}</PrunButton>
     </Commands>
   </form>
 </template>

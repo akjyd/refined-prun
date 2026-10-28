@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { objectId } from '@src/utils/object-id';
 import { LogTag, LogContent } from '@src/features/XIT/ACT/runner/logger';
 
@@ -26,6 +27,16 @@ watch(
   { deep: true },
 );
 
+const tagLabels: Record<NonNullable<LogTag>, string> = {
+  INFO: t('act.tag.INFO'),
+  ACTION: t('act.tag.ACTION'),
+  SUCCESS: t('act.tag.SUCCESS'),
+  ERROR: t('act.tag.ERROR'),
+  SKIP: t('act.tag.SKIP'),
+  WARNING: t('act.tag.WARNING'),
+  CANCEL: t('act.tag.CANCEL'),
+};
+
 function getTagClass(tag: LogTag) {
   switch (tag) {
     case 'ACTION':
@@ -45,7 +56,7 @@ function getTagClass(tag: LogTag) {
 <template>
   <div ref="log" :class="[$style.log, C.fonts.fontRegular]">
     <div v-for="message in messages" :key="objectId(message)">
-      <b v-if="message.tag" :class="getTagClass(message.tag)">{{ message.tag }}: </b>
+      <b v-if="message.tag" :class="getTagClass(message.tag)">{{ tagLabels[message.tag] }}：</b>
       <template v-if="typeof message.message === 'string'">
         <span>{{ message.message }}</span>
       </template>

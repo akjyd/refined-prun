@@ -3,6 +3,7 @@ import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
 import { populationsStore } from '@src/infrastructure/prun-api/data/populations';
 import { populationProjectsStore } from '@src/infrastructure/prun-api/data/population-projects';
 import { waitUntil } from '@src/utils/wait';
+import { t } from '@src/i18n';
 
 interface Data {
   planet: string;
@@ -11,7 +12,7 @@ interface Data {
 
 export const OPEN_POPID = act.addActionStep<Data>({
   type: 'OPEN_POPID',
-  description: data => `Open POPID for ${data.ticker} on ${data.planet}`,
+  description: data => t('act.popid.open', data.ticker, data.planet),
   execute: async ctx => {
     const { data, requestTile, complete, skip, fail } = ctx;
 
@@ -34,7 +35,7 @@ export const OPEN_POPID = act.addActionStep<Data>({
       200,
     );
     if (!loaded) {
-      fail(`POPID data for ${data.ticker} on ${data.planet} did not arrive`);
+      fail(t('act.popid.noData', data.ticker, data.planet));
     }
     complete();
   },

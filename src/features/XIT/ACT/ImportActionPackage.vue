@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Active from '@src/components/forms/Active.vue';
@@ -16,11 +17,11 @@ type ImportType = 'TEXT' | 'FILE';
 
 const typeOptions: { label: string; value: ImportType }[] = [
   {
-    label: 'Paste JSON',
+    label: t('act.import.paste'),
     value: 'TEXT',
   },
   {
-    label: 'Upload JSON',
+    label: t('act.import.upload'),
     value: 'FILE',
   },
 ];
@@ -66,17 +67,21 @@ function validateJson(json: any) {
 
 <template>
   <div :class="C.DraftConditionEditor.form">
-    <SectionHeader>Import Action Package</SectionHeader>
+    <SectionHeader>{{ t('act.import.title') }}</SectionHeader>
     <form>
-      <Active label="Type">
+      <Active :label="t('act.common.type')">
         <SelectInput v-model="type" :options="typeOptions" />
       </Active>
       <Active v-if="type === 'TEXT'" label="JSON" :error="error">
         <TextInput v-model="text" focus-on-mount />
       </Active>
       <Commands>
-        <PrunButton v-if="type === 'FILE'" primary @click="onUploadClick">UPLOAD</PrunButton>
-        <PrunButton v-if="type === 'TEXT'" primary @click="onImportClick">IMPORT</PrunButton>
+        <PrunButton v-if="type === 'FILE'" primary @click="onUploadClick">{{
+          t('act.import.uploadButton')
+        }}</PrunButton>
+        <PrunButton v-if="type === 'TEXT'" primary @click="onImportClick">{{
+          t('act.common.import')
+        }}</PrunButton>
       </Commands>
     </form>
   </div>

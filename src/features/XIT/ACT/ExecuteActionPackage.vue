@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import ActionBar from '@src/components/ActionBar.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import Header from '@src/components/Header.vue';
@@ -180,42 +181,50 @@ function clearLog() {
     </ConfigWindow>
     <LogWindow v-else :messages="log" :scrolling="logScrolling" :class="$style.mainWindow" />
     <div :class="$style.status">
-      <span>Status: </span>
+      <span>{{ t('act.exec.status') }}</span>
       <span v-if="status">{{ status }}</span>
-      <span v-else-if="shouldShowConfigure">Configure group parameters ↑</span>
-      <span v-else>Press Execute to start</span>
+      <span v-else-if="shouldShowConfigure">{{ t('act.exec.configureHint') }}</span>
+      <span v-else>{{ t('act.exec.pressExecute') }}</span>
     </div>
     <ActionBar :class="$style.actionBar">
       <template v-if="shouldShowConfigure">
         <PrunButton primary :disabled="!isValidConfig" @click="onConfigureApplyClick">
-          APPLY
+          {{ t('act.exec.apply') }}
         </PrunButton>
       </template>
       <template v-else-if="isPreviewing">
-        <PrunButton v-if="needsConfigure" primary @click="onConfigureClick">CONFIGURE</PrunButton>
-        <PrunButton disabled>PREVIEW</PrunButton>
-        <PrunButton disabled>EXECUTE</PrunButton>
+        <PrunButton v-if="needsConfigure" primary @click="onConfigureClick">{{
+          t('act.exec.configure')
+        }}</PrunButton>
+        <PrunButton disabled>{{ t('act.exec.preview') }}</PrunButton>
+        <PrunButton disabled>{{ t('act.common.execute') }}</PrunButton>
       </template>
       <template v-else-if="!isRunning">
-        <PrunButton v-if="needsConfigure" primary @click="onConfigureClick">CONFIGURE</PrunButton>
-        <PrunButton primary @click="onPreviewClick">PREVIEW</PrunButton>
+        <PrunButton v-if="needsConfigure" primary @click="onConfigureClick">{{
+          t('act.exec.configure')
+        }}</PrunButton>
+        <PrunButton primary @click="onPreviewClick">{{ t('act.exec.preview') }}</PrunButton>
         <PrunButton primary :class="$style.executeButton" @click="onExecuteClick">
-          EXECUTE
+          {{ t('act.common.execute') }}
         </PrunButton>
       </template>
       <template v-else>
-        <PrunButton v-if="needsConfigure" primary disabled>CONFIGURE</PrunButton>
-        <PrunButton primary disabled>PREVIEW</PrunButton>
+        <PrunButton v-if="needsConfigure" primary disabled>{{
+          t('act.exec.configure')
+        }}</PrunButton>
+        <PrunButton primary disabled>{{ t('act.exec.preview') }}</PrunButton>
         <PrunButton
           danger
           :disabled="!actReady && !skipReady"
           :class="$style.executeButton"
           @click="onCancelClick">
-          CANCEL
+          {{ t('act.exec.cancel') }}
         </PrunButton>
-        <PrunButton primary :disabled="!actReady" @click="onActClick">ACT</PrunButton>
+        <PrunButton primary :disabled="!actReady" @click="onActClick">{{
+          t('act.exec.act')
+        }}</PrunButton>
         <PrunButton neutral :disabled="!actReady && !skipReady" @click="onSkipClick">
-          SKIP
+          {{ t('act.exec.skip') }}
         </PrunButton>
       </template>
     </ActionBar>

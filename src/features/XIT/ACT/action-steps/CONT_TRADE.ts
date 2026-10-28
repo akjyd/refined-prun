@@ -17,6 +17,7 @@ import {
   saveConditions,
 } from '@src/features/XIT/ACT/action-steps/cont-utils';
 import { billQuantities, MaterialBill } from '@src/features/XIT/ACT/material-bill';
+import { t } from '@src/i18n';
 
 interface Data {
   packageName: string;
@@ -32,8 +33,8 @@ export const CONT_TRADE = act.addActionStep<Data>({
   totalMaterials: data => billQuantities(data.materials, (_, quantity) => quantity > 0),
   description: data => {
     const materialCount = Object.keys(data.materials).length;
-    const typeLabel = data.tradeType === 'BUYING' ? 'Buy' : 'Sell';
-    return `Create ${typeLabel} contract draft (${fixed0(materialCount)} materials)`;
+    const typeLabel = data.tradeType === 'BUYING' ? t('act.cont.buy') : t('act.cont.sell');
+    return t('act.cont.tradeDraft', typeLabel, fixed0(materialCount));
   },
   execute: async ctx => {
     const { data, log, setStatus, requestTile, waitAct, complete } = ctx;
@@ -49,7 +50,7 @@ export const CONT_TRADE = act.addActionStep<Data>({
 
     const newDraft = await createNewDraft(ctx, listTile);
 
-    setStatus(`Loading draft ${newDraft.naturalId}...`);
+    setStatus(t('act.cont.loadingDraft', newDraft.naturalId));
     const draftTile = await requestTile(`CONTD ${newDraft.naturalId}`);
     if (!draftTile) {
       return;
@@ -74,7 +75,7 @@ export const CONT_TRADE = act.addActionStep<Data>({
     await setDraftNameAndPreamble(ctx, anchor, contractName, preambleText);
 
     // Save draft details (name/preamble).
-    await waitAct('Save draft details?');
+    await waitAct(t('act.cont.saveDetailsAsk'));
     await saveDraftDetails(ctx, draftTile, newDraft.naturalId);
 
     const templateSelect = await openTemplate(ctx, anchor);
@@ -90,36 +91,33 @@ export const CONT_TRADE = act.addActionStep<Data>({
       setPrice: (group, ticker) => {
         // Fail on a missing price to prevent a free trade.
         const price = data.materials[ticker].price;
-        assert(isValidContractPrice(price), `Invalid price for ${ticker}`);
+        assert(isValidContractPrice(price), t('act.cont.invalidPrice', ticker));
         const priceInput = _$$(group, 'input').find(x => x.inputMode === 'decimal');
-        assert(priceInput, `Could not find price input for ${ticker}`);
+        assert(priceInput, t('act.cont.noPriceFor', ticker));
         selectAndChangeInputValue(priceInput, fixed02(price));
-        log.info(`Price for ${ticker}: ${fixed02(price)} ${data.currency}`);
+        log.info(t('act.cont.priceFor', ticker, fixed02(price), data.currency));
       },
     });
 
     // Set location address.
     const addressContainers = _$$(anchor, C.AddressSelector.container);
-    assert(
-      addressContainers.length >= 1 && data.location.length > 0,
-      'Could not find trade location control',
-    );
-    await waitAct(`Set location to ${data.location}?`);
+    assert(addressContainers.length >= 1 && data.location.length > 0, t('act.cont.noLocation'));
+    await waitAct(t('act.cont.setLocationAsk', data.location));
     const locationSet = await selectAddress(addressContainers[0], data.location);
-    assert(locationSet, `Could not select location: ${data.location}`);
-    log.info(`Location set: ${data.location}`);
+    assert(locationSet, t('act.cont.locationFailed', data.location));
+    log.info(t('act.cont.locationSet', data.location));
 
     setDeadline(ctx, anchor, data.daysToFulfill);
 
     // Apply template.
-    await waitAct('Apply template?');
+    await waitAct(t('act.cont.applyTemplateAsk'));
     await applyTemplate(ctx, anchor, newDraft.naturalId);
 
     // Save conditions, after the player has reviewed them.
-    await waitAct('Save conditions?');
+    await waitAct(t('act.cont.saveCondAsk'));
     await saveConditions(ctx, draftTile, newDraft.naturalId);
 
-    log.success(`Contract draft ${newDraft.naturalId} ready to send`);
+    log.success(t('act.cont.ready', newDraft.naturalId));
     complete();
   },
 });

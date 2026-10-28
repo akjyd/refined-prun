@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tType } from '@src/i18n';
 import { ActionPackageConfig } from '@src/features/XIT/ACT/shared-types';
 import { configurableValue } from '@src/features/XIT/ACT/shared-types';
 import { deserializeStorage } from '@src/features/XIT/ACT/actions/utils';
@@ -42,7 +43,7 @@ const blocks = computed(() => {
       }
     }
     blocks.push({
-      name: `[${name}]: ${info.type} Material Group`,
+      name: t('act.config.groupBlock', name, tType(info.type)),
       component: info.configureComponent,
       data: group,
       config: groupConfig,
@@ -60,7 +61,7 @@ const blocks = computed(() => {
       continue;
     }
     blocks.push({
-      name: `[${name}]: ${info.type} Action`,
+      name: t('act.config.actionBlock', name, tType(info.type)),
       component: info.configureComponent,
       data: action,
       config: actionConfig,

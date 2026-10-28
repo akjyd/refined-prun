@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Active from '@src/components/forms/Active.vue';
@@ -26,13 +27,13 @@ function onCreateClick() {
 
 <template>
   <div :class="C.DraftConditionEditor.form">
-    <SectionHeader>Create Action Package</SectionHeader>
+    <SectionHeader>{{ t('act.create.title') }}</SectionHeader>
     <form>
-      <Active label="Name" :error="nameError">
+      <Active :label="t('act.common.name')" :error="nameError">
         <TextInput v-model="name" />
       </Active>
       <Commands>
-        <PrunButton primary @click="onCreateClick">CREATE</PrunButton>
+        <PrunButton primary @click="onCreateClick">{{ t('act.common.create') }}</PrunButton>
       </Commands>
     </form>
   </div>

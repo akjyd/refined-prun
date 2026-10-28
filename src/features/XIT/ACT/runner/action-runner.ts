@@ -8,6 +8,7 @@ import { ActionPackageConfig, ActionStep } from '@src/features/XIT/ACT/shared-ty
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { fixed02 } from '@src/utils/format';
 import { LogPart } from '@src/features/XIT/ACT/runner/logger';
+import { t } from '@src/i18n';
 
 interface ActionRunnerOptions {
   tile: PrunTile;
@@ -44,7 +45,7 @@ export class ActionRunner {
     extraSteps?: ActionStep[],
   ) {
     if (this.isRunning) {
-      this.log.error('Action Package is already running');
+      this.log.error(t('act.run.alreadyRunning'));
       return;
     }
     // Create a copy to prevent changes during execution.
@@ -58,7 +59,7 @@ export class ActionRunner {
     }
     this.log.info(formatTotals(steps));
     if (fail) {
-      this.log.info('Generated steps for valid actions:');
+      this.log.info(t('act.run.generated'));
     }
     for (const step of steps) {
       const stepInfo = act.getActionStepInfo(step.type);
@@ -72,20 +73,20 @@ export class ActionRunner {
     extraSteps?: ActionStep[],
   ) {
     if (this.isRunning) {
-      this.log.error('Action Package is already running');
+      this.log.error(t('act.run.alreadyRunning'));
       return;
     }
     // Create a copy to prevent changes during execution.
     const copy = structuredClone(deepToRaw(pkg));
     const { steps, fail } = await this.stepGenerator.generateSteps(copy, config, false);
     if (fail) {
-      this.log.error('Action Package execution failed');
+      this.log.error(t('act.run.failed'));
       return;
     }
     if (extraSteps && extraSteps.length > 0) {
       steps.push(...extraSteps);
     }
-    this.log.info('Action Package execution started');
+    this.log.info(t('act.run.started'));
     this.log.info(formatTotals(steps));
     this.stepMachine = new StepMachine(steps, {
       ...this.options,
@@ -135,9 +136,9 @@ function formatTotals(steps: ActionStep[]): LogPart[] {
     }
   }
   return [
-    { text: 'Total Weight ' },
+    { text: t('act.run.totalWeight') },
     { text: `${fixed02(totalWeight)}t`, yellow: true },
-    { text: ', Total Volume ' },
+    { text: t('act.run.totalVolume') },
     { text: `${fixed02(totalVolume)}m³`, yellow: true },
   ];
 }

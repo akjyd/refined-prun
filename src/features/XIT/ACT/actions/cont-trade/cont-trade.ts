@@ -13,22 +13,23 @@ import {
   maxContractPrice,
   minContractPrice,
 } from '@src/features/XIT/ACT/actions/cont-limits';
+import { t } from '@src/i18n';
 
 act.addAction<Config>({
   type: 'CONT Trade',
-  shortDescription: 'Create a buying or selling contract draft',
+  shortDescription: t('act.ctrade.short'),
   description: (action, config) => {
     if (!action.group || !action.contLocation) {
       return '--';
     }
 
-    const tradeLabel = action.contTradeType === 'SELLING' ? 'Sell' : 'Buy';
+    const tradeLabel = action.contTradeType === 'SELLING' ? t('act.cont.sell') : t('act.cont.buy');
     const location =
       action.contLocation === configurableValue
-        ? (config?.location ?? 'configured location')
+        ? (config?.location ?? t('act.f.configuredLocation'))
         : displayLocationValue(action.contLocation);
 
-    return `${tradeLabel} contract for [${action.group}] at ${location}`;
+    return t('act.ctrade.desc', tradeLabel, action.group, location);
   },
   editComponent: Edit,
   configureComponent: Configure,
@@ -43,19 +44,19 @@ act.addAction<Config>({
     const assert: AssertFn = ctx.assert;
 
     const materials = await getMaterialGroup(data.group);
-    assert(materials, 'Invalid material group');
+    assert(materials, t('act.f.invalidGroup'));
 
     const traded = Object.values(materials).filter(x => x.quantity > 0);
-    assert(traded.length > 0, 'Material group has no materials to trade');
+    assert(traded.length > 0, t('act.ctrade.noMaterials'));
 
     // Reject missing prices before editing a draft; a blank price creates a free trade.
     assert(
       traded.every(x => isValidContractPrice(x.price)),
-      `Each material in [${data.group}] needs a price from ${minContractPrice} to ${maxContractPrice}. Use a Paste group with 3 columns (ticker, amount, price).`,
+      t('act.ctrade.needPrice', data.group, minContractPrice, maxContractPrice),
     );
 
     const location = resolveLocation(data.contLocation, config?.location, getMaterialGroupPlanet);
-    assert(location, 'Invalid location');
+    assert(location, t('act.f.invalidLocation'));
 
     const tradeType = data.contTradeType ?? 'BUYING';
     const daysToFulfill = data.daysToFulfill ?? 3;

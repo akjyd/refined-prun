@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import SectionDescription from '@src/components/SectionDescription.vue';
@@ -96,34 +97,31 @@ const ExchangeTickers = {
 
 <template>
   <div :class="C.DraftConditionEditor.form">
-    <SectionHeader>Quickstart</SectionHeader>
+    <SectionHeader>{{ t('act.quick.title') }}</SectionHeader>
     <SectionDescription>
-      This prefilled action package will resupply your base with materials for a given number of
-      days.
+      {{ t('act.quick.desc1') }}
       <br />
-      The created action package will have two actions: buy missing materials from the CX, then
-      transfer them to the configured (next step) ship.
+      {{ t('act.quick.desc2') }}
       <br />
-      After clicking "Create", you will be taken to the action package runner. Once there, first
-      configure the target ship, then press "Execute" and press "Act" until the package is done.
+      {{ t('act.quick.desc3') }}
       <br />
-      <mark>Note: You need a ship parked at the selected CX for this to work.</mark>
+      <mark>{{ t('act.quick.note') }}</mark>
     </SectionDescription>
     <form>
-      <Active label="Name">
+      <Active :label="t('act.common.name')">
         <TextInput v-model="name" />
       </Active>
-      <Active label="CX to Resupply From">
+      <Active :label="t('act.quick.cx')">
         <SelectInput v-model="cx" :options="cxes" />
       </Active>
-      <Active label="Planet to Resupply">
+      <Active :label="t('act.quick.planet')">
         <SelectInput v-model="planet" :options="planets" />
       </Active>
-      <Active label="Resupply Days">
+      <Active :label="t('act.quick.days')">
         <NumberInput v-model="days" float />
       </Active>
       <Commands>
-        <PrunButton primary @click="onCreateClick">CREATE</PrunButton>
+        <PrunButton primary @click="onCreateClick">{{ t('act.common.create') }}</PrunButton>
       </Commands>
     </form>
   </div>

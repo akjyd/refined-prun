@@ -1,14 +1,15 @@
 import Papa from 'papaparse';
 import { MaterialBill } from '@src/features/XIT/ACT/material-bill';
+import { t } from '@src/i18n';
 
 // Pure Paste parser; inject ticker lookup to test without stores or components.
 
 export type Delimiter = '\t' | ';' | ',';
 
 export const delimiterNames: Record<Delimiter, string> = {
-  '\t': 'tab-separated',
-  ';': 'semicolon-separated',
-  ',': 'comma-separated',
+  '\t': t('act.paste.delim.tab'),
+  ';': t('act.paste.delim.semicolon'),
+  ',': t('act.paste.delim.comma'),
 };
 
 // Reject prices exceeding CXPO's significant-figure limit to prevent rounding.
@@ -89,7 +90,7 @@ function numberCandidates(raw: string) {
 function toParsedNumber(normalized: string, raw: string): ParsedNumber | { error: string } {
   const value = Number(normalized);
   if (!Number.isFinite(value) || value <= 0 || value > Number.MAX_SAFE_INTEGER) {
-    return { error: `"${raw}" is not a finite positive number` };
+    return { error: t('act.paste.notPositive', raw) };
   }
   return { value, normalized };
 }
@@ -97,17 +98,17 @@ function toParsedNumber(normalized: string, raw: string): ParsedNumber | { error
 function parseQuantity(raw: string): { amount: number } | { error: string } {
   const candidates = numberCandidates(raw);
   if (candidates.length === 0) {
-    return { error: `"${raw}" is not a supported number` };
+    return { error: t('act.paste.notNumber', raw) };
   }
   if (candidates.length > 1) {
-    return { error: `quantity "${raw}" has ambiguous separators; write it without grouping` };
+    return { error: t('act.paste.qtyAmbiguous', raw) };
   }
   const parsed = toParsedNumber(candidates[0], raw);
   if ('error' in parsed) {
     return parsed;
   }
   if (parsed.normalized.includes('.') || !Number.isSafeInteger(parsed.value)) {
-    return { error: `quantity "${raw}" is not a whole number` };
+    return { error: t('act.paste.qtyWhole', raw) };
   }
   return { amount: parsed.value };
 }
@@ -115,11 +116,11 @@ function parseQuantity(raw: string): { amount: number } | { error: string } {
 function parsePrice(raw: string): { price: number } | { error: string } {
   const candidates = numberCandidates(raw);
   if (candidates.length === 0) {
-    return { error: `"${raw}" is not a supported number` };
+    return { error: t('act.paste.notNumber', raw) };
   }
   // A price can be fractional, so grouping cannot be told from a decimal here.
   if (candidates.length > 1) {
-    return { error: `price "${raw}" has ambiguous separators; write it without grouping` };
+    return { error: t('act.paste.priceAmbiguous', raw) };
   }
   const parsed = toParsedNumber(candidates[0], raw);
   if ('error' in parsed) {
@@ -127,13 +128,13 @@ function parsePrice(raw: string): { price: number } | { error: string } {
   }
   // CXPO_BUY writes the limit through fixed02. Do not accept one it would round.
   if ((parsed.normalized.split('.')[1]?.length ?? 0) > 2) {
-    return { error: `price "${raw}" has more than two decimal places` };
+    return { error: t('act.paste.priceDecimals', raw) };
   }
   const digits = parsed.normalized.replace('.', '').replace(/^0+/, '').replace(/0+$/, '');
   if (digits.length > maxPriceSignificantFigures) {
     const suggestion = Number(parsed.value.toPrecision(maxPriceSignificantFigures));
     return {
-      error: `price "${raw}" has more than ${maxPriceSignificantFigures} significant figures (use ${suggestion})`,
+      error: t('act.paste.priceSig', raw, maxPriceSignificantFigures, suggestion),
     };
   }
   return { price: parsed.value };
@@ -165,13 +166,17 @@ export function parsePaste(input: string | undefined, resolveTicker: ResolveTick
     if (fields.length < 2 || fields.length > 3) {
       result.errors.push({
         line,
-        reason: `expected TICKER, QUANTITY[, PRICE] (got ${fields.length} fields)`,
+        reason: t('act.paste.fields', fields.length),
       });
       continue;
     }
 
     if (result.delimiter !== undefined && result.delimiter !== delimiter) {
-      result.fatal = `Paste mixes ${delimiterNames[result.delimiter]} and ${delimiterNames[delimiter]} rows. Use one delimiter throughout.`;
+      result.fatal = t(
+        'act.paste.mixed',
+        delimiterNames[result.delimiter],
+        delimiterNames[delimiter],
+      );
       result.rows = [];
       result.errors = [];
       return result;
@@ -181,7 +186,7 @@ export function parsePaste(input: string | undefined, resolveTicker: ResolveTick
     const [tickerRaw, quantityRaw, priceRaw] = fields;
     const ticker = resolveTicker(tickerRaw);
     if (ticker === undefined) {
-      result.errors.push({ line, reason: `unknown ticker "${tickerRaw}"` });
+      result.errors.push({ line, reason: t('act.paste.unknownTicker', tickerRaw) });
       continue;
     }
     const quantity = parseQuantity(quantityRaw);
@@ -202,7 +207,7 @@ export function parsePaste(input: string | undefined, resolveTicker: ResolveTick
       if (previous !== undefined && previous.price !== price.price) {
         result.errors.push({
           line,
-          reason: `conflicting price for ${ticker}; line ${previous.line} used ${previous.price}`,
+          reason: t('act.paste.conflict', ticker, previous.line, previous.price),
         });
         continue;
       }

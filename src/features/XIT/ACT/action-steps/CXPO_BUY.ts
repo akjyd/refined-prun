@@ -9,6 +9,7 @@ import { watchWhile } from '@src/utils/watch';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { watchEffect } from 'vue';
 import { AssertFn } from '@src/features/XIT/ACT/shared-types';
+import { t } from '@src/i18n';
 
 interface Data {
   exchange: string;
@@ -31,22 +32,22 @@ export const CXPO_BUY = act.addActionStep<Data>({
     const willFillCompletely = filled && filled.amount === data.amount;
 
     if (!willFillCompletely && allowUnfilled) {
-      let description = `Bid for ${fixed0(data.amount)} ${ticker} on ${exchange}`;
+      let description = t('act.cxpo.bid', fixed0(data.amount), ticker, exchange);
       if (isFinite(priceLimit)) {
-        description += ` at price ${fixed02(data.priceLimit)}`;
-        description += ` (${fixed0(data.amount * data.priceLimit)} total cost)`;
+        description += t('act.cxpo.atPrice', fixed02(data.priceLimit));
+        description += t('act.cxpo.totalCost', fixed0(data.amount * data.priceLimit));
       }
       return description;
     }
 
-    let description = `Buy ${fixed0(amount)} ${ticker} on ${exchange}`;
+    let description = t('act.cxpo.buy', fixed0(amount), ticker, exchange);
     if (isFinite(priceLimit)) {
-      description += ` with price limit ${fixed02(priceLimit)}`;
+      description += t('act.cxpo.withLimit', fixed02(priceLimit));
     }
     if (filled) {
-      description += ` (${fixed0(filled.cost)} total cost)`;
+      description += t('act.cxpo.totalCost', fixed0(filled.cost));
     } else {
-      description += ' (no price data yet)';
+      description += t('act.cxpo.noPrice');
     }
     return description;
   },
@@ -61,40 +62,37 @@ export const CXPO_BUY = act.addActionStep<Data>({
       const warehouse = warehousesStore.getByEntityNaturalId(naturalId);
       return storagesStore.getById(warehouse?.storeId);
     });
-    assert(cxWarehouse.value, `CX warehouse not found for ${exchange}`);
+    assert(cxWarehouse.value, t('act.cxpo.noWarehouse', exchange));
 
     if (amount <= 0) {
-      log.warning(`No ${ticker} was bought (target amount is 0)`);
+      log.warning(t('act.cxpo.zero', ticker));
       skip();
       return;
     }
 
     const material = materialsStore.getByTicker(ticker);
-    assert(material, `Unknown material ${ticker}`);
+    assert(material, t('act.step.unknownMaterial', ticker));
 
     const canFitWeight =
       material.weight * amount <= cxWarehouse.value.weightCapacity - cxWarehouse.value.weightLoad;
     const canFitVolume =
       material.volume * amount <= cxWarehouse.value.volumeCapacity - cxWarehouse.value.volumeLoad;
-    assert(
-      canFitWeight && canFitVolume,
-      `Cannot not buy ${fixed0(amount)} ${ticker} (will not fit in the warehouse)`,
-    );
+    assert(canFitWeight && canFitVolume, t('act.cxpo.noFit', fixed0(amount), ticker));
 
     const tile = await requestTile(`CXPO ${cxTicker}`);
     if (!tile) {
       return;
     }
 
-    setStatus('Setting up CXPO buffer...');
+    setStatus(t('act.cxpo.setup'));
 
     const buyButton = await $(tile.anchor, C.Button.success);
     const form = await $(tile.anchor, C.ComExPlaceOrderForm.form);
     const inputs = _$$(form, 'input');
     const quantityInput = inputs[0];
-    assert(quantityInput !== undefined, 'Missing quantity input');
+    assert(quantityInput !== undefined, t('act.cxpo.noQuantity'));
     const priceInput = inputs[1];
-    assert(priceInput !== undefined, 'Missing price input');
+    assert(priceInput !== undefined, t('act.cxpo.noPriceInput'));
 
     let shouldUnwatch = false;
     let lastShortageWarning: string | undefined;
@@ -108,19 +106,24 @@ export const CXPO_BUY = act.addActionStep<Data>({
 
       if (!filled) {
         shouldUnwatch = true;
-        fail(`Missing ${cxTicker} order book data`);
+        fail(t('act.cxpo.noBook', cxTicker));
         return;
       }
 
       if (filled.amount < amount && !data.allowUnfilled) {
         const leftover = amount - filled.amount;
-        let message =
-          `${fixed0(leftover)} ${ticker} will not be bought on ${exchange} ` +
-          `(${fixed0(filled.amount)} of ${fixed0(amount)} available`;
+        let message = t(
+          'act.cxpo.shortage',
+          fixed0(leftover),
+          ticker,
+          exchange,
+          fixed0(filled.amount),
+          fixed0(amount),
+        );
         if (isFinite(priceLimit)) {
-          message += ` with price limit ${fixed02(priceLimit)}/u`;
+          message += t('act.cxpo.shortageLimit', fixed02(priceLimit));
         }
-        message += ')';
+        message += t('act.common.closeParen');
         // Order-book updates rerun this effect; log only changed shortages.
         if (message !== lastShortageWarning) {
           lastShortageWarning = message;
@@ -153,7 +156,7 @@ export const CXPO_BUY = act.addActionStep<Data>({
       // Synthetic events from changeInputValue() have isTrusted === false.
       if (event.isTrusted && !shouldUnwatch) {
         shouldUnwatch = true;
-        log.info('Manual input detected; keeping user-entered quantity and price');
+        log.info(t('act.cxpo.manual'));
       }
     }
     quantityInput.addEventListener('input', onManualInput);
@@ -180,10 +183,10 @@ export const CXPO_BUY = act.addActionStep<Data>({
     await waitActionFeedback(tile);
 
     if (shouldWaitForUpdate) {
-      setStatus('Waiting for storage update...');
+      setStatus(t('act.step.waitStorage'));
       await watchWhile(() => warehouseAmount.value === currentAmount);
     } else {
-      setStatus('Bid order created');
+      setStatus(t('act.cxpo.bidCreated'));
     }
 
     complete();

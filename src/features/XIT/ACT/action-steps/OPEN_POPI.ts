@@ -2,6 +2,7 @@ import { act } from '@src/features/XIT/ACT/act-registry';
 import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
 import { populationsStore } from '@src/infrastructure/prun-api/data/populations';
 import { sleep } from '@src/utils/sleep';
+import { t } from '@src/i18n';
 
 interface Data {
   planet: string;
@@ -9,7 +10,7 @@ interface Data {
 
 export const OPEN_POPI = act.addActionStep<Data>({
   type: 'OPEN_POPI',
-  description: data => `Open POPI ${data.planet} for infrastructure data`,
+  description: data => t('act.popi.open', data.planet),
   execute: async ctx => {
     const { data, log, requestTile, complete, fail } = ctx;
     const tile = await requestTile(`POPI ${data.planet}`);
@@ -27,14 +28,14 @@ export const OPEN_POPI = act.addActionStep<Data>({
           .map(x => `${x.ticker} ${x.level}`);
         log.info(
           present.length > 0
-            ? `${data.planet} buildings: ${present.join(', ')}`
-            : `${data.planet} buildings: none`,
+            ? t('act.popi.buildings', data.planet, present.join(', '))
+            : t('act.popi.none', data.planet),
         );
         complete();
         return;
       }
       await sleep(200);
     }
-    fail(`POPI data for ${data.planet} did not arrive`);
+    fail(t('act.popi.noData', data.planet));
   },
 });

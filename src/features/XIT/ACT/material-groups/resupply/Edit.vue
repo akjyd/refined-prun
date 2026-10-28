@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tOptions } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNameFromAddress } from '@src/infrastructure/prun-api/data/addresses';
@@ -64,29 +65,22 @@ defineExpose({ validate, save });
 </script>
 
 <template>
-  <Active label="Planet" :error="planetError">
-    <SelectInput v-model="planet" :options="planets" />
+  <Active :label="t('act.f.planet')" :error="planetError">
+    <SelectInput v-model="planet" :options="tOptions(planets)" />
   </Active>
-  <Active
-    label="Days"
-    tooltip="The number of days of supplies to refill the planet with."
-    :error="daysError">
+  <Active :label="t('act.resupply.days')" :tooltip="t('act.resupply.daysTip')" :error="daysError">
     <NumberInput v-if="!configureDaysOnExecution" v-model="days" float />
-    <RadioItem v-model="configureDaysOnExecution">configure on execution</RadioItem>
+    <RadioItem v-model="configureDaysOnExecution">{{
+      t('act.resupply.configureOnExec')
+    }}</RadioItem>
   </Active>
-  <Active
-    label="Material Exclusions"
-    tooltip="Materials to be excluded from the group. List material tickers separated by commas.">
+  <Active :label="t('act.resupply.exclusions')" :tooltip="t('act.resupply.exclusionsTip')">
     <TextInput v-model="exclusions" />
   </Active>
-  <Active
-    label="Use Base Inv"
-    tooltip="Whether to count the materials currently in the base towards the totals.">
-    <RadioItem v-model="useBaseInventory">use base inv</RadioItem>
+  <Active :label="t('act.resupply.useBaseInv')" :tooltip="t('act.resupply.useBaseInvTip')">
+    <RadioItem v-model="useBaseInventory">{{ t('act.resupply.useBaseInvToggle') }}</RadioItem>
   </Active>
-  <Active
-    label="Workforce Only"
-    tooltip="Whether to limit the materials in the group to workforce consumables only.">
-    <RadioItem v-model="workforceOnly">workforce only</RadioItem>
+  <Active :label="t('act.resupply.wfOnly')" :tooltip="t('act.resupply.wfOnlyTip')">
+    <RadioItem v-model="workforceOnly">{{ t('act.resupply.wfOnlyToggle') }}</RadioItem>
   </Active>
 </template>

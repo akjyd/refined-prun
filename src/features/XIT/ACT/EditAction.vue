@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tType } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Active from '@src/components/forms/Active.vue';
@@ -20,7 +21,7 @@ const emit = defineEmits<{ (e: 'close'): void }>();
 const name = ref(action.name ?? '');
 const nameError = ref(false);
 
-const typeOptions = act.getActionTypes();
+const typeOptions = act.getActionTypes().map(x => ({ label: tType(x), value: x }));
 const type = ref(action.type);
 
 const shortDescription = computed(() => act.getActionInfo(type.value)?.shortDescription);
@@ -48,15 +49,15 @@ function onSaveClick() {
 
 <template>
   <div :class="C.DraftConditionEditor.form">
-    <SectionHeader>{{ add ? 'Add' : 'Edit' }} Action</SectionHeader>
+    <SectionHeader>{{ add ? t('act.edit.addAction') : t('act.edit.editAction') }}</SectionHeader>
     <form>
-      <Active label="Type">
+      <Active :label="t('act.common.type')">
         <SelectInput v-model="type" :options="typeOptions" />
       </Active>
-      <Passive v-if="shortDescription" label="Description">
+      <Passive v-if="shortDescription" :label="t('act.common.description')">
         <span>{{ shortDescription }}</span>
       </Passive>
-      <Active label="Name" :error="nameError">
+      <Active :label="t('act.common.name')" :error="nameError">
         <TextInput v-model="name" />
       </Active>
       <Component
@@ -66,7 +67,9 @@ function onSaveClick() {
         :action="action"
         :pkg="pkg" />
       <Commands>
-        <PrunButton primary @click="onSaveClick">{{ add ? 'ADD' : 'SAVE' }}</PrunButton>
+        <PrunButton primary @click="onSaveClick">{{
+          add ? t('act.common.add') : t('act.common.save')
+        }}</PrunButton>
       </Commands>
     </form>
   </div>
