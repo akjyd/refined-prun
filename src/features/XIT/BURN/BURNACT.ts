@@ -5,6 +5,7 @@ import '@src/features/XIT/ACT/material-groups/resupply/resupply';
 import BurnActWindow from '@src/features/XIT/BURN/BurnActWindow.vue';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNameFromAddress } from '@src/infrastructure/prun-api/data/addresses';
+import { t } from '@src/i18n';
 
 xit.add({
   command: 'BURNACT',
@@ -16,7 +17,7 @@ xit.add({
     }
     return 'BURN RESUPPLY';
   },
-  description: 'Executes a resupply action package for a planet from the burn screen.',
-  mandatoryParameters: 'Planet Identifier',
+  description: t('burnact.description'),
+  mandatoryParameters: t('burnact.parameters'),
   component: () => BurnActWindow,
 });

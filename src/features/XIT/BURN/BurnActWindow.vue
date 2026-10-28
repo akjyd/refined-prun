@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { useXitParameters } from '@src/hooks/use-xit-parameters';
 import { useMinBufferHeight } from '@src/hooks/use-min-buffer-height';
 import ExecuteActionPackage from '@src/features/XIT/ACT/ExecuteActionPackage.vue';
@@ -105,14 +106,14 @@ function afterExecute(
 </script>
 
 <template>
-  <div v-if="!planetName">Planet "{{ naturalId }}" not found.</div>
+  <div v-if="!planetName">{{ t('burnact.notFound', naturalId) }}</div>
   <ExecuteActionPackage v-else :pkg="pkg" :after-execute="afterExecute">
     <template #extra>
-      <Active label="Generate Return JSON">
-        <RadioItem v-model="generateReturnJson">generate return json</RadioItem>
+      <Active :label="t('burnact.returnJson')">
+        <RadioItem v-model="generateReturnJson">{{ t('burnact.returnJsonToggle') }}</RadioItem>
       </Active>
-      <Active label="Agent">
-        <RadioItem v-model="agent">agent</RadioItem>
+      <Active :label="t('burnact.agent')">
+        <RadioItem v-model="agent">{{ t('burnact.agentToggle') }}</RadioItem>
       </Active>
     </template>
   </ExecuteActionPackage>

@@ -1,6 +1,7 @@
 import BURN from '@src/features/XIT/BURN/BURN.vue';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNameFromAddress } from '@src/infrastructure/prun-api/data/addresses';
+import { t } from '@src/i18n';
 
 xit.add({
   command: 'BURN',
@@ -15,7 +16,7 @@ xit.add({
 
     return 'BURN';
   },
-  description: 'Shows the number of days of consumables left.',
-  optionalParameters: 'Planet Identifier(s), OVERALL, NOT',
+  description: t('burn.description'),
+  optionalParameters: t('burn.parameters'),
   component: () => BURN,
 });

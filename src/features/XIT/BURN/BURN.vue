@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import CopyButton from '@src/components/CopyButton.vue';
 import RadioItem from '@src/components/forms/RadioItem.vue';
 import {
@@ -181,7 +182,7 @@ const planetBurn = computed(() => {
   const overallSection = {
     hasInboundShips: filtered.some(x => x.hasInboundShips),
     burn: filterBurn(overallBurn, ''),
-    planetName: 'Overall',
+    planetName: t('burn.overall'),
     naturalId: '',
     storeId: '',
   };
@@ -268,29 +269,29 @@ function copyBurnTable() {
   <LoadingSpinner v-if="planetBurn === undefined" />
   <template v-else>
     <div :class="C.ComExOrdersPanel.filter">
-      <RadioItem v-model="red" horizontal>RED</RadioItem>
-      <RadioItem v-model="yellow" horizontal>YELLOW</RadioItem>
-      <RadioItem v-model="green" horizontal>GREEN</RadioItem>
-      <RadioItem v-model="inf" horizontal>INF</RadioItem>
+      <RadioItem v-model="red" horizontal>{{ t('burn.filter.red') }}</RadioItem>
+      <RadioItem v-model="yellow" horizontal>{{ t('burn.filter.yellow') }}</RadioItem>
+      <RadioItem v-model="green" horizontal>{{ t('burn.filter.green') }}</RadioItem>
+      <RadioItem v-model="inf" horizontal>{{ t('burn.filter.inf') }}</RadioItem>
       <div :class="$style.separator" />
       <RadioItem
         v-model="prod"
         horizontal
         :class="$style.radioItemWithTooltip"
-        data-tooltip="Toggle materials with production consumption. When off, hides materials only used in production."
+        :data-tooltip="t('burn.filter.prodTip')"
         data-tooltip-position="bottom">
-        PROD
+        {{ t('burn.filter.prod') }}
       </RadioItem>
       <RadioItem
         v-model="wf"
         horizontal
         :class="$style.radioItemWithTooltip"
-        data-tooltip="Toggle materials with workforce consumption. When off, hides materials only consumed by workforce."
+        :data-tooltip="t('burn.filter.wfTip')"
         data-tooltip-position="bottom">
-        WF
+        {{ t('burn.filter.wf') }}
       </RadioItem>
       <div :class="$style.separator" />
-      <RadioItem v-model="io" horizontal>I/O</RadioItem>
+      <RadioItem v-model="io" horizontal>{{ t('burn.filter.io') }}</RadioItem>
       <div :class="$style.spacer" />
       <CopyButton :copy-fn="copyBurnTable" data-tooltip-position="bottom" />
     </div>
@@ -303,34 +304,29 @@ function copyBurnTable() {
           <th v-else />
           <th>
             <InlineFlex>
-              Inv
-              <Tooltip
-                position="right"
-                tooltip="Stock at the base plus cargo on inbound ships when enabled. Fractional amount
-                 represents the leftover materials since the last workforce consumption event." />
+              {{ t('burn.col.inv') }}
+              <Tooltip position="right" :tooltip="t('burn.col.invTip')" />
             </InlineFlex>
           </th>
           <template v-if="io">
-            <th>In</th>
-            <th>Out</th>
-            <th>Net</th>
+            <th>{{ t('burn.col.in') }}</th>
+            <th>{{ t('burn.col.out') }}</th>
+            <th>{{ t('burn.col.net') }}</th>
           </template>
           <th v-else>
             <InlineFlex>
-              Burn
-              <Tooltip position="bottom" tooltip="How much of a material is consumed per day." />
+              {{ t('burn.col.burn') }}
+              <Tooltip position="bottom" :tooltip="t('burn.col.burnTip')" />
             </InlineFlex>
           </th>
           <th>
             <InlineFlex>
-              Need
-              <Tooltip
-                position="bottom"
-                tooltip="How much of a material needs to be delivered to be fully supplied." />
+              {{ t('burn.col.need') }}
+              <Tooltip position="bottom" :tooltip="t('burn.col.needTip')" />
             </InlineFlex>
           </th>
-          <th>Days</th>
-          <th>CMD</th>
+          <th>{{ t('burn.col.days') }}</th>
+          <th>{{ t('burn.col.cmd') }}</th>
         </tr>
       </thead>
       <tbody :class="$style.fakeRow">

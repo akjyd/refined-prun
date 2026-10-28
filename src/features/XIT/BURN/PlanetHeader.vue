@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import DaysCell from '@src/features/XIT/BURN/DaysCell.vue';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import PrunButton from '@src/components/PrunButton.vue';
@@ -20,9 +21,7 @@ const io = useTileState('io');
 const excludeInbound = useTileState('excludeInbound');
 const includesInbound = computed(() => !excludeInbound.value.includes(burn.naturalId));
 const inboundTooltip = computed(() =>
-  includesInbound.value
-    ? 'Includes inbound cargo. Click to exclude it.'
-    : 'Excludes inbound cargo. Click to include it.',
+  includesInbound.value ? t('burn.inbound.included') : t('burn.inbound.excluded'),
 );
 const days = computed(() => countDays(burn.burn));
 const nameColspan = computed(() => (io.value ? 6 : 4));
