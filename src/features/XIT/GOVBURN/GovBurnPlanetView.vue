@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunLink from '@src/components/PrunLink.vue';
 import { popiBuildings } from '@src/core/popi-buildings';
 import GovBurnDaysCell from '@src/features/XIT/GOVBURN/GovBurnDaysCell.vue';
@@ -106,30 +107,30 @@ function onRowClick(e: MouseEvent, row: BuildingRow) {
 <template>
   <template v-if="!captured">
     <p>
-      No data for {{ displayName }}. Run
+      {{ t('gov.noDataRun', displayName) }}
       <PrunLink inline :command="`XIT GOVBURNDATA ${naturalId}`">
         XIT GOVBURNDATA {{ naturalId }}
       </PrunLink>
-      .
+      {{ t('gov.period') }}
     </p>
   </template>
   <table v-else>
     <thead>
       <tr>
-        <th>Building</th>
-        <th>Required</th>
-        <th>Days</th>
+        <th>{{ t('gov.col.building') }}</th>
+        <th>{{ t('gov.pv.required') }}</th>
+        <th>{{ t('gov.col.days') }}</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="row in rows" :key="row.ticker">
         <td :class="$style.building" @click="onRowClick($event, row)">
           <template v-if="row.isCogc">COGC</template>
-          <template v-else>{{ row.ticker }} Lvl {{ row.level }}</template>
+          <template v-else>{{ t('gov.pv.level', row.ticker, row.level) }}</template>
         </td>
         <td>{{ row.required === -1 ? '--' : row.required }}</td>
         <td v-if="row.required > 0 && !row.hasData">
-          <span data-tooltip="No data captured. Run XIT GOVBURNDATA.">--</span>
+          <span :data-tooltip="t('gov.noDataTip')">--</span>
         </td>
         <GovBurnDaysCell v-else :days="row.days" />
       </tr>

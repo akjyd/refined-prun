@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import ExecuteActionPackage from '@src/features/XIT/ACT/ExecuteActionPackage.vue';
 import { stagedGovBurn } from '@src/features/XIT/GOVBURN/staged';
 import { useMinBufferHeight } from '@src/hooks/use-min-buffer-height';
@@ -9,6 +10,6 @@ useMinBufferHeight();
 </script>
 
 <template>
-  <div v-if="!pkg">Nothing staged. Open XIT GOVBURNACT and press EXECUTE.</div>
+  <div v-if="!pkg">{{ t('gov.exec.nothing') }}</div>
   <ExecuteActionPackage v-else :pkg="pkg" />
 </template>

@@ -1,9 +1,10 @@
 import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
 import { lookupLocalization } from '@src/infrastructure/prun-ui/i18n';
+import { t } from '@src/i18n';
 
 function formatCogcLabel(programType?: string | null) {
   if (!programType) {
-    return 'CoGC (Inactive)';
+    return t('feat.pli.cogcInactive');
   }
   const localized =
     lookupLocalization(L.CoGCProgram, `${programType}_SHORT`)() ??
@@ -12,7 +13,7 @@ function formatCogcLabel(programType?: string | null) {
       .split('_')
       .map(word => word.charAt(0) + word.slice(1).toLowerCase())
       .join(' ');
-  return `CoGC (${localized})`;
+  return t('feat.pli.cogc', localized);
 }
 
 function onTileReady(tile: PrunTile) {

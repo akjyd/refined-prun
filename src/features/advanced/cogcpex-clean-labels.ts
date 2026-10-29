@@ -1,7 +1,8 @@
+import { t } from '@src/i18n';
 function onTileReady(tile: PrunTile) {
   // Replace 'view details/vote' with 'vote'
   subscribe($$(tile.anchor, C.Button.darkInline), button => {
-    button.textContent = 'vote';
+    button.textContent = t('feat.cogcpex.vote');
   });
 
   // Remove redundant title parts

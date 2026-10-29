@@ -1,4 +1,5 @@
 import { clamp } from '@src/utils/clamp';
+import { t } from '@src/i18n';
 
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
@@ -271,7 +272,7 @@ export function planetGovBurnBill(
     }
     for (const slot of slots) {
       if (slot.ticker === '') {
-        throw new Error(`Unresolved gov burn slot for ${building.ticker}`);
+        throw new Error(t('gov.unresolvedSlot', building.ticker));
       }
       const upkeep = upkeeps.find(x => x.ticker === slot.ticker);
       if (!upkeep) {

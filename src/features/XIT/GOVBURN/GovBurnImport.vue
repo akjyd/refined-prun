@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import Commands from '@src/components/forms/Commands.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
@@ -20,8 +21,8 @@ const emit = defineEmits<{ (e: 'done'): void }>();
 type ImportType = 'TEXT' | 'FILE';
 
 const typeOptions: { label: string; value: ImportType }[] = [
-  { label: 'Paste JSON', value: 'TEXT' },
-  { label: 'Upload JSON', value: 'FILE' },
+  { label: t('act.import.paste'), value: 'TEXT' },
+  { label: t('act.import.upload'), value: 'FILE' },
 ];
 
 const type = ref('TEXT' as ImportType);
@@ -49,13 +50,13 @@ function formatCountMaterials(count: number, materials: string[]) {
 function rowNote(row: GovBurnImportRow) {
   const notes: string[] = [];
   if (row.omitted) {
-    notes.push('not in import');
+    notes.push(t('gov.imp.notInImport'));
   }
   if (row.clamped) {
-    notes.push(`clamped to ${row.count} upkeeps`);
+    notes.push(t('gov.imp.clamped', row.count));
   }
   if (row.unknownMaterials.length > 0) {
-    notes.push(`not an upkeep: ${row.unknownMaterials.join(', ')}`);
+    notes.push(t('gov.imp.notUpkeep', row.unknownMaterials.join(', ')));
   }
   return notes.join('; ');
 }
@@ -64,13 +65,13 @@ function applyJson(json: unknown) {
   const input = parseGovBurnImport(json);
   if (input === undefined) {
     error.value = true;
-    errorMessage.value = 'Invalid JSON.';
+    errorMessage.value = t('gov.imp.invalidJson');
     return;
   }
   const planet = planetsStore.find(input.planet);
   if (planet === undefined) {
     error.value = true;
-    errorMessage.value = 'Planet not found.';
+    errorMessage.value = t('gov.planetNotFound');
     return;
   }
   error.value = false;
@@ -88,14 +89,14 @@ function applyJson(json: unknown) {
 function onPreviewClick() {
   if (text.value.length === 0) {
     error.value = true;
-    errorMessage.value = 'Invalid JSON.';
+    errorMessage.value = t('gov.imp.invalidJson');
     return;
   }
   try {
     applyJson(JSON.parse(text.value));
   } catch {
     error.value = true;
-    errorMessage.value = 'Invalid JSON.';
+    errorMessage.value = t('gov.imp.invalidJson');
   }
 }
 
@@ -134,9 +135,9 @@ function onConfirm() {
 
 <template>
   <div v-if="plan === undefined">
-    <SectionHeader>Import GovBurn Plan</SectionHeader>
+    <SectionHeader>{{ t('gov.imp.title') }}</SectionHeader>
     <form @submit.prevent>
-      <Active label="Type">
+      <Active :label="t('act.common.type')">
         <SelectInput v-model="type" :options="typeOptions" />
       </Active>
       <Active v-if="type === 'TEXT'" label="JSON" :error="error">
@@ -147,9 +148,13 @@ function onConfirm() {
           spellcheck="false" />
       </Active>
       <Commands>
-        <PrunButton v-if="type === 'FILE'" primary @click="onUploadClick">UPLOAD</PrunButton>
-        <PrunButton v-if="type === 'TEXT'" primary @click="onPreviewClick">PREVIEW</PrunButton>
-        <PrunButton @click="emit('done')">CANCEL</PrunButton>
+        <PrunButton v-if="type === 'FILE'" primary @click="onUploadClick">{{
+          t('act.import.uploadButton')
+        }}</PrunButton>
+        <PrunButton v-if="type === 'TEXT'" primary @click="onPreviewClick">{{
+          t('act.exec.preview')
+        }}</PrunButton>
+        <PrunButton @click="emit('done')">{{ t('act.exec.cancel') }}</PrunButton>
       </Commands>
     </form>
     <p v-if="error" :class="$style.error">{{ errorMessage }}</p>
@@ -158,21 +163,21 @@ function onConfirm() {
   <div v-else>
     <SectionHeader>{{ planetLabel }}</SectionHeader>
     <p v-if="plan.hasConflicts" :class="$style.error">
-      Overwrites existing settings for the highlighted rows.
+      {{ t('gov.imp.overwrites') }}
     </p>
     <p v-if="!plan.hasData" :class="$style.note">
-      No data captured for this planet. Materials cannot be validated - run XIT GOVBURNDATA.
+      {{ t('gov.imp.noData') }}
     </p>
     <p v-if="plan.ignored.length > 0" :class="$style.note">
-      Ignored (not POPI buildings): {{ plan.ignored.join(', ') }}.
+      {{ t('gov.imp.ignored', plan.ignored.join(', ')) }}
     </p>
     <table>
       <thead>
         <tr>
-          <th>Building</th>
-          <th>Current</th>
-          <th>New</th>
-          <th>Note</th>
+          <th>{{ t('gov.col.building') }}</th>
+          <th>{{ t('gov.imp.current') }}</th>
+          <th>{{ t('gov.imp.new') }}</th>
+          <th>{{ t('gov.imp.note') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -186,8 +191,8 @@ function onConfirm() {
     </table>
     <form @submit.prevent>
       <Commands>
-        <PrunButton primary @click="onConfirm">CONFIRM</PrunButton>
-        <PrunButton @click="onBack">BACK</PrunButton>
+        <PrunButton primary @click="onConfirm">{{ t('gov.imp.confirm') }}</PrunButton>
+        <PrunButton @click="onBack">{{ t('gov.imp.back') }}</PrunButton>
       </Commands>
     </form>
   </div>

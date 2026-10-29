@@ -1,4 +1,5 @@
 import Passive from '@src/components/forms/Passive.vue';
+import { t } from '@src/i18n';
 
 function onTileReady(tile: PrunTile) {
   const basesText = L.CompanyPanel.data.bases();
@@ -9,7 +10,7 @@ function onTileReady(tile: PrunTile) {
     }
     const bases = await $(container, C.StaticInput.static);
     createFragmentApp(() => (
-      <Passive label="Base Count">
+      <Passive label={t('feat.co.baseCount')}>
         <span>{bases.childElementCount}</span>
       </Passive>
     )).before(container);

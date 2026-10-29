@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import GovBurnConfig from '@src/features/XIT/GOVBURN/GovBurnConfig.vue';
 import GovBurnDaysCell from '@src/features/XIT/GOVBURN/GovBurnDaysCell.vue';
@@ -79,17 +80,17 @@ function onActClick(naturalId: string) {
   <template v-else>
     <div :class="C.ComExOrdersPanel.filter">
       <div :class="$style.spacer" />
-      <PrunButton primary @click="showConfig = true">CONFIG</PrunButton>
-      <PrunButton primary @click="showBuffer('XIT GOVBURNDATA')">DATA</PrunButton>
+      <PrunButton primary @click="showConfig = true">{{ t('gov.ov.config') }}</PrunButton>
+      <PrunButton primary @click="showBuffer('XIT GOVBURNDATA')">{{ t('gov.ov.data') }}</PrunButton>
     </div>
-    <p v-if="rows.length === 0" :class="$style.empty">No planets configured.</p>
+    <p v-if="rows.length === 0" :class="$style.empty">{{ t('gov.ov.empty') }}</p>
     <table v-else>
       <thead>
         <tr>
-          <th>Planet</th>
+          <th>{{ t('gov.col.planet') }}</th>
           <th>POPI</th>
           <th>COGC</th>
-          <th>CMD</th>
+          <th>{{ t('gov.ov.cmd') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -101,18 +102,20 @@ function onActClick(naturalId: string) {
             {{ row.name }}
           </td>
           <td v-if="!row.hasData" :class="$style.noData" @click="openPlanet(row.naturalId)">
-            <span data-tooltip="No data captured. Run XIT GOVBURNDATA.">--</span>
+            <span :data-tooltip="t('gov.noDataTip')">--</span>
           </td>
           <GovBurnDaysCell v-else :days="row.days" @click="openPlanet(row.naturalId)" />
           <td
             v-if="row.cogcDays === undefined"
             :class="$style.noData"
             @click="openPlanet(row.naturalId)">
-            <span data-tooltip="No COGC data captured. Run XIT GOVBURNDATA.">--</span>
+            <span :data-tooltip="t('gov.ov.noCogcTip')">--</span>
           </td>
           <GovBurnDaysCell v-else :days="row.cogcDays" @click="openPlanet(row.naturalId)" />
           <td>
-            <PrunButton dark inline @click="onActClick(row.naturalId)">ACT</PrunButton>
+            <PrunButton dark inline @click="onActClick(row.naturalId)">{{
+              t('act.exec.act')
+            }}</PrunButton>
           </td>
         </tr>
       </tbody>

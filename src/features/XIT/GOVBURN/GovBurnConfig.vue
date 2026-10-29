@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import Active from '@src/components/forms/Active.vue';
 import Commands from '@src/components/forms/Commands.vue';
 import NumberInput from '@src/components/forms/NumberInput.vue';
@@ -91,35 +92,35 @@ function onInputKeydown(ev: KeyboardEvent) {
   <template v-else>
     <div :class="C.ComExOrdersPanel.filter">
       <div :class="$style.spacer" />
-      <PrunButton primary @click="showImport = true">IMPORT</PrunButton>
-      <PrunButton primary @click="emit('done')">DONE</PrunButton>
+      <PrunButton primary @click="showImport = true">{{ t('act.common.import') }}</PrunButton>
+      <PrunButton primary @click="emit('done')">{{ t('gov.cfg.done') }}</PrunButton>
     </div>
 
-    <SectionHeader>Thresholds</SectionHeader>
+    <SectionHeader>{{ t('gov.cfg.thresholds') }}</SectionHeader>
     <form @submit.prevent>
-      <Active label="Red (days)">
+      <Active :label="t('gov.cfg.red')">
         <NumberInput v-model="userData.govburn.config.red" float />
       </Active>
-      <Active label="Yellow (days)">
+      <Active :label="t('gov.cfg.yellow')">
         <NumberInput v-model="userData.govburn.config.yellow" float />
       </Active>
     </form>
 
-    <SectionHeader>Add Planet</SectionHeader>
+    <SectionHeader>{{ t('gov.cfg.addPlanet') }}</SectionHeader>
     <form @submit.prevent>
-      <Active label="Planet" :error="planetError">
+      <Active :label="t('gov.col.planet')" :error="planetError">
         <TextInput v-model="planetInput" @keydown="onInputKeydown" />
       </Active>
       <Commands>
-        <PrunButton primary @click="addPlanet">ADD</PrunButton>
+        <PrunButton primary @click="addPlanet">{{ t('act.common.add') }}</PrunButton>
       </Commands>
     </form>
-    <p v-if="planetError" :class="$style.error">Planet not found.</p>
+    <p v-if="planetError" :class="$style.error">{{ t('gov.planetNotFound') }}</p>
 
     <table v-if="configuredPlanets.length > 0">
       <thead>
         <tr>
-          <th>Planet</th>
+          <th>{{ t('gov.col.planet') }}</th>
           <th v-for="building in popiBuildings" :key="building.ticker">{{ building.ticker }}</th>
           <th />
         </tr>
@@ -140,7 +141,9 @@ function onInputKeydown(ev: KeyboardEvent) {
             </div>
           </td>
           <td>
-            <PrunButton danger inline @click="removePlanet(naturalId)">REMOVE</PrunButton>
+            <PrunButton danger inline @click="removePlanet(naturalId)">{{
+              t('gov.cfg.remove')
+            }}</PrunButton>
           </td>
         </tr>
       </tbody>

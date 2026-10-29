@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import PrunLink from '@src/components/PrunLink.vue';
 import LoadingSpinner from '@src/components/LoadingSpinner.vue';
@@ -154,7 +155,7 @@ function isPastOrNow(timestamp?: number) {
 function formatFutureDuration(timestamp: number) {
   const now = timestampEachSecond.value;
   if (timestamp <= now) {
-    return '0s';
+    return t('elec.s', 0);
   }
 
   let duration = dayjs.duration({ milliseconds: timestamp - now });
@@ -162,22 +163,22 @@ function formatFutureDuration(timestamp: number) {
   duration = duration.subtract(days, 'days');
   const hours = Math.floor(duration.asHours());
   if (days > 0) {
-    return `${days}d ${hours}h`;
+    return t('elec.dh', days, hours);
   }
 
   duration = duration.subtract(hours, 'hours');
   const minutes = Math.floor(duration.asMinutes());
   if (hours > 0) {
-    return `${hours}h ${minutes}m`;
+    return t('elec.hm', hours, minutes);
   }
 
   duration = duration.subtract(minutes, 'minutes');
   const seconds = Math.floor(duration.asSeconds());
   if (minutes > 0) {
-    return `${minutes}m ${seconds}s`;
+    return t('elec.ms', minutes, seconds);
   }
 
-  return `${seconds}s`;
+  return t('elec.s', seconds);
 }
 
 function getLatestAlertTimestampByPlanet(type: PrunApi.AlertType) {
@@ -217,16 +218,16 @@ function getPlanetNaturalIdFromAlert(alert: PrunApi.Alert) {
   <LoadingSpinner v-if="rows === undefined" />
   <template v-else>
     <div :class="C.ComExOrdersPanel.filter">
-      <RadioItem v-model="gov" horizontal>GOV</RadioItem>
+      <RadioItem v-model="gov" horizontal>{{ t('elec.filter.gov') }}</RadioItem>
       <RadioItem v-model="cogc" horizontal>COGC</RadioItem>
     </div>
     <table>
       <thead>
         <tr>
-          <th>Planet</th>
-          <th>Type</th>
-          <th>Voting</th>
-          <th>Ends</th>
+          <th>{{ t('elec.col.planet') }}</th>
+          <th>{{ t('elec.col.type') }}</th>
+          <th>{{ t('elec.col.voting') }}</th>
+          <th>{{ t('elec.col.ends') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -245,13 +246,13 @@ function getPlanetNaturalIdFromAlert(alert: PrunApi.Alert) {
               v-else-if="isPastOrNow(row.electionStart)"
               primary
               @click="showBuffer(`${voteCommand[row.type]} ${row.planetNaturalId}`)">
-              VOTE
+              {{ t('elec.vote') }}
             </PrunButton>
             <template v-else>{{ formatFutureDuration(row.electionStart) }}</template>
           </td>
           <td>
             <template v-if="row.electionEnd === undefined">--</template>
-            <template v-else-if="isPastOrNow(row.electionEnd)">Now</template>
+            <template v-else-if="isPastOrNow(row.electionEnd)">{{ t('elec.now') }}</template>
             <template v-else>{{ formatFutureDuration(row.electionEnd) }}</template>
           </td>
         </tr>

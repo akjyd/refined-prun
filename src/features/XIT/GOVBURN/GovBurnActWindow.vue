@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import ActionBar from '@src/components/ActionBar.vue';
 import Active from '@src/components/forms/Active.vue';
 import Header from '@src/components/Header.vue';
@@ -193,7 +194,7 @@ const billLine = computed(() => {
     .map(([ticker, amount]) => `${ticker} ${fixed0(amount)}`)
     .join(', ');
   const totals = billTotals(materialBillFromQuantities(bill.value));
-  return `Bill: ${parts} (${fixed02(totals.weight)}t, ${fixed02(totals.volume)}m³)`;
+  return t('gov.act.bill', parts, fixed02(totals.weight), fixed02(totals.volume));
 });
 
 const pkg = computed<UserData.ActionPackageData>(() => ({
@@ -239,41 +240,43 @@ function onExecuteClick() {
 
 <template>
   <div :class="$style.root">
-    <Header :class="$style.header">GovBurn Resupply {{ displayName }}</Header>
+    <Header :class="$style.header">{{ t('gov.act.header', displayName) }}</Header>
     <template v-if="!captured">
       <p>
-        No data for {{ displayName }}. Run
+        {{ t('gov.noDataRun', displayName) }}
         <PrunLink inline :command="`XIT GOVBURNDATA ${naturalId}`">
           XIT GOVBURNDATA {{ naturalId }}
         </PrunLink>
-        .
+        {{ t('gov.period') }}
       </p>
     </template>
     <template v-else-if="!canPlanResupply">
       <p>
-        No buildings configured for {{ displayName }}. Configure them in
+        {{ t('gov.act.noBuildings', displayName) }}
         <PrunLink inline command="XIT GOVBURN">XIT GOVBURN</PrunLink>
-        .
+        {{ t('gov.period') }}
       </p>
     </template>
     <template v-else>
       <div :class="$style.pane">
-        <Active label="Days">
+        <Active :label="t('gov.col.days')">
           <SelectInput v-model="resupplyDays" :options="dayOptions" />
         </Active>
 
         <table v-if="buildingRows.length > 0">
           <thead>
             <tr>
-              <th>Building</th>
-              <th v-for="i in Math.max(0, ...buildingRows.map(x => x.n))" :key="i">Slot {{ i }}</th>
+              <th>{{ t('gov.col.building') }}</th>
+              <th v-for="i in Math.max(0, ...buildingRows.map(x => x.n))" :key="i">{{
+                t('gov.act.slot', i)
+              }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in buildingRows" :key="row.ticker">
               <td>{{ row.ticker }} {{ row.level }}</td>
               <template v-if="!row.hasUpkeeps">
-                <td :colspan="row.n" :class="$style.noData">no data</td>
+                <td :colspan="row.n" :class="$style.noData">{{ t('gov.act.noData') }}</td>
               </template>
               <template v-else>
                 <td
@@ -293,26 +296,26 @@ function onExecuteClick() {
         </table>
 
         <p v-if="captured?.cogc !== undefined" :class="$style.cogcSummary">
-          COGC: {{ cogcRefills(horizonDays) }} refill(s) included
+          {{ t('gov.act.cogc', cogcRefills(horizonDays)) }}
         </p>
       </div>
       <p v-if="allResolved && !billNotEmpty" :class="$style.summary">
-        Reserves already cover {{ horizonDays }} days - nothing to buy.
+        {{ t('gov.act.covered', horizonDays) }}
       </p>
       <template v-else>
         <p v-if="hasMissingData" :class="$style.summary">
-          Missing upkeep data. Run
+          {{ t('gov.act.missing') }}
           <PrunLink inline :command="`XIT GOVBURNDATA ${naturalId}`">
             XIT GOVBURNDATA {{ naturalId }}
           </PrunLink>
-          .
+          {{ t('gov.period') }}
         </p>
         <p v-else-if="allResolved" :class="$style.summary">{{ billLine }}</p>
-        <p v-else :class="$style.summary">Resolve all upkeep slots to continue.</p>
+        <p v-else :class="$style.summary">{{ t('gov.act.resolve') }}</p>
       </template>
       <ActionBar :class="$style.actionBar">
         <PrunButton v-if="allResolved && billNotEmpty" primary @click="onExecuteClick">
-          EXECUTE
+          {{ t('act.common.execute') }}
         </PrunButton>
       </ActionBar>
     </template>

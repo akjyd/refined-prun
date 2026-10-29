@@ -508,6 +508,99 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'act.sync.idsFull': '今天的 26 个代理消息编号已经全部用完。',
   'act.sync.collision': '动作包无法同步：“{0}”和同步用的缩写冲突，请改名。',
   'act.sync.tooLarge': '动作包太大，无法同步（{0} > {1} 个字符）。',
+
+  // 州长维护 —— 通用
+  'gov.period': '。',
+  'gov.noDataRun': '{0} 还没有数据。请运行',
+  'gov.planetNotFound': '找不到星球。',
+  'gov.col.planet': '星球',
+  'gov.col.building': '建筑',
+  'gov.col.days': '天数',
+  'gov.noDataTip': '还没有收集到数据。请运行 XIT GOVBURNDATA。',
+
+  // 州长维护 —— 命令
+  'gov.title': '州长维护',
+  'gov.titlePlanet': '州长维护 - {0}',
+  'gov.description': '跟踪星球人口基础设施的维护物资。',
+  'gov.parameters': '星球编号',
+  'gov.act.title': '州长维护补给',
+  'gov.act.titlePlanet': '州长维护补给 - {0}',
+  'gov.act.description': '执行星球维护物资的补给动作包。',
+  'gov.data.title': '州长维护数据',
+  'gov.data.titlePlanet': '州长维护数据 - {0}',
+  'gov.data.description': '通过 POPI / POPID 窗口收集人口基础设施的维护数据。',
+  'gov.exec.title': '州长维护执行',
+  'gov.exec.description': '执行已准备好的星球维护补给动作包。',
+  'gov.exec.nothing': '还没有准备好的动作包。请打开 XIT GOVBURNACT 并按「执行」。',
+
+  // 州长维护 —— 总览
+  'gov.ov.config': '设置',
+  'gov.ov.data': '数据',
+  'gov.ov.empty': '还没有添加星球。',
+  'gov.ov.noCogcTip': '还没有收集到 COGC 数据。请运行 XIT GOVBURNDATA。',
+  'gov.ov.cmd': '命令',
+
+  // 州长维护 —— 单个星球
+  'gov.pv.required': '需要数量',
+  'gov.pv.level': '{0} {1} 级',
+
+  // 州长维护 —— 补给窗口（GOVBURNACT）
+  'gov.act.header': '州长维护补给 {0}',
+  'gov.act.noBuildings': '{0} 还没有设置建筑。请在这里设置：',
+  'gov.act.missing': '缺少维护数据。请运行',
+  'gov.act.slot': '槽位 {0}',
+  'gov.act.noData': '无数据',
+  'gov.act.cogc': 'COGC：已包含 {0} 次补充',
+  'gov.act.covered': '现有储备已够 {0} 天，不需要购买。',
+  'gov.act.resolve': '请先选定所有维护槽位的物资。',
+  'gov.act.bill': '清单：{0}（{1} 吨，{2} 立方米）',
+
+  // 州长维护 —— 设置
+  'gov.cfg.done': '完成',
+  'gov.cfg.thresholds': '变色阈值',
+  'gov.cfg.red': '红色（天）',
+  'gov.cfg.yellow': '黄色（天）',
+  'gov.cfg.addPlanet': '添加星球',
+  'gov.cfg.remove': '移除',
+
+  // 州长维护 —— 导入方案
+  'gov.imp.title': '导入州长维护方案',
+  'gov.imp.overwrites': '高亮的行会覆盖现有设置。',
+  'gov.imp.noData': '这个星球还没有收集到数据，无法核对物资。请运行 XIT GOVBURNDATA。',
+  'gov.imp.ignored': '已忽略（不是人口基础设施建筑）：{0}。',
+  'gov.imp.current': '当前',
+  'gov.imp.new': '导入后',
+  'gov.imp.note': '备注',
+  'gov.imp.confirm': '确认',
+  'gov.imp.back': '返回',
+  'gov.imp.notInImport': '导入里没有',
+  'gov.imp.clamped': '已限制为 {0} 个维护物资',
+  'gov.imp.notUpkeep': '不是维护物资：{0}',
+  'gov.imp.invalidJson': 'JSON 格式无效。',
+  'gov.unresolvedSlot': '{0} 还有没选定物资的维护槽位',
+
+  // XIT ELEC（选举）
+  'elec.title': '选举',
+  'elec.description': '你有基地的星球上即将举行的选举。',
+  'elec.filter.gov': '州长',
+  'elec.col.planet': '星球',
+  'elec.col.type': '类型',
+  'elec.col.voting': '投票',
+  'elec.col.ends': '结束',
+  'elec.vote': '投票',
+  'elec.now': '现在',
+  'elec.dh': '{0}天{1}小时',
+  'elec.hm': '{0}小时{1}分',
+  'elec.ms': '{0}分{1}秒',
+  'elec.s': '{0}秒',
+
+  // 游戏窗口里的政府相关功能
+  'feat.contrib.all': '全部',
+  'feat.contrib.none': '清零',
+  'feat.co.baseCount': '基地数',
+  'feat.pli.cogcInactive': 'COGC（未启用）',
+  'feat.pli.cogc': 'COGC（{0}）',
+  'feat.cogcpex.vote': '投票',
 };
 
 export default zh;

@@ -519,4 +519,98 @@ export default {
   'act.sync.idsFull': 'All 26 agent message ids for today are in use.',
   'act.sync.collision': 'Action package can\'t sync: "{0}" matches a sync short code - rename it.',
   'act.sync.tooLarge': 'Action package too large to sync ({0} > {1} chars).',
+
+  // 州长维护 —— 通用
+  'gov.period': '.',
+  'gov.noDataRun': 'No data for {0}. Run',
+  'gov.planetNotFound': 'Planet not found.',
+  'gov.col.planet': 'Planet',
+  'gov.col.building': 'Building',
+  'gov.col.days': 'Days',
+  'gov.noDataTip': 'No data captured. Run XIT GOVBURNDATA.',
+
+  // 州长维护 —— 命令
+  'gov.title': 'GOVERNMENT BURN',
+  'gov.titlePlanet': 'GOVERNMENT BURN - {0}',
+  'gov.description': 'Tracks planetary infrastructure upkeep.',
+  'gov.parameters': 'Planet Identifier',
+  'gov.act.title': 'GOVBURN RESUPPLY',
+  'gov.act.titlePlanet': 'GOVBURN RESUPPLY - {0}',
+  'gov.act.description': 'Executes a planetary upkeep resupply action package.',
+  'gov.data.title': 'GOVBURN DATA',
+  'gov.data.titlePlanet': 'GOVBURN DATA - {0}',
+  'gov.data.description': 'Collects planetary infrastructure upkeep data via POPI/POPID buffers.',
+  'gov.exec.title': 'GOVBURN EXECUTE',
+  'gov.exec.description': 'Executes the staged planetary upkeep resupply action package.',
+  'gov.exec.nothing': 'Nothing staged. Open XIT GOVBURNACT and press EXECUTE.',
+
+  // 州长维护 —— 总览
+  'gov.ov.config': 'CONFIG',
+  'gov.ov.data': 'DATA',
+  'gov.ov.empty': 'No planets configured.',
+  'gov.ov.noCogcTip': 'No COGC data captured. Run XIT GOVBURNDATA.',
+  'gov.ov.cmd': 'CMD',
+
+  // 州长维护 —— 单个星球
+  'gov.pv.required': 'Required',
+  'gov.pv.level': '{0} Lvl {1}',
+
+  // 州长维护 —— 补给窗口（GOVBURNACT）
+  'gov.act.header': 'GovBurn Resupply {0}',
+  'gov.act.noBuildings': 'No buildings configured for {0}. Configure them in',
+  'gov.act.missing': 'Missing upkeep data. Run',
+  'gov.act.slot': 'Slot {0}',
+  'gov.act.noData': 'no data',
+  'gov.act.cogc': 'COGC: {0} refill(s) included',
+  'gov.act.covered': 'Reserves already cover {0} days - nothing to buy.',
+  'gov.act.resolve': 'Resolve all upkeep slots to continue.',
+  'gov.act.bill': 'Bill: {0} ({1}t, {2}m³)',
+
+  // 州长维护 —— 设置
+  'gov.cfg.done': 'DONE',
+  'gov.cfg.thresholds': 'Thresholds',
+  'gov.cfg.red': 'Red (days)',
+  'gov.cfg.yellow': 'Yellow (days)',
+  'gov.cfg.addPlanet': 'Add Planet',
+  'gov.cfg.remove': 'REMOVE',
+
+  // 州长维护 —— 导入方案
+  'gov.imp.title': 'Import GovBurn Plan',
+  'gov.imp.overwrites': 'Overwrites existing settings for the highlighted rows.',
+  'gov.imp.noData':
+    'No data captured for this planet. Materials cannot be validated - run XIT GOVBURNDATA.',
+  'gov.imp.ignored': 'Ignored (not POPI buildings): {0}.',
+  'gov.imp.current': 'Current',
+  'gov.imp.new': 'New',
+  'gov.imp.note': 'Note',
+  'gov.imp.confirm': 'CONFIRM',
+  'gov.imp.back': 'BACK',
+  'gov.imp.notInImport': 'not in import',
+  'gov.imp.clamped': 'clamped to {0} upkeeps',
+  'gov.imp.notUpkeep': 'not an upkeep: {0}',
+  'gov.imp.invalidJson': 'Invalid JSON.',
+  'gov.unresolvedSlot': 'Unresolved gov burn slot for {0}',
+
+  // XIT ELEC（选举）
+  'elec.title': 'ELECTIONS',
+  'elec.description': 'Upcoming elections for planets you have bases on.',
+  'elec.filter.gov': 'GOV',
+  'elec.col.planet': 'Planet',
+  'elec.col.type': 'Type',
+  'elec.col.voting': 'Voting',
+  'elec.col.ends': 'Ends',
+  'elec.vote': 'VOTE',
+  'elec.now': 'Now',
+  'elec.dh': '{0}d {1}h',
+  'elec.hm': '{0}h {1}m',
+  'elec.ms': '{0}m {1}s',
+  'elec.s': '{0}s',
+
+  // 游戏窗口里的政府相关功能
+  'feat.contrib.all': 'ALL',
+  'feat.contrib.none': 'NONE',
+  'feat.co.baseCount': 'Base Count',
+  'feat.pli.cogcInactive': 'CoGC (Inactive)',
+  'feat.pli.cogc': 'CoGC ({0})',
+  'feat.cogcpex.vote': 'vote',
 };

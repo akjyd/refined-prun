@@ -2,6 +2,7 @@ import '@src/features/XIT/ACT/actions/govburn-data/govburn-data';
 
 import GovBurnDataWindow from '@src/features/XIT/GOVBURN/GovBurnDataWindow.vue';
 import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
+import { t } from '@src/i18n';
 
 xit.add({
   command: 'GOVBURNDATA',
@@ -10,11 +11,11 @@ xit.add({
     const parameter = parameters.join(' ');
     if (parameter) {
       const planet = planetsStore.find(parameter);
-      return `GOVBURN DATA - ${planet?.name ?? parameter}`;
+      return t('gov.data.titlePlanet', planet?.name ?? parameter);
     }
-    return 'GOVBURN DATA';
+    return t('gov.data.title');
   },
-  description: 'Collects planetary infrastructure upkeep data via POPI/POPID buffers.',
-  optionalParameters: 'Planet Identifier',
+  description: t('gov.data.description'),
+  optionalParameters: t('gov.parameters'),
   component: () => GovBurnDataWindow,
 });

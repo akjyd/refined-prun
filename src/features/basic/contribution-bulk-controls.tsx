@@ -2,6 +2,7 @@ import { clickElement } from '@src/util';
 import { refAnimationFrame } from '@src/utils/reactive-dom';
 import PrunButton from '@src/components/PrunButton.vue';
 import { ElementTag } from '@src/infrastructure/prun-ui/tagger';
+import { t } from '@src/i18n';
 
 function onTileReady(tile: PrunTile) {
   subscribe($$(tile.anchor, C.Contribution.contribute), contribute => {
@@ -42,12 +43,12 @@ function onTileReady(tile: PrunTile) {
     );
     createFragmentApp(() => (
       <PrunButton primary disabled={disabled.value} onClick={maxSliders}>
-        ALL
+        {t('feat.contrib.all')}
       </PrunButton>
     )).prependTo(contribute);
     createFragmentApp(() => (
       <PrunButton primary disabled={disabled.value} onClick={minSliders}>
-        NONE
+        {t('feat.contrib.none')}
       </PrunButton>
     )).prependTo(contribute);
   });
