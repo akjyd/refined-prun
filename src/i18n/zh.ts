@@ -601,6 +601,69 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feat.pli.cogcInactive': 'COGC（未启用）',
   'feat.pli.cogc': 'COGC（{0}）',
   'feat.cogcpex.vote': '投票',
+
+  // 新功能 —— 一键关闭
+  'feat.closeAll.label': '一键关闭',
+  'feat.closeAll.tooltip': '关闭所有浮动窗口（包括最小化的）。',
+
+  // 新功能 —— 飞船维修 ACT（SHP）
+  'shipRepair.button': '生成维修ACT',
+  'shipRepair.title': '生成飞船维修动作包',
+  'shipRepair.noShip': '找不到这艘船的数据。',
+  'shipRepair.ship': '飞船',
+  'shipRepair.location': '当前位置',
+  'shipRepair.exchange': '购买地点',
+  'shipRepair.noWarehouse': '你在任何交易所都没有仓库',
+  'shipRepair.useShipInv': '扣除货舱库存',
+  'shipRepair.useShipInvTip': '先扣掉货舱里已有的维修物资，再计算要买多少。',
+  'shipRepair.useShipInvToggle': '扣除',
+  'shipRepair.materials': '需要购买',
+  'shipRepair.nothing': '无，货舱里已经够了。',
+  'shipRepair.transferTo': '转运到',
+  'shipRepair.chooseShip': '执行时再选（船不在这个交易所）',
+  'shipRepair.generate': '生成',
+
+  // 新功能 —— 合同总览通用（HAUL / LOAN）
+  'contracts.col.contract': '合同',
+  'contracts.col.partner': '对方',
+  'contracts.col.progress': '进度',
+  'contracts.col.status': '状态',
+
+  // 新功能 —— XIT HAUL（运输合同）
+  'haul.title': '运输合同',
+  'haul.description': '分类显示运输合同：你承运的，和委托别人运的。',
+  'haul.carrying': '承运合同（你负责运）',
+  'haul.carryingEmpty': '没有承运合同',
+  'haul.shipping': '委托运输（别人帮你运）',
+  'haul.shippingEmpty': '没有委托运输',
+  'haul.summary': '共 {0} 单 | 已完成 {1} 单 | 运费合计 {2} | {3} 吨 / {4} 立方米',
+  'haul.col.from': '起点',
+  'haul.col.to': '终点',
+  'haul.col.cargo': '货物',
+  'haul.col.payment': '运费',
+
+  // 新功能 —— XIT LOAN（贷款合同）
+  'loan.title': '贷款合同',
+  'loan.description': '分类显示贷款合同：借入的和放出的。',
+  'loan.borrowed': '借入贷款',
+  'loan.borrowedEmpty': '没有借入贷款',
+  'loan.lent': '放出贷款',
+  'loan.lentEmpty': '没有放出贷款',
+  'loan.summaryBorrowed': '未还本金 {0} | 未还利息 {1} | 剩余 {2} 期',
+  'loan.summaryLent': '未收本金 {0} | 未收利息 {1} | 剩余 {2} 期',
+  'loan.col.principal': '本金',
+  'loan.col.interest': '每期利息',
+  'loan.col.repaid': '还款进度',
+  'loan.col.collected': '回收进度',
+  'loan.col.nextRepay': '下次还款',
+  'loan.col.nextCollect': '下次收款',
+  'loan.col.amount': '金额',
+  'loan.overdue': '已逾期',
+
+  // 新功能 —— ACT 预览总花费
+  'act.run.totalCost': '，总花费 ',
+  'act.run.missingPrices': '（{0} 项暂无价格）',
+  'act.run.loadingPrices': '正在加载价格……',
 };
 
 export default zh;

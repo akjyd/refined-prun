@@ -51,6 +51,17 @@ export const CXPO_BUY = act.addActionStep<Data>({
     }
     return description;
   },
+  cost: data => {
+    const filled = fillAmount(`${data.ticker}.${data.exchange}`, data.amount, data.priceLimit);
+    if (!filled) {
+      return undefined;
+    }
+    // An unfilled bid with a price limit reserves the full amount at that limit.
+    if (filled.amount < data.amount && data.allowUnfilled && isFinite(data.priceLimit)) {
+      return data.amount * data.priceLimit;
+    }
+    return filled.cost;
+  },
   execute: async ctx => {
     const { data, log, setStatus, requestTile, waitAct, waitActionFeedback, complete, skip, fail } =
       ctx;

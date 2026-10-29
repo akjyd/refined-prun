@@ -613,4 +613,68 @@ export default {
   'feat.pli.cogcInactive': 'CoGC (Inactive)',
   'feat.pli.cogc': 'CoGC ({0})',
   'feat.cogcpex.vote': 'vote',
+
+  // 新功能 —— 一键关闭
+  'feat.closeAll.label': 'CLOSE ALL',
+  'feat.closeAll.tooltip': 'Close all floating windows, including minimized ones.',
+
+  // 新功能 —— 飞船维修 ACT（SHP）
+  'shipRepair.button': 'REPAIR ACT',
+  'shipRepair.title': 'Generate Ship Repair Action Package',
+  'shipRepair.noShip': 'Ship data not found.',
+  'shipRepair.ship': 'Ship',
+  'shipRepair.location': 'Location',
+  'shipRepair.exchange': 'Buy at',
+  'shipRepair.noWarehouse': 'No warehouse at any exchange',
+  'shipRepair.useShipInv': 'Use Cargo',
+  'shipRepair.useShipInvTip': 'Subtract the repair materials already in the cargo hold.',
+  'shipRepair.useShipInvToggle': 'use cargo',
+  'shipRepair.materials': 'To Buy',
+  'shipRepair.nothing': 'Nothing - the cargo hold already has everything.',
+  'shipRepair.transferTo': 'Transfer To',
+  'shipRepair.chooseShip': 'Choose when executing (ship is not at this exchange)',
+  'shipRepair.generate': 'GENERATE',
+
+  // 新功能 —— 合同总览通用（HAUL / LOAN）
+  'contracts.col.contract': 'Contract',
+  'contracts.col.partner': 'Partner',
+  'contracts.col.progress': 'Progress',
+  'contracts.col.status': 'Status',
+
+  // 新功能 —— XIT HAUL（运输合同）
+  'haul.title': 'HAULING CONTRACTS',
+  'haul.description':
+    'Shows shipping contracts, split into ones you carry and ones others carry for you.',
+  'haul.carrying': 'Carrying (you deliver)',
+  'haul.carryingEmpty': 'No carrying contracts',
+  'haul.shipping': 'Shipping (others deliver for you)',
+  'haul.shippingEmpty': 'No shipping contracts',
+  'haul.summary': '{0} contracts | {1} fulfilled | payment {2} | {3}t / {4}m³',
+  'haul.col.from': 'From',
+  'haul.col.to': 'To',
+  'haul.col.cargo': 'Cargo',
+  'haul.col.payment': 'Payment',
+
+  // 新功能 —— XIT LOAN（贷款合同）
+  'loan.title': 'LOAN CONTRACTS',
+  'loan.description': 'Shows loan contracts, split into borrowed and lent.',
+  'loan.borrowed': 'Borrowed',
+  'loan.borrowedEmpty': 'No borrowed loans',
+  'loan.lent': 'Lent',
+  'loan.lentEmpty': 'No lent loans',
+  'loan.summaryBorrowed': 'principal left {0} | interest left {1} | {2} installments left',
+  'loan.summaryLent': 'principal left {0} | interest left {1} | {2} installments left',
+  'loan.col.principal': 'Principal',
+  'loan.col.interest': 'Interest',
+  'loan.col.repaid': 'Repaid',
+  'loan.col.collected': 'Collected',
+  'loan.col.nextRepay': 'Next Payment',
+  'loan.col.nextCollect': 'Next Collection',
+  'loan.col.amount': 'Amount',
+  'loan.overdue': 'Overdue',
+
+  // 新功能 —— ACT 预览总花费
+  'act.run.totalCost': ', Total Cost ',
+  'act.run.missingPrices': ' ({0} without price data)',
+  'act.run.loadingPrices': 'Loading prices...',
 };

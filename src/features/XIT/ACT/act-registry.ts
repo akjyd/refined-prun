@@ -5,6 +5,7 @@ import {
   MaterialGroupGenerateContext,
 } from '@src/features/XIT/ACT/shared-types';
 import { MaterialBill } from '@src/features/XIT/ACT/material-bill';
+import {} from '@src/i18n';
 
 interface MaterialGroupInfo<TConfig> {
   type: UserData.MaterialGroupType;
@@ -63,6 +64,8 @@ interface ActionStepInfo<T> {
   preProcessData?: (data: T) => T;
   description: (data: T) => string;
   totalMaterials?: (data: T) => Record<string, number>;
+  // Money spent by this step, in the currency of `data.exchange`. Undefined if no price data yet.
+  cost?: (data: T) => number | undefined;
   execute: (ctx: ActionStepExecuteContext<T>) => Promise<void>;
 }
 
