@@ -146,6 +146,8 @@ function onExecuteClick() {
 }
 
 function onCancelClick() {
+  autoMode.value = false;
+  clearTimeout(autoActTimer);
   actReady.value = false;
   skipReady.value = false;
   runner.cancel();
@@ -173,21 +175,31 @@ function clearLog() {
 
 const autoActDelayMs = 300;
 
+// When on, press ACT for every step without waiting for the player.
+const autoMode = ref(autoAct ?? false);
+let autoActTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch([actReady, autoMode], ([ready, auto]) => {
+  clearTimeout(autoActTimer);
+  if (!ready || !auto || !isRunning.value) {
+    return;
+  }
+  autoActTimer = setTimeout(() => {
+    if (actReady.value && autoMode.value) {
+      onActClick();
+    }
+  }, autoActDelayMs);
+});
+
+function onAutoClick() {
+  autoMode.value = !autoMode.value;
+}
+
 if (autoAct) {
   onMounted(() => {
     if (!shouldShowConfigure.value) {
       onExecuteClick();
     }
-  });
-  watch(actReady, ready => {
-    if (!ready || !isRunning.value) {
-      return;
-    }
-    setTimeout(() => {
-      if (actReady.value) {
-        onActClick();
-      }
-    }, autoActDelayMs);
   });
 }
 </script>
@@ -229,6 +241,9 @@ if (autoAct) {
         <PrunButton primary :class="$style.executeButton" @click="onExecuteClick">
           {{ t('act.common.execute') }}
         </PrunButton>
+        <PrunButton :primary="autoMode" :neutral="!autoMode" @click="onAutoClick">
+          {{ autoMode ? t('act.exec.autoOn') : t('act.exec.autoOff') }}
+        </PrunButton>
       </template>
       <template v-else>
         <PrunButton v-if="needsConfigure" primary disabled>{{
@@ -247,6 +262,9 @@ if (autoAct) {
         }}</PrunButton>
         <PrunButton neutral :disabled="!actReady && !skipReady" @click="onSkipClick">
           {{ t('act.exec.skip') }}
+        </PrunButton>
+        <PrunButton :primary="autoMode" :neutral="!autoMode" @click="onAutoClick">
+          {{ autoMode ? t('act.exec.autoOn') : t('act.exec.autoOff') }}
         </PrunButton>
       </template>
     </ActionBar>

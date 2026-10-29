@@ -1233,4 +1233,8 @@ export default {
   'finch.value': 'Value',
   'finch.smoothing': 'Smoothing: {0}',
   'finch.date': 'Date',
+
+  // 新功能 —— ACT 自动执行开关
+  'act.exec.autoOn': 'AUTO: ON',
+  'act.exec.autoOff': 'AUTO: OFF',
 };

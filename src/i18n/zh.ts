@@ -1164,6 +1164,10 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'finch.value': '数值',
   'finch.smoothing': '平滑：{0}',
   'finch.date': '日期',
+
+  // 新功能 —— ACT 自动执行开关
+  'act.exec.autoOn': '自动：开',
+  'act.exec.autoOff': '自动：关',
 };
 
 export default zh;
