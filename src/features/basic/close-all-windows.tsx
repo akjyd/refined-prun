@@ -38,12 +38,7 @@ function onFooterReady(footer: HTMLElement) {
       class={[$style.container, C.HeadItem.container, C.fonts.fontRegular, C.type.typeRegular]}
       onClick={() => void closeAllWindows()}>
       <div class={[C.HeadItem.indicator, C.HeadItem.indicatorSuccess]} />
-      <div
-        class={[$style.label, C.HeadItem.label]}
-        data-tooltip={t('feat.closeAll.tooltip')}
-        data-tooltip-position="top">
-        {t('feat.closeAll.label')}
-      </div>
+      <div class={[$style.label, C.HeadItem.label]}>{t('feat.closeAll.label')}</div>
     </div>
   )).prependTo(footer);
 }

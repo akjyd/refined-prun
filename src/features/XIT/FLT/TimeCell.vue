@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { computed } from 'vue';
 import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
@@ -42,7 +43,7 @@ const hasItems = computed(() => (inventory.value?.items.length ?? 0) > 0);
       <div :class="$style.actions">
         <div
           :class="[$style.actionBtn, hasItems ? $style.bgOrange : $style.bgBlue]"
-          data-tooltip="Open inventory"
+          :data-tooltip="t('flt.openInventory')"
           data-tooltip-position="top"
           @click.stop="showBuffer(`SHPI ${ship?.registration}`)">
           <span :class="[$style.actionBtnIcon, fa.solid]">
@@ -51,7 +52,7 @@ const hasItems = computed(() => (inventory.value?.items.length ?? 0) > 0);
         </div>
         <div
           :class="[$style.actionBtn, $style.bgGreen]"
-          data-tooltip="Open flight control"
+          :data-tooltip="t('flt.openFlightControl')"
           data-tooltip-position="top"
           @click.stop="showBuffer(`SFC ${ship?.registration}`)">
           <span :class="[$style.actionBtnIcon, fa.solid]">

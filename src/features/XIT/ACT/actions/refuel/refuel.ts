@@ -2,7 +2,11 @@ import { act } from '@src/features/XIT/ACT/act-registry';
 import Edit from '@src/features/XIT/ACT/actions/refuel/Edit.vue';
 import Configure from '@src/features/XIT/ACT/actions/refuel/Configure.vue';
 import { Config } from '@src/features/XIT/ACT/actions/refuel/config';
-import { allExchangesValue, getRefuelOrigins } from '@src/features/XIT/ACT/actions/refuel/utils';
+import {
+  allExchangesValue,
+  allLocationsValue,
+  getRefuelOrigins,
+} from '@src/features/XIT/ACT/actions/refuel/utils';
 import { CXPO_BUY } from '@src/features/XIT/ACT/action-steps/CXPO_BUY';
 import { fillAmount } from '@src/features/XIT/ACT/actions/cx-buy/utils';
 import { MTRA_TRANSFER } from '@src/features/XIT/ACT/action-steps/MTRA_TRANSFER';
@@ -28,6 +32,9 @@ act.addAction<Config>({
   description: action => {
     if (action.origin === allExchangesValue) {
       return t('act.refuel.allDesc');
+    }
+    if (action.origin === allLocationsValue) {
+      return t('act.refuel.allLocationsDesc');
     }
     return action.origin ? t('act.refuel.nearDesc', action.origin) : '--';
   },
@@ -61,6 +68,19 @@ act.addAction<Config>({
       return;
     }
 
+    if (data.origin === allLocationsValue) {
+      // Exchange warehouses first, because only they can buy missing fuel.
+      const origins = getRefuelOrigins()
+        .filter(x => x.type === 'STORE' || x.type === 'WAREHOUSE_STORE')
+        .sort((a, b) => Number(isCXWarehouse(b)) - Number(isCXWarehouse(a)));
+      // A ship can be next to more than one storage; refuel it only once.
+      const planned = new Set<string>();
+      for (const origin of origins) {
+        refuelFromOrigin(origin, data, stlMaterial, ftlMaterial, log, emitStep, planned);
+      }
+      return;
+    }
+
     const serializedOrigin = data.origin === configurableValue ? config?.origin : data.origin;
     const origin = deserializeStorage(serializedOrigin);
     assert(origin, t('act.f.invalidOrigin'));
@@ -76,19 +96,27 @@ function refuelFromOrigin(
   ftlMaterial: PrunApi.Material,
   log: Logger,
   emitStep: (step: ActionStep) => void,
+  planned?: Set<string>,
 ) {
   const originName = serializeStorage(origin);
+  const isFree = (store: PrunApi.Store) => !planned?.has(store.id);
   const exchangeCode = getExchangeCode(origin);
   const isCX = exchangeCode !== undefined;
 
   const dockedStl =
-    storagesStore.getByType('STL_FUEL_STORE')?.filter(x => atSameLocation(x, origin)) ?? [];
+    storagesStore
+      .getByType('STL_FUEL_STORE')
+      ?.filter(x => atSameLocation(x, origin) && isFree(x)) ?? [];
 
   const dockedFtl =
-    storagesStore.getByType('FTL_FUEL_STORE')?.filter(x => atSameLocation(x, origin)) ?? [];
+    storagesStore
+      .getByType('FTL_FUEL_STORE')
+      ?.filter(x => atSameLocation(x, origin) && isFree(x)) ?? [];
 
   if (dockedStl.length === 0 && dockedFtl.length === 0) {
-    log.info(t('act.refuel.noShips', originName));
+    if (!planned) {
+      log.info(t('act.refuel.noShips', originName));
+    }
     return;
   }
 
@@ -96,7 +124,9 @@ function refuelFromOrigin(
   const totalFtlRefuel = sumBy(dockedFtl, x => calculateRefuelAmount(x, ftlMaterial));
 
   if (totalFtlRefuel === 0 && totalStlRefuel === 0) {
-    log.info(t('act.refuel.noNeed', originName));
+    if (!planned) {
+      log.info(t('act.refuel.noNeed', originName));
+    }
     return;
   }
 
@@ -149,6 +179,7 @@ function refuelFromOrigin(
         amount,
       }),
     );
+    planned?.add(store.id);
     presentStlFuel -= amount;
   }
 
@@ -165,6 +196,7 @@ function refuelFromOrigin(
         amount,
       }),
     );
+    planned?.add(store.id);
     presentFtlFuel -= amount;
   }
 }

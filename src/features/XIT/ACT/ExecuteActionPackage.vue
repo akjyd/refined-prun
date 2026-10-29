@@ -11,8 +11,10 @@ import ConfigWindow from '@src/features/XIT/ACT/ConfigureWindow.vue';
 import { ActionPackageConfig, ActionStep } from '@src/features/XIT/ACT/shared-types';
 import { act } from '@src/features/XIT/ACT/act-registry';
 
-const { pkg, afterExecute, extraSteps } = defineProps<{
+const { pkg, afterExecute, extraSteps, autoAct } = defineProps<{
   pkg: UserData.ActionPackageData;
+  // Start at once and press ACT for every step without waiting for the player.
+  autoAct?: boolean;
   afterExecute?: (
     config: ActionPackageConfig,
     log: (tag: LogTag, message: LogContent) => void,
@@ -167,6 +169,26 @@ function logMessage(tag: LogTag, message: LogContent) {
 
 function clearLog() {
   log.value.length = 0;
+}
+
+const autoActDelayMs = 300;
+
+if (autoAct) {
+  onMounted(() => {
+    if (!shouldShowConfigure.value) {
+      onExecuteClick();
+    }
+  });
+  watch(actReady, ready => {
+    if (!ready || !isRunning.value) {
+      return;
+    }
+    setTimeout(() => {
+      if (actReady.value) {
+        onActClick();
+      }
+    }, autoActDelayMs);
+  });
 }
 </script>
 

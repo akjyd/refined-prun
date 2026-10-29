@@ -47,6 +47,17 @@ export function tValue(value: string): string {
   return t(key);
 }
 
+/**
+ * 功能开关列表里某个功能的说明。没有译文时用功能自己注册的英文说明。
+ */
+export function tFeature(id: string, fallback: string): string {
+  if (lang === 'en') {
+    return fallback;
+  }
+  const table: Partial<Record<string, string>> = tables.zh;
+  return table[`feature.${id}`] ?? fallback;
+}
+
 type Option = string | { label: string; value: string };
 
 /**

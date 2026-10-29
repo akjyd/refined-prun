@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import Commands from '@src/components/forms/Commands.vue';
@@ -12,22 +13,24 @@ import {
 </script>
 
 <template>
-  <SectionHeader>Import PMMG files</SectionHeader>
+  <SectionHeader>{{ t('set.pmmg.title') }}</SectionHeader>
   <form>
     <Commands label="pmmg-settings.json">
-      <PrunButton primary @click="importPmmgSettings">Import Settings</PrunButton>
+      <PrunButton primary @click="importPmmgSettings">{{ t('set.pmmg.settings') }}</PrunButton>
     </Commands>
     <Commands label="pmmg-finance.json">
-      <PrunButton primary @click="importPmmgFinancialHistory">Import Finances</PrunButton>
+      <PrunButton primary @click="importPmmgFinancialHistory">{{
+        t('set.pmmg.finance')
+      }}</PrunButton>
     </Commands>
     <Commands label="pmmg-notes.json">
-      <PrunButton primary @click="importPmmgNotes">Import Notes</PrunButton>
+      <PrunButton primary @click="importPmmgNotes">{{ t('set.pmmg.notes') }}</PrunButton>
     </Commands>
     <Commands label="pmmg-action.json">
-      <PrunButton primary @click="importPmmgActions">Import Actions</PrunButton>
+      <PrunButton primary @click="importPmmgActions">{{ t('set.pmmg.actions') }}</PrunButton>
     </Commands>
     <Commands label="pmmg-lists.json">
-      <PrunButton primary @click="importPmmgCommandLists">Import Command Lists</PrunButton>
+      <PrunButton primary @click="importPmmgCommandLists">{{ t('set.pmmg.lists') }}</PrunButton>
     </Commands>
   </form>
 </template>

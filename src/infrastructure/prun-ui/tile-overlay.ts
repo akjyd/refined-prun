@@ -1,5 +1,6 @@
 import Overlay from '@src/components/Overlay.vue';
 import ActionFeedback from '@src/components/ActionFeedback.vue';
+import { t } from '@src/i18n';
 
 export function showTileOverlay<T extends Component>(
   baseElementOrEvent: Element | Event,
@@ -40,8 +41,8 @@ export function showConfirmationOverlay(
     confirmLabel?: string;
   },
 ) {
-  const message = options?.message ?? 'Are you sure?';
-  const confirmLabel = options?.confirmLabel ?? 'Confirm';
+  const message = options?.message ?? t('common.areYouSure');
+  const confirmLabel = options?.confirmLabel ?? t('common.confirm');
   const container = findMountContainer(baseElementOrEvent);
   if (!container) {
     return;

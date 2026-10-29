@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { userData } from '@src/store/user-data';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import SectionHeader from '@src/components/SectionHeader.vue';
@@ -46,21 +47,20 @@ function onInputKeydown(ev: KeyboardEvent) {
 </script>
 
 <template>
-  <SectionHeader>CX Buy Exclusions</SectionHeader>
-  <Passive v-if="userData.settings.noBuy.length === 0" label="Materials">None</Passive>
+  <SectionHeader>{{ t('set.act.exclusions') }}</SectionHeader>
+  <Passive v-if="userData.settings.noBuy.length === 0" :label="t('set.act.materials')">
+    {{ t('set.act.none') }}
+  </Passive>
   <Passive v-for="ticker in userData.settings.noBuy" :key="ticker" :label="ticker">
     <PrunButton danger @click="remove(ticker)">x</PrunButton>
   </Passive>
-  <SectionHeader>Add Materials</SectionHeader>
+  <SectionHeader>{{ t('set.act.add') }}</SectionHeader>
   <form @submit.prevent>
-    <Active
-      label="Tickers"
-      tooltip="ACT CX Buy actions skip these materials. Enter one or more material tickers separated by commas."
-      :error="inputError">
+    <Active :label="t('set.act.tickers')" :tooltip="t('set.act.tickersTip')" :error="inputError">
       <TextInput v-model="input" @keydown="onInputKeydown" />
     </Active>
     <Commands>
-      <PrunButton primary @click="add">ADD</PrunButton>
+      <PrunButton primary @click="add">{{ t('act.common.add') }}</PrunButton>
     </Commands>
   </form>
 </template>

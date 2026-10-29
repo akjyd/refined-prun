@@ -616,7 +616,6 @@ export default {
 
   // 新功能 —— 一键关闭
   'feat.closeAll.label': 'CLOSE ALL',
-  'feat.closeAll.tooltip': 'Close all floating windows, including minimized ones.',
 
   // 新功能 —— 飞船维修 ACT（SHP）
   'shipRepair.button': 'REPAIR ACT',
@@ -677,4 +676,415 @@ export default {
   'act.run.totalCost': ', Total Cost ',
   'act.run.missingPrices': ' ({0} without price data)',
   'act.run.loadingPrices': 'Loading prices...',
+
+  // 通用确认框（整个插件）
+  'common.areYouSure': 'Are you sure?',
+  'common.confirm': 'Confirm',
+
+  // XIT SET —— 命令与标签页
+  'set.title': 'REFINED PRUN SETTINGS',
+  'set.description': 'Refined PrUn settings.',
+  'set.parameters': 'Settings Tab Identifier, Feature Identifier (FEAT)',
+  'set.tab.gameplay': 'Gameplay',
+  'set.tab.features': 'Features',
+  'set.tab.financial': 'Financial',
+  'set.tab.buffers': 'Buffers',
+
+  // XIT SET —— 功能开关页
+  'set.feat.changeSet': 'Change feature set',
+  'set.feat.switchTo': 'SWITCH TO {0}',
+  'set.feat.search': 'Search',
+  'set.feat.restart': 'RESTART THE GAME TO APPLY CHANGES',
+  'set.feat.count': 'Features: {0}',
+  'set.feat.off': '({0} off) ',
+  'set.feat.more': '(+{0} more available in full mode)',
+  'set.feat.fullTitle': 'Full Mode Features',
+
+  // XIT SET —— 常规页
+  'set.opt.smooth': 'Smooth',
+  'set.opt.aligned': 'Aligned',
+  'set.opt.raw': 'Raw',
+  'set.opt.default': 'Default',
+  'set.opt.custom': 'Custom',
+  'set.opt.after': 'After',
+  'set.opt.before': 'Before',
+  'set.opt.hasSpace': 'Has space',
+  'set.opt.noSpace': 'No space',
+  'set.game.appearance': 'Appearance',
+  'set.game.burn': 'Burn Settings',
+  'set.game.importExport': 'Import/Export',
+  'set.game.backups': 'Backups',
+  'set.game.danger': 'Danger Zone',
+  'set.game.timeFormat': 'Time format',
+  'set.game.chartType': 'Default CX Chart Type',
+  'set.game.currency': 'Currency Symbol',
+  'set.game.currencyTip':
+    'Currency symbol used when displaying money values. Only shown in UI added by Refined PrUn.',
+  'set.game.symbol': 'Symbol',
+  'set.game.customSymbol': 'Custom symbol',
+  'set.game.position': 'Position',
+  'set.game.spacing': 'Spacing',
+  'set.game.spacingTip': 'The space between symbol and value.',
+  'set.game.red': 'Red',
+  'set.game.redTip': 'Threshold for red consumable level in burn calculations (in days).',
+  'set.game.yellow': 'Yellow',
+  'set.game.yellowTip': 'Threshold for yellow consumable level in burn calculations (in days).',
+  'set.game.resupply': 'Resupply',
+  'set.game.resupplyTip':
+    "Default target amount of supplied days for the 'Need' column in XIT BURN. Can be overridden per planet in XIT PLS.",
+  'set.game.sidebar': 'Left Sidebar Buttons',
+  'set.game.sidebarTip':
+    'Create hotkeys on the left sidebar. The first value is what will be displayed, the second is the command.',
+  'set.game.buttonN': 'Button {0}',
+  'set.game.reset': 'RESET',
+  'set.game.addNew': 'ADD NEW',
+  'set.game.import': 'Import User Data',
+  'set.game.export': 'Export User Data',
+  'set.game.backupExport': 'Export',
+  'set.game.backupRestore': 'Restore',
+  'set.game.backupDelete': 'Delete',
+  'set.game.restoreConfirm':
+    'Are you sure you want to restore this backup? This will overwrite your current data.',
+  'set.game.resetAll': 'Reset All Data',
+
+  // XIT SET —— 财务页
+  'set.fin.equity': 'Equity Mode',
+  'set.fin.equityTip':
+    'In this mode, equity includes the market value of all assets, including ships, HQ upgrades, and ARC. Not recommended for beginners, as starter ships have a disproportionate value compared to starting resources. Note that even with this mode disabled, your financial data history is still collected in full, so you can always switch to full equity mode later.',
+  'set.fin.equityToggle': 'full equity',
+  'set.fin.prices': 'Price Settings',
+  'set.fin.mm': 'MM Materials',
+  'set.fin.mmTip':
+    'Comma-separated list of Market Maker materials. The price of these materials will be equal to MM Bid price.',
+  'set.fin.ignored': 'Ignored Materials',
+  'set.fin.ignoredTip':
+    'Comma-separated list of ignored materials. The price of these materials is considered to be zero.',
+  'set.fin.points': 'Collected Data Points',
+  'set.fin.collect': 'Collect Data Point',
+  'set.fin.hideMerge': 'Hide Backup Merge',
+  'set.fin.merge': 'Merge Financial Backups',
+  'set.fin.date': 'Date',
+  'set.fin.equityCol': 'Equity',
+  'set.fin.command': 'Command',
+  'set.fin.clearTip': 'Clear all historical financial data',
+  'set.fin.clear': 'Clear Financial Data',
+  'set.fin.deletePointConfirm':
+    'You are about to delete a historical data point. Do you want to continue?',
+  'set.fin.clearConfirm':
+    'You are about to clear all historical financial data. Do you want to continue?',
+
+  // XIT SET —— 窗口大小页
+  'set.bfr.title': 'Override Default Buffer Sizes',
+  'set.bfr.titleTip':
+    'The first matched rule will be used. If no rules match, the default buffer size will be used. You can reorganize the rules by dragging them up and down.',
+  'set.bfr.pickThis': 'CLICK TO PICK THIS BUFFER',
+  'set.bfr.cancel': 'CLICK ANYWHERE TO CANCEL',
+  'set.bfr.pick': 'PICK BUFFER',
+  'set.bfr.addRule': 'ADD NEW RULE',
+  'set.bfr.command': 'Command',
+  'set.bfr.commandTip':
+    'Can be a full command, a part of it, or a regular expression. Case-insensitive.',
+  'set.bfr.width': 'Width',
+  'set.bfr.height': 'Height',
+  'set.bfr.empty': 'Nothing here yet.',
+
+  // XIT SET —— ACT 页
+  'set.act.exclusions': 'CX Buy Exclusions',
+  'set.act.materials': 'Materials',
+  'set.act.none': 'None',
+  'set.act.add': 'Add Materials',
+  'set.act.tickers': 'Tickers',
+  'set.act.tickersTip':
+    'ACT CX Buy actions skip these materials. Enter one or more material tickers separated by commas.',
+
+  // XIT SET PMMG —— 从 PMMG 导入
+  'set.pmmg.title': 'Import PMMG files',
+  'set.pmmg.settings': 'Import Settings',
+  'set.pmmg.finance': 'Import Finances',
+  'set.pmmg.notes': 'Import Notes',
+  'set.pmmg.actions': 'Import Actions',
+  'set.pmmg.lists': 'Import Command Lists',
+
+  // 功能开关说明（按功能 ID）
+  'feature.adm-neutral-withdraw-button':
+    'ADM: Applies the "neutral" style to the "Withdraw" vote button.',
+  'feature.align-chat-delete-button':
+    'Moves the "delete" button to prevent chat message layout shift.',
+  'feature.always-visible-tile-controls': 'Makes top-right tile controls always visible.',
+  'feature.audio-volume-slider':
+    'Adds a volume slider to the game settings in the top-right corner of the screen.',
+  'feature.auto-resize-buffers': 'Automatically resizes the buffer size on command change.',
+  'feature.bbc-building-count': 'BBC: Adds a building count label to the building icons.',
+  'feature.bbl-clean-repair-info':
+    'BBL: Hides "Last repair", "Established", and "Repair costs" rows if they are empty or irrelevant to repairs.',
+  'feature.bbl-collapsible-categories':
+    'BBL: Makes categories collapsible and collapses the "Infrastructure" category by default.',
+  'feature.bbl-condition-progress-bar': 'BBL: Adds a progress bar to the building condition row.',
+  'feature.bbl-dangerous-demolish': 'BBL: Applies the "danger" style to the "Demolish" button.',
+  'feature.bbl-dangerous-repair':
+    'BBL: Applies the "danger" style to the "Repair" button if the building condition is >98%.',
+  'feature.bbl-hide-book-value': 'BBL: Hides the "Book value" row.',
+  'feature.bbl-sticky-dividers': 'BBL: Makes building category dividers sticky.',
+  'feature.better-item-colors': 'Alters item colors to be more easily recognized.',
+  'feature.bigger-item-count-font': 'Makes the item count label font bigger.',
+  'feature.blck-item-destination': 'Adds a destination address to BLCK items.',
+  'feature.browser-tab-name': 'Renames browser tab based on the current screen',
+  'feature.bs-building-list': 'BS: Adds a building summary list.',
+  'feature.bs-hide-zero-workforce': 'BS: Hides workforce rows with zero current workforce.',
+  'feature.bs-merge-area-stats':
+    'BS: Merges the area progress bar field with the detailed area stats row.',
+  'feature.bs-satisfaction-percentage':
+    'BS: Adds a workforce satisfaction percentage label to the satisfaction progress bar.',
+  'feature.bs-warehouse-button': 'BS: Adds a "Warehouse" button.',
+  'feature.bui-sort-recipes':
+    'BUI: Sorts the recipes and materials by category/ticker/amount sort order.',
+  'feature.chat-command-links': 'Renders text in backticks as command links.',
+  'feature.chat-images': 'Adds images to chat messages containing image URLs.',
+  'feature.clickable-apex-logo':
+    'Makes the APEX logo clickable and leading to the user company info screen.',
+  'feature.close-all-windows':
+    'Adds a bottom-left button that closes all floating windows, including minimized ones.',
+  'feature.cmds-clickable-commands': 'CMDS: Makes commands clickable.',
+  'feature.co-base-count': 'CO: Adds a "Base Count" row.',
+  'feature.cogcpex-clean-labels':
+    'COGCPEX: Hides "Advertising Campaign:" and "Education Events:" parts of the campaign labels.',
+  'feature.cogcu-contribution-maxed': 'COGCU: Automatically maxes the contribution sliders.',
+  'feature.cont-fulfill-next': 'CONT: Adds a fulfill-next button with pending condition count.',
+  'feature.contd-bulk-add-commodity':
+    'CONTD: Adds a count input to add multiple commodity/shipment rows at once.',
+  'feature.contd-condition-address-placeholder':
+    'CONTD: Sets the current address as the placeholder for the address field of the condition editor.',
+  'feature.contd-fill-all-button':
+    'CONTD: Adds "all" buttons next to the first commodity fields to copy values to every other commodity.',
+  'feature.contd-import-export': 'CONTD: Adds importing and exporting of contract templates.',
+  'feature.contd-upward-search-results':
+    'CONTD: Moves the search bar results above the search bar.',
+  'feature.context-controls-no-hover':
+    'Prevents the context controls from displaying description while hovering over.',
+  'feature.contribution-bulk-controls':
+    'Adds bulk controls (NONE, ALL) to contribution menus in CoGC and population upkeep tiles.',
+  'feature.correct-commands': 'Corrects tile commands.',
+  'feature.custom-left-sidebar': 'Makes the sidebar on the left customizable via settings.',
+  'feature.cx-search-bar': 'CX: Adds a search bar for materials.',
+  'feature.cxm-reorder': 'CXM: Adds drag-and-drop to reorder exchanges.',
+  'feature.cxo-delete-order-button': 'CXO/FXO: Adds a delete button.',
+  'feature.cxob-center-on-open': 'CXOB: Centers the order book on open.',
+  'feature.cxob-delete-own-exchange-orders': 'CXOB/FXOB: Adds a delete button to own orders.',
+  'feature.cxob-depth-bars': 'CXOB: Adds market depth bars.',
+  'feature.cxob-hide-section-headers': 'CXOB: Hides "Offers" and "Requests" headers.',
+  'feature.cxob-supply-demand-values': 'CXOB: Adds supply and demand value labels.',
+  'feature.cxos-hide-delete-filled':
+    'CXOS: Hides the "Delete Filled" button when filters are hidden.',
+  'feature.cxos-hide-exchange': 'CXOS: Hides the "Exchange" column.',
+  'feature.cxpc-chart-types': 'CXPC: Adds "Smooth" and "Aligned" chart types.',
+  'feature.cxpo-auto-price': 'CXPO: Adds automatic price calculation.',
+  'feature.cxpo-bigger-buttons': 'CXPO: Makes "Buy" and "Sell" buttons bigger.',
+  'feature.cxpo-command-shortcut':
+    'CXPO: Opens the CXPO buffer by typing an exchange shortcut and a material ticker, like "a dw" or "rat mor".',
+  'feature.cxpo-order-book': 'CXPO: Adds a compact order book.',
+  'feature.cxpo-shorten-fields':
+    'CXPO: Replaces values of "Exchange" and "Material" fields with corresponding tickers.',
+  'feature.exp-expert-eta': 'EXP: Displays ETA for the next expert to appear.',
+  'feature.expand-sidebar-contract-list': 'Fully expands the contracts list in the sidebar.',
+  'feature.favicon-notification-badge':
+    'Adds a notification count badge to the browser tab favicon.',
+  'feature.finla-hide-ecd': 'FINLA: Hides the ECD row.',
+  'feature.finla-more-columns': 'FINLA: Adds columns for additional liquid asset types.',
+  'feature.flt-arrival-eta': 'FLT: Adds an arrival date to the "ETA" column.',
+  'feature.flt-flex-fuel': 'FLT: Allows the fuel column layout to better use available space.',
+  'feature.flt-flight-status-icons': 'FLT: Replaces the flight status text with arrow icons.',
+  'feature.flt-hide-transponder': 'FLT: Hides the "Transponder" column.',
+  'feature.flt-ship-condition': 'FLT: Adds a ship condition label to the "Name" column.',
+  'feature.flt-shorten-addresses': 'FLT: Shortens addresses in "Location" and "Destination".',
+  'feature.flt-shorten-cargo-capacity':
+    'FLT: Removes "t" and "m³" and converts cargo capacity label to k-notation.',
+  'feature.focus-buffers-on-click': 'Focuses buffers on click anywhere, not just the header.',
+  'feature.funny-materials': 'Improves material icon rendering.',
+  'feature.fxpo-better-current-price': 'FXPO: Sets the current price to the order book price.',
+  'feature.fxpo-maximum-lot-size':
+    'FXPO: Adds a "Maximum Lot Size" field to fill the top order in the order book.',
+  'feature.header-calculator-button':
+    'Adds a calculator button to the buffer header of LM, CX and XIT commands.',
+  'feature.header-duplicate-button': 'Adds a tile duplicate button to the buffer header.',
+  'feature.header-hide-controls-button':
+    'Adds buttons to hide and show context controls for tiles containing them.',
+  'feature.hide-ctx-name': 'Hides the current context name label (CTX).',
+  'feature.hide-form-errors': 'Hides error labels from form fields with incorrect input.',
+  'feature.hide-inactive-close-button':
+    'Hides the close button on single tile windows where it does nothing.',
+  'feature.hide-item-names': 'Hides item names and removes item grid gaps in all inventories.',
+  'feature.hide-system-chat-messages': 'Hides system messages in chats.',
+  'feature.hide-weight-volume-labels': 'Hides "Weight" and "Volume" labels in all inventories.',
+  'feature.highlight-own-exchange-orders': 'Highlights own orders in CXOB and FXOB.',
+  'feature.highlight-production-order-error':
+    'Highlights production orders with errors in PROD, PRODQ, and PRODCO.',
+  'feature.input-math': 'Evaluates math expressions in numeric text fields on Enter or Tab.',
+  'feature.inv-analysis-button':
+    'INV: Adds an Analysis button that shows an XIT STO summary pane, expandable to a full companion buffer.',
+  'feature.inv-compress-inventory-info': 'INV/SHPI: Compresses specific inventory info into a row.',
+  'feature.inv-custom-item-sorting': 'INV/SHPI: Adds custom sorting modes to inventories.',
+  'feature.inv-item-markers': 'INV/SHPI: Adds bottom-left item markers.',
+  'feature.inv-search': 'INV/SHPI: Adds a search bar to the main INV buffer.',
+  'feature.inv-ship-destination-location':
+    'INV: Shows in-flight ship destinations in the Location column.',
+  'feature.inv-ship-names': 'INV: Shows ship names in ship-owned inventory rows.',
+  'feature.inv-shorten-addresses': 'INV: Shortens addresses in the main INV command.',
+  'feature.inv-shorten-storage-types': 'INV: Shortens storage type names in the table and filters.',
+  'feature.inv-show-space-remaining':
+    'INV/SHPI: Shows the remaining weight and volume capacity of the selected store in INV and SHPI',
+  'feature.inv-shpt-condition-indicator':
+    'INV/SHPI: Adds a contract condition indicator to SHPT and BLCK items.',
+  'feature.inv-warehouse-button': 'INV: Adds a WAR context button to base inventories.',
+  'feature.item-icons': 'Adds icons to items.',
+  'feature.item-ticker-shadow': 'Adds a shadow to item tickers.',
+  'feature.lead-per-day-column':
+    'LEAD: Adds a "Per Day" column to the "Commodity Production" leaderboard.',
+  'feature.lm-clean-ads': 'LM: Hides redundant information from ads.',
+  'feature.lm-colored-buy-sell': 'LM: Colors the BUYING and SELLING in green and red respectively.',
+  'feature.lm-hide-rating': 'LM: Hides rating icon from ads.',
+  'feature.lm-highlight-own-ads': 'LM: Highlights own ads.',
+  'feature.lm-item-icons': 'LM: Adds material and shipment icons to ads.',
+  'feature.macos-antialiased-font': 'Applies antialiased smoothing to all fonts on macOS.',
+  'feature.market-context-menu': 'Right click any material to quickly see material market buttons.',
+  'feature.mat-clean-info': 'MAT: Hides "Ticker" and "Natural resource" fields.',
+  'feature.mat-linkify-category':
+    'MAT: Makes material category clickable and leading to XIT MATS with the material category.',
+  'feature.mat-refined-prun-price': 'MAT: Adds a "Refined PrUn Price" row.',
+  'feature.minimize-headers': 'Minimizes headers in CX, CONT, LM, and SYSI.',
+  'feature.mtra-auto-focus-amount': 'MTRA: Automatically focuses the amount input on buffer open.',
+  'feature.mtra-transfer-on-enter':
+    'MTRA: Triggers transfer on Enter and closes the buffer on success.',
+  'feature.mu-fix-sector-names': 'MU: Fixes sector names, for example LE => LS.',
+  'feature.nots-clean-notifications': 'NOTS: Hides redundant information from notifications.',
+  'feature.nots-material-ticker': 'NOTS: Replaces material name with material ticker.',
+  'feature.nots-notification-type-label': 'NOTS: Adds a colored notification type label.',
+  'feature.nots-ship-arrival-inventory':
+    'NOTS: Opens ship inventory on "ship arrived" notification click.',
+  'feature.other-context-notification-count':
+    'Adds a counter for notifications from other contexts in the NOTS header label.',
+  'feature.pli-cogc-label':
+    'PLI: Replaces "Chamber of Global Commerce" row label with "CoGC ({program type})".',
+  'feature.pli-warehouse-open-button':
+    'PLI: Adds an "open" button to the warehouse row when the player has a warehouse.',
+  'feature.prevent-delete-button-misclicks':
+    'Makes the "delete" button in chats work only when shift is held down.',
+  'feature.prod-burn-link': 'PROD: Adds a XIT BURN link to the context bar.',
+  'feature.prod-hide-percent': 'PROD: Hides percent value in the order list.',
+  'feature.prod-order-eta': 'PROD: Adds a finish ETA label to orders.',
+  'feature.prodco-order-eta': 'PRODCO: Adds a finish ETA label to orders.',
+  'feature.prodq-hide-government-links': 'PRODQ: Hides fee collector links.',
+  'feature.prodq-order-eta': 'PRODQ: Adds a finish ETA label to orders.',
+  'feature.prodq-queue-load': 'PRODQ: Adds a daily load percentage label to queued orders.',
+  'feature.prodq-shorten-material-links':
+    'PRODQ: Shortens material full names into their ticker with a link.',
+  'feature.prun-bugs': 'Fixes PrUn bugs.',
+  'feature.rprun-version-label': 'Adds a bottom-right "Refined PrUn version" label.',
+  'feature.screen-layout-lock': 'Adds screen locking.',
+  'feature.screen-tab-bar': 'Adds a tab bar for user screens.',
+  'feature.screen-tab-bar-folders': 'Adds folder management to the screen tab bar.',
+  'feature.search-auto-focus': 'Auto-focuses the search bar in PLI and SYSI.',
+  'feature.sfc-auto-close': 'SFC: Auto-closes the window on success.',
+  'feature.sfc-exchange-destinations':
+    'SFC: Adds commodity exchange shortcut buttons to the destination field.',
+  'feature.sfc-flight-cost': 'SFC: Shows flight cost, including fees and fuel.',
+  'feature.sfc-flight-eta': 'SFC: Adds an arrival date to the "Duration" column.',
+  'feature.shipping-per-unit-price': 'Adds a per-unit price label to ads in LM, LMA, and LMP.',
+  'feature.shorten-shpt-blck-address': 'Shortens addresses in SHPT and BLCK items.',
+  'feature.shp-repair-act':
+    'SHP: Adds a button next to "Repair" that creates an action package to buy and load the repair materials.',
+  'feature.shpf-hide-sort-options': 'SHPF: Hides inventory sort options.',
+  'feature.shpi-base-inv-button':
+    'SHPI: Adds an INV context button when the ship is landed at a base.',
+  'feature.shpi-warehouse-button':
+    'SHPI: Adds a WAR context button when the ship is landed at an address with a warehouse.',
+  'feature.sidebar-contracts-details':
+    'Adds a partner name to contracts in the sidebar on the right.',
+  'feature.sidebar-hide-zero-currencies':
+    'Hides currencies with zero balance in the right sidebar.',
+  'feature.sysi-blue-negative-value':
+    'SYSI: Makes lower negative planet values blue instead of red.',
+  'feature.table-rows-alternating-colors': 'Colors even rows in lighter color in all tables.',
+  'feature.tile-controls-background':
+    'Adds a solid color background to the top-right tile controls.',
+  'feature.unclipped-tooltips': 'Prevents tooltips from being clipped by tile boundaries.',
+  'feature.usr-subscription-level': 'USR: Adds user license info.',
+  'feature.wf-workforce-filters': 'WF: Adds filters to hide zero workforce types and consumables.',
+
+  // XIT FLT —— 命令
+  'flt.description': 'Enhanced fleet table with detailed status, cargo, fuel, and quick actions.',
+
+  // XIT FLT —— 筛选面板
+  'flt.minimize': 'Minimize',
+  'flt.active': '{0} active',
+  'flt.reset': 'reset',
+  'flt.group.shipList': 'Ship list',
+  'flt.group.flightState': 'Flight state',
+  'flt.group.columns': 'Columns',
+  'flt.group.resetTitle': 'Reset',
+  'flt.group.primarySort': 'Primary sort',
+  'flt.group.secondarySort': 'Secondary sort',
+  'flt.group.layout': 'Layout',
+  'flt.group.route': 'Route',
+  'flt.group.fuel': 'Fuel',
+  'flt.group.problemFuel': 'Problematic fuel level',
+  'flt.inFlight': 'IN FLIGHT',
+  'flt.docked': 'DOCKED',
+  'flt.filter.shipClass': 'Ship class',
+  'flt.filter.etaBucket': 'ETA bucket',
+  'flt.filter.inventorySize': 'Inventory size',
+  'flt.filter.cargoState': 'Cargo state',
+  'flt.filter.condition': 'Condition',
+  'value.DOCKED': 'DOCKED',
+  'value.EMPTY': 'EMPTY',
+  'value.PARTIAL': 'PARTIAL',
+  'value.FULL': 'FULL',
+  'flt.col.Name': 'NAME',
+  'flt.col.ShipClass': 'CLASS',
+  'flt.col.Size': 'SIZE',
+  'flt.col.Cargo': 'CARGO',
+  'flt.col.CargoSize': 'CARGO/SIZE',
+  'flt.col.Time': 'ETA',
+  'flt.col.Repair': 'REPAIR',
+  'flt.col.Fuel': 'FUEL',
+  'flt.col.Problems': 'PROBLEMS',
+  'flt.resetAll': 'RESET ALL FILTERS',
+  'flt.sort.none': 'NONE',
+  'flt.sort.name': 'NAME',
+  'flt.sort.shipClass': 'SHIPCLASS',
+  'flt.sort.cargo': 'CARGO',
+  'flt.sort.status': 'STATUS',
+  'flt.sort.eta': 'ETA',
+  'flt.sort.repair': 'REPAIR',
+  'flt.sort.size': 'SIZE',
+  'flt.sort.fuel': 'FUEL',
+  'flt.layout.compact': 'COMPACT',
+  'flt.layout.whitespace': 'WHITESPACE',
+  'flt.layout.cargo': 'CARGO',
+  'flt.layout.legacy': 'LEGACY',
+  'flt.hideCxReturns': 'HIDE CX RETURNS',
+
+  // XIT FLT —— 表头
+  'flt.head.name': 'Name',
+  'flt.head.class': 'Class',
+  'flt.head.size': 'Size',
+  'flt.head.cargo': 'Cargo',
+  'flt.head.cargoSize': 'Cargo/Size',
+  'flt.head.status': 'Status',
+  'flt.head.eta': 'ETA',
+  'flt.head.repair': 'Repair',
+  'flt.head.problems': 'Problems',
+  'flt.fuelButton': 'Fuel',
+  'flt.openInventory': 'Open inventory',
+  'flt.openFlightControl': 'Open flight control',
+
+  // 新功能 —— 一键全部加油
+  'value.All Locations': 'All Locations',
+  'act.refuel.allLocationsDesc': 'Refuel all docked ships from the storage at their location',
+  'act.refuel.params': 'AUTO (all locations, no ACT clicks)',
+
+  // 新功能 —— 补给时勾选生产原料
+  'act.resupply.pick': 'Production materials',
+  'act.resupply.pickTip':
+    'Untick the production materials that you do not want to resupply. Consumables are always included. The selection is remembered for each planet.',
+  'act.resupply.pickNone': 'No production materials',
 };

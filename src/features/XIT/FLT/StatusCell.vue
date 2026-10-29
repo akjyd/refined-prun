@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { computed } from 'vue';
 import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
@@ -44,13 +45,13 @@ const posData = computed(() => {
         inline
         :command="posData.invCommand"
         :class="$style.link"
-        data-tooltip="Open inventory"
+        :data-tooltip="t('flt.openInventory')"
         data-tooltip-position="top">
         {{ '\u2612' }}
       </PrunLink>
       <span
         :class="$style.link"
-        data-tooltip="Open flight control"
+        :data-tooltip="t('flt.openFlightControl')"
         data-tooltip-position="top"
         @click.stop="showBuffer(`SFC ${ship?.registration}`)">
         {{ statusIcon }}

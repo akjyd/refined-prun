@@ -5,7 +5,13 @@ import Active from '@src/components/forms/Active.vue';
 import NumberInput from '@src/components/forms/NumberInput.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import { Config, MaterialFilter } from '@src/features/XIT/ACT/material-groups/resupply/config';
-import { computeResupplyBill } from '@src/features/XIT/ACT/material-groups/resupply/bill';
+import {
+  computeResupplyBill,
+  getExcludedProduction,
+  getProductionOnlyTickers,
+  setExcludedProduction,
+} from '@src/features/XIT/ACT/material-groups/resupply/bill';
+import RadioItem from '@src/components/forms/RadioItem.vue';
 import { maxFittingDays } from '@src/features/XIT/ACT/material-groups/resupply/fit-days';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import {
@@ -68,8 +74,26 @@ const effectiveDays = computed(() => {
   return isNaN(parsed) ? undefined : parsed;
 });
 
+const productionTickers = computed(() => getProductionOnlyTickers(effectivePlanet.value));
+const excluded = computed(() => getExcludedProduction(effectivePlanet.value));
+
+function isPicked(ticker: string) {
+  return !excluded.value.includes(ticker);
+}
+
+function setPicked(ticker: string, picked: boolean) {
+  const rest = excluded.value.filter(x => x !== ticker);
+  setExcludedProduction(effectivePlanet.value, picked ? rest : [...rest, ticker]);
+}
+
 const bill = computed(() =>
-  computeResupplyBill(data, effectivePlanet.value, effectiveDays.value, materialFilter.value),
+  computeResupplyBill(
+    data,
+    effectivePlanet.value,
+    effectiveDays.value,
+    materialFilter.value,
+    excluded.value,
+  ),
 );
 
 const totals = computed(() => {
@@ -91,7 +115,7 @@ function fitToShip(maxWeight: number, maxVolume: number) {
     return;
   }
   config.days = maxFittingDays(days => {
-    const entries = computeResupplyBill(data, planet, days, materialFilter.value)!;
+    const entries = computeResupplyBill(data, planet, days, materialFilter.value, excluded.value)!;
     const t = billTotals(entries);
     return t.weight <= maxWeight && t.volume <= maxVolume;
   });
@@ -133,6 +157,22 @@ const shipName = computed(() => {
   <Active :label="t('act.resupply.materials')" :tooltip="t('act.resupply.materialsTip')">
     <SelectInput v-model="materialFilter" :options="tOptions(materialFilterOptions)" />
   </Active>
+  <Active
+    v-if="materialFilter !== 'Workforce'"
+    :label="t('act.resupply.pick')"
+    :tooltip="t('act.resupply.pickTip')">
+    <div v-if="productionTickers.length > 0" :class="$style.pick">
+      <RadioItem
+        v-for="ticker in productionTickers"
+        :key="ticker"
+        :model-value="isPicked(ticker)"
+        horizontal
+        @update:model-value="v => setPicked(ticker, v)">
+        {{ ticker }}
+      </RadioItem>
+    </div>
+    <span v-else>{{ t('act.resupply.pickNone') }}</span>
+  </Active>
   <div :class="$style.totals">
     <template v-if="totals">
       <span>{{ t('act.run.totalWeight') }}</span>
@@ -166,6 +206,12 @@ const shipName = computed(() => {
 <style module>
 .totals {
   margin: 4px 4px 4px 8px;
+}
+
+.pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
 }
 
 .value {

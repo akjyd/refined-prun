@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import ActionBar from '@src/components/ActionBar.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
@@ -91,22 +92,18 @@ function deleteRule(rule: [string, number, number]) {
 
 <template>
   <SectionHeader>
-    Override Default Buffer Sizes
-    <Tooltip
-      position="bottom"
-      :class="$style.tooltip"
-      tooltip="The first matched rule will be used. If no rules match, the default buffer size will be used.
-        You can reorganize the rules by dragging them up and down." />
+    {{ t('set.bfr.title') }}
+    <Tooltip position="bottom" :class="$style.tooltip" :tooltip="t('set.bfr.titleTip')" />
   </SectionHeader>
   <ActionBar>
     <template v-if="picking">
       <PrunButton neutral>
-        {{ pickedBuffer ? 'CLICK TO PICK THIS BUFFER' : 'CLICK ANYWHERE TO CANCEL' }}
+        {{ pickedBuffer ? t('set.bfr.pickThis') : t('set.bfr.cancel') }}
       </PrunButton>
     </template>
     <template v-else>
-      <PrunButton primary @click="picking = true">PICK BUFFER</PrunButton>
-      <PrunButton primary @click="addNewRule">ADD NEW RULE</PrunButton>
+      <PrunButton primary @click="picking = true">{{ t('set.bfr.pick') }}</PrunButton>
+      <PrunButton primary @click="addNewRule">{{ t('set.bfr.addRule') }}</PrunButton>
     </template>
   </ActionBar>
   <table>
@@ -115,20 +112,18 @@ function deleteRule(rule: [string, number, number]) {
         <GripHeaderCell />
         <th>
           <InlineFlex>
-            Command
-            <Tooltip
-              position="right"
-              tooltip="Can be a full command, a part of it, or a regular expression. Case-insensitive." />
+            {{ t('set.bfr.command') }}
+            <Tooltip position="right" :tooltip="t('set.bfr.commandTip')" />
           </InlineFlex>
         </th>
-        <th>Width</th>
-        <th>Height</th>
+        <th>{{ t('set.bfr.width') }}</th>
+        <th>{{ t('set.bfr.height') }}</th>
         <th />
       </tr>
     </thead>
     <tbody v-if="userData.settings.buffers.length === 0">
       <tr>
-        <td colspan="5">Nothing here yet.</td>
+        <td colspan="5">{{ t('set.bfr.empty') }}</td>
       </tr>
     </tbody>
     <template v-else>
@@ -151,7 +146,7 @@ function deleteRule(rule: [string, number, number]) {
             </div>
           </td>
           <td>
-            <PrunButton danger @click="deleteRule(rule)">DELETE</PrunButton>
+            <PrunButton danger @click="deleteRule(rule)">{{ t('act.common.delete') }}</PrunButton>
           </td>
         </tr>
       </tbody>

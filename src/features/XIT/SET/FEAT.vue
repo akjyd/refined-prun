@@ -3,6 +3,7 @@ const changed = reactive({});
 </script>
 
 <script setup lang="ts">
+import { t, tFeature } from '@src/i18n';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Active from '@src/components/forms/Active.vue';
 import TextInput from '@src/components/forms/TextInput.vue';
@@ -45,7 +46,10 @@ const sorted = available.sort((a, b) => {
 
 const searchIndex = new Map<string, string>();
 for (const feature of sorted) {
-  searchIndex.set(feature.id, `${feature.id} ${feature.description}`.toLowerCase());
+  searchIndex.set(
+    feature.id,
+    `${feature.id} ${feature.description} ${tFeature(feature.id, '')}`.toLowerCase(),
+  );
 }
 
 const searchQuery = ref('');
@@ -53,7 +57,7 @@ const searchQuery = ref('');
 const filtered = computed(() => {
   const keywords = searchQuery.value
     .toLowerCase()
-    .replaceAll(/\W/g, ' ')
+    .replaceAll(/[^\p{L}\p{N}_-]/gu, ' ')
     .split(/\s+/)
     .filter(Boolean);
   if (keywords.length === 0) {
@@ -100,26 +104,26 @@ async function onChangeModeClick() {
 <template>
   <div>
     <form :class="$style.form">
-      <Commands label="Change feature set">
+      <Commands :label="t('set.feat.changeSet')">
         <PrunButton primary @click="onChangeModeClick">
-          SWITCH TO {{ isFullMode ? 'BASIC' : 'FULL' }}
+          {{ t('set.feat.switchTo', isFullMode ? 'BASIC' : 'FULL') }}
         </PrunButton>
       </Commands>
-      <Active :class="$style.warningRoot" label="Search">
+      <Active :class="$style.warningRoot" :label="t('set.feat.search')">
         <TextInput v-model="searchQuery" />
         <PrunButton
           v-if="!isEmpty(Object.keys(changed))"
           primary
           :class="$style.warning"
           @click="onReloadClick">
-          RESTART THE GAME TO APPLY CHANGES
+          {{ t('set.feat.restart') }}
         </PrunButton>
       </Active>
     </form>
     <SectionHeader>
-      Features: {{ sorted.length }}
-      <span v-if="disabledCount > 0">({{ disabledCount }} off) </span>
-      <span v-if="!isFullMode">(+{{ advanced.length }} more available in full mode)</span>
+      {{ t('set.feat.count', sorted.length) }}
+      <span v-if="disabledCount > 0">{{ t('set.feat.off', disabledCount) }}</span>
+      <span v-if="!isFullMode">{{ t('set.feat.more', advanced.length) }}</span>
     </SectionHeader>
     <table>
       <tbody>
@@ -128,14 +132,14 @@ async function onChangeModeClick() {
             <div :class="[C.RadioItem.indicator, $style.indicator, toggleClass(feature.id)]" />
             <div>
               <div :class="$style.id">{{ feature.id }}</div>
-              <div :class="$style.description">{{ feature.description }}</div>
+              <div :class="$style.description">{{ tFeature(feature.id, feature.description) }}</div>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
     <template v-if="!isFullMode && advanced.length > 0">
-      <SectionHeader>Full Mode Features</SectionHeader>
+      <SectionHeader>{{ t('set.feat.fullTitle') }}</SectionHeader>
       <table>
         <tbody>
           <tr v-for="feature in advanced" :key="feature.id">
@@ -143,7 +147,9 @@ async function onChangeModeClick() {
               <div :class="[C.RadioItem.indicator, C.RadioItem.disabled, $style.indicator]" />
               <div>
                 <div :class="$style.id">{{ feature.id }}</div>
-                <div :class="$style.description">{{ feature.description }}</div>
+                <div :class="$style.description">{{
+                  tFeature(feature.id, feature.description)
+                }}</div>
               </div>
             </td>
           </tr>

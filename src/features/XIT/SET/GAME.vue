@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Tooltip from '@src/components/Tooltip.vue';
@@ -59,15 +60,15 @@ const timeFormat = computed({
 
 const exchangeChartTypes: { label: string; value: UserData.ExchangeChartType }[] = [
   {
-    label: 'Smooth',
+    label: t('set.opt.smooth'),
     value: 'SMOOTH',
   },
   {
-    label: 'Aligned',
+    label: t('set.opt.aligned'),
     value: 'ALIGNED',
   },
   {
-    label: 'Raw',
+    label: t('set.opt.raw'),
     value: 'RAW',
   },
 ];
@@ -76,7 +77,7 @@ const currencySettings = computed(() => userData.settings.currency);
 
 const currencyPresets: { label: string; value: UserData.CurrencyPreset }[] = [
   {
-    label: 'Default',
+    label: t('set.opt.default'),
     value: 'DEFAULT',
   },
   {
@@ -96,29 +97,29 @@ const currencyPresets: { label: string; value: UserData.CurrencyPreset }[] = [
     value: 'NCC',
   },
   {
-    label: 'Custom',
+    label: t('set.opt.custom'),
     value: 'CUSTOM',
   },
 ];
 
 const currencyPosition: { label: string; value: UserData.CurrencyPosition }[] = [
   {
-    label: 'After',
+    label: t('set.opt.after'),
     value: 'AFTER',
   },
   {
-    label: 'Before',
+    label: t('set.opt.before'),
     value: 'BEFORE',
   },
 ];
 
 const currencySpacing: { label: string; value: UserData.CurrencySpacing }[] = [
   {
-    label: 'Has space',
+    label: t('set.opt.hasSpace'),
     value: 'HAS_SPACE',
   },
   {
-    label: 'No space',
+    label: t('set.opt.noSpace'),
     value: 'NO_SPACE',
   },
 ];
@@ -155,8 +156,7 @@ async function restoreBackupAndReload(ev: Event, backup: UserDataBackup) {
       window.location.reload();
     },
     {
-      message:
-        'Are you sure you want to restore this backup? This will overwrite your current data.',
+      message: t('set.game.restoreConfirm'),
     },
   );
 }
@@ -175,70 +175,57 @@ function confirmResetAllData(ev: Event) {
 </script>
 
 <template>
-  <SectionHeader>Appearance</SectionHeader>
+  <SectionHeader>{{ t('set.game.appearance') }}</SectionHeader>
   <form>
-    <Active label="Time format">
+    <Active :label="t('set.game.timeFormat')">
       <SelectInput v-model="timeFormat" :options="timeFormats" />
     </Active>
-    <Active label="Default CX Chart Type">
+    <Active :label="t('set.game.chartType')">
       <SelectInput v-model="userData.settings.defaultChartType" :options="exchangeChartTypes" />
     </Active>
   </form>
   <SectionHeader>
-    Currency Symbol
-    <Tooltip
-      :class="$style.tooltip"
-      tooltip="Currency symbol used when displaying money values.
-       Only shown in UI added by Refined PrUn." />
+    {{ t('set.game.currency') }}
+    <Tooltip :class="$style.tooltip" :tooltip="t('set.game.currencyTip')" />
   </SectionHeader>
   <form>
-    <Active label="Symbol">
+    <Active :label="t('set.game.symbol')">
       <SelectInput v-model="currencySettings.preset" :options="currencyPresets" />
     </Active>
-    <Active v-if="currencySettings.preset === 'CUSTOM'" label="Custom symbol">
+    <Active v-if="currencySettings.preset === 'CUSTOM'" :label="t('set.game.customSymbol')">
       <TextInput v-model="currencySettings.custom" />
     </Active>
-    <Active v-if="currencySettings.preset !== 'DEFAULT'" label="Position">
+    <Active v-if="currencySettings.preset !== 'DEFAULT'" :label="t('set.game.position')">
       <SelectInput v-model="currencySettings.position" :options="currencyPosition" />
     </Active>
     <Active
       v-if="currencySettings.preset !== 'DEFAULT'"
-      label="Spacing"
-      tooltip="The space between symbol and value.">
+      :label="t('set.game.spacing')"
+      :tooltip="t('set.game.spacingTip')">
       <SelectInput v-model="currencySettings.spacing" :options="currencySpacing" />
     </Active>
   </form>
-  <SectionHeader>Burn Settings</SectionHeader>
+  <SectionHeader>{{ t('set.game.burn') }}</SectionHeader>
   <form>
-    <Active
-      label="Red"
-      tooltip="Threshold for red consumable level in burn calculations (in days).">
+    <Active :label="t('set.game.red')" :tooltip="t('set.game.redTip')">
       <NumberInput v-model="userData.settings.burn.red" float />
     </Active>
-    <Active
-      label="Yellow"
-      tooltip="Threshold for yellow consumable level in burn calculations (in days).">
+    <Active :label="t('set.game.yellow')" :tooltip="t('set.game.yellowTip')">
       <NumberInput v-model="userData.settings.burn.yellow" float />
     </Active>
-    <Active
-      label="Resupply"
-      tooltip="Default target amount of supplied days for the 'Need' column in XIT BURN.
-       Can be overridden per planet in XIT PLS.">
+    <Active :label="t('set.game.resupply')" :tooltip="t('set.game.resupplyTip')">
       <NumberInput v-model="userData.settings.burn.resupply" float />
     </Active>
   </form>
   <SectionHeader>
-    Left Sidebar Buttons
-    <Tooltip
-      :class="$style.tooltip"
-      tooltip="Create hotkeys on the left sidebar.
-         The first value is what will be displayed, the second is the command." />
+    {{ t('set.game.sidebar') }}
+    <Tooltip :class="$style.tooltip" :tooltip="t('set.game.sidebarTip')" />
   </SectionHeader>
   <form v-draggable="[userData.settings.sidebar, grip.draggable]">
     <Active
       v-for="(button, i) in userData.settings.sidebar"
       :key="objectId(button)"
-      :label="`Button ${i + 1}`"
+      :label="t('set.game.buttonN', i + 1)"
       :class="$style.sidebarRow">
       <div :class="$style.sidebarInputPair">
         <GripChar :class="[$style.grip, grip.class]" />
@@ -250,38 +237,40 @@ function confirmResetAllData(ev: Event) {
   </form>
   <form>
     <Commands>
-      <PrunButton primary @click="confirmResetSidebar">RESET</PrunButton>
-      <PrunButton primary @click="addSidebarButton">ADD NEW</PrunButton>
+      <PrunButton primary @click="confirmResetSidebar">{{ t('set.game.reset') }}</PrunButton>
+      <PrunButton primary @click="addSidebarButton">{{ t('set.game.addNew') }}</PrunButton>
     </Commands>
   </form>
-  <SectionHeader>Import/Export</SectionHeader>
+  <SectionHeader>{{ t('set.game.importExport') }}</SectionHeader>
   <form>
     <Commands>
-      <PrunButton primary @click="importUserDataAndReload">Import User Data</PrunButton>
-      <PrunButton primary @click="exportUserData">Export User Data</PrunButton>
+      <PrunButton primary @click="importUserDataAndReload">{{ t('set.game.import') }}</PrunButton>
+      <PrunButton primary @click="exportUserData">{{ t('set.game.export') }}</PrunButton>
     </Commands>
   </form>
   <template v-if="backups.length > 0">
-    <SectionHeader>Backups</SectionHeader>
+    <SectionHeader>{{ t('set.game.backups') }}</SectionHeader>
     <form>
       <Commands
         v-for="backup in backups"
         :key="backup.timestamp"
         :label="ddmmyyyy(backup.timestamp) + ' ' + hhmm(backup.timestamp)">
         <PrunButton primary @click="downloadBackup(backup.data, backup.timestamp)">
-          Export
+          {{ t('set.game.backupExport') }}
         </PrunButton>
         <PrunButton primary @click="restoreBackupAndReload($event, backup.data)">
-          Restore
+          {{ t('set.game.backupRestore') }}
         </PrunButton>
-        <PrunButton danger @click="confirmDeleteBackup($event, backup)">Delete</PrunButton>
+        <PrunButton danger @click="confirmDeleteBackup($event, backup)">{{
+          t('set.game.backupDelete')
+        }}</PrunButton>
       </Commands>
     </form>
   </template>
-  <SectionHeader>Danger Zone</SectionHeader>
+  <SectionHeader>{{ t('set.game.danger') }}</SectionHeader>
   <form>
     <Commands>
-      <PrunButton danger @click="confirmResetAllData">Reset All Data</PrunButton>
+      <PrunButton danger @click="confirmResetAllData">{{ t('set.game.resetAll') }}</PrunButton>
     </Commands>
   </form>
 </template>

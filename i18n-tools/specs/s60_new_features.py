@@ -2,7 +2,6 @@ from tr import S, E
 
 S('新功能 —— 一键关闭')
 E('feat.closeAll.label', 'CLOSE ALL', '一键关闭')
-E('feat.closeAll.tooltip', 'Close all floating windows, including minimized ones.', '关闭所有浮动窗口（包括最小化的）。')
 
 S('新功能 —— 飞船维修 ACT（SHP）')
 E('shipRepair.button', 'REPAIR ACT', '生成维修ACT')

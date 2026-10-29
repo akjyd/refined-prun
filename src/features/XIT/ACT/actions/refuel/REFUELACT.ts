@@ -7,5 +7,6 @@ xit.add({
   command: 'REFUELACT',
   name: t('act.refuel.title'),
   description: t('act.refuel.cmdDesc'),
+  optionalParameters: t('act.refuel.params'),
   component: () => RefuelActWindow,
 });

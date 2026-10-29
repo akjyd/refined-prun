@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { useXitParameters } from '@src/hooks/use-xit-parameters';
 import Tabs, { Tab } from '@src/components/Tabs.vue';
 import GAME from '@src/features/XIT/SET/GAME.vue';
@@ -10,22 +11,22 @@ import ACT from '@src/features/XIT/SET/ACT.vue';
 const tabs: Tab[] = [
   {
     id: 'GAME',
-    label: 'Gameplay',
+    label: t('set.tab.gameplay'),
     component: GAME,
   },
   {
     id: 'FEAT',
-    label: 'Features',
+    label: t('set.tab.features'),
     component: FEAT,
   },
   {
     id: 'FIN',
-    label: 'Financial',
+    label: t('set.tab.financial'),
     component: FIN,
   },
   {
     id: 'BFR',
-    label: 'Buffers',
+    label: t('set.tab.buffers'),
     component: BFR,
   },
   {

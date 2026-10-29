@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t, tValue } from '@src/i18n';
 import { computed } from 'vue';
 import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
@@ -387,38 +388,50 @@ const layoutClass = computed(() => {
 
 const filterSymbol = computed(() => (showFilters.value ? '-' : '+'));
 
+const sortLabels: Record<string, string> = {
+  none: t('flt.sort.none'),
+  name: t('flt.sort.name'),
+  shipClass: t('flt.sort.shipClass'),
+  cargo: t('flt.sort.cargo'),
+  status: t('flt.sort.status'),
+  eta: t('flt.sort.eta'),
+  repair: t('flt.sort.repair'),
+  size: t('flt.sort.size'),
+  fuel: t('flt.sort.fuel'),
+};
+
 const optionFilterGroups = computed<MultiOptionFilterGroup[]>(() => [
   {
     key: 'ship-class',
-    title: 'Ship class',
+    title: t('flt.filter.shipClass'),
     options: shipClassOptions.value,
     selected: shipClassFilters.value,
     onToggle: onShipClassClick,
   },
   {
     key: 'eta-bucket',
-    title: 'ETA bucket',
+    title: t('flt.filter.etaBucket'),
     options: etaOptions,
     selected: etaFilters.value,
     onToggle: onEtaClick,
   },
   {
     key: 'inventory-size',
-    title: 'Inventory size',
+    title: t('flt.filter.inventorySize'),
     options: inventorySizeOptions.value,
     selected: inventorySizeFilters.value,
     onToggle: onInventorySizeClick,
   },
   {
     key: 'cargo-state',
-    title: 'Cargo state',
+    title: t('flt.filter.cargoState'),
     options: cargoStateOptions,
     selected: cargoStateFilters.value,
     onToggle: onCargoStateClick,
   },
   {
     key: 'condition',
-    title: 'Condition',
+    title: t('flt.filter.condition'),
     options: conditionOptions,
     selected: conditionFilters.value,
     onToggle: onConditionClick,
@@ -761,7 +774,7 @@ function getCargoState(cargoRatio: number) {
   <div v-else :class="$style.content">
     <div :class="[C.FormComponent.containerPassive, C.forms.passive, C.forms.formComponent]">
       <label :class="[C.FormComponent.label, C.fonts.fontRegular, C.type.typeRegular]">
-        Minimize
+        {{ t('flt.minimize') }}
       </label>
       <div :class="[C.FormComponent.input, C.forms.input]">
         <div>
@@ -773,18 +786,18 @@ function getCargoState(cargoRatio: number) {
     <div v-if="showFilters" :class="$style.filterPanel">
       <div :class="$style.filterMeta">
         <span v-if="activeFilterCount > 0" :class="$style.activeCount">
-          {{ activeFilterCount }} active
+          {{ t('flt.active', activeFilterCount) }}
         </span>
         <span
           v-if="activeFilterCount > 0"
           :class="[C.Link.link, $style.clearFilters]"
           @click="clearFilters">
-          reset
+          {{ t('flt.reset') }}
         </span>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Ship list</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.shipList') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
           <RadioItem v-model="showStlShips" horizontal>STL</RadioItem>
           <RadioItem v-model="showFtlShips" horizontal>FTL</RadioItem>
@@ -792,10 +805,10 @@ function getCargoState(cargoRatio: number) {
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Flight state</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.flightState') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
-          <RadioItem v-model="showInFlightShips" horizontal>IN FLIGHT</RadioItem>
-          <RadioItem v-model="showNotInFlightShips" horizontal>DOCKED</RadioItem>
+          <RadioItem v-model="showInFlightShips" horizontal>{{ t('flt.inFlight') }}</RadioItem>
+          <RadioItem v-model="showNotInFlightShips" horizontal>{{ t('flt.docked') }}</RadioItem>
         </div>
       </div>
 
@@ -808,37 +821,37 @@ function getCargoState(cargoRatio: number) {
             :model-value="isOptionSelected(group.selected, option)"
             horizontal
             @update:model-value="group.onToggle(option)">
-            {{ option }}
+            {{ tValue(option) }}
           </RadioItem>
         </div>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Columns</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.columns') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
-          <RadioItem v-model="showColName" horizontal>NAME</RadioItem>
-          <RadioItem v-model="showColShipClass" horizontal>CLASS</RadioItem>
-          <RadioItem v-model="showColSize" horizontal>SIZE</RadioItem>
-          <RadioItem v-model="showColCargo" horizontal>CARGO</RadioItem>
-          <RadioItem v-model="showColCargoSize" horizontal>CARGO/SIZE</RadioItem>
-          <RadioItem v-model="showColTime" horizontal>ETA</RadioItem>
-          <RadioItem v-model="showColRepair" horizontal>REPAIR</RadioItem>
-          <RadioItem v-model="showColFuel" horizontal>FUEL</RadioItem>
-          <RadioItem v-model="showColProblems" horizontal>PROBLEMS</RadioItem>
+          <RadioItem v-model="showColName" horizontal>{{ t('flt.col.Name') }}</RadioItem>
+          <RadioItem v-model="showColShipClass" horizontal>{{ t('flt.col.ShipClass') }}</RadioItem>
+          <RadioItem v-model="showColSize" horizontal>{{ t('flt.col.Size') }}</RadioItem>
+          <RadioItem v-model="showColCargo" horizontal>{{ t('flt.col.Cargo') }}</RadioItem>
+          <RadioItem v-model="showColCargoSize" horizontal>{{ t('flt.col.CargoSize') }}</RadioItem>
+          <RadioItem v-model="showColTime" horizontal>{{ t('flt.col.Time') }}</RadioItem>
+          <RadioItem v-model="showColRepair" horizontal>{{ t('flt.col.Repair') }}</RadioItem>
+          <RadioItem v-model="showColFuel" horizontal>{{ t('flt.col.Fuel') }}</RadioItem>
+          <RadioItem v-model="showColProblems" horizontal>{{ t('flt.col.Problems') }}</RadioItem>
         </div>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Reset</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.resetTitle') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
           <RadioItem :model-value="false" horizontal @update:model-value="clearFilters">
-            RESET ALL FILTERS
+            {{ t('flt.resetAll') }}
           </RadioItem>
         </div>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Primary sort</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.primarySort') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
           <RadioItem
             v-for="key in [
@@ -856,14 +869,14 @@ function getCargoState(cargoRatio: number) {
             :model-value="primarySortKey === key"
             horizontal
             @update:model-value="setPrimarySort(key as SortKey)">
-            {{ key.toUpperCase() }}
+            {{ sortLabels[key] }}
             {{ primarySortKey === key && key !== 'none' ? getSortIndicator(key as SortKey) : '' }}
           </RadioItem>
         </div>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Secondary sort</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.secondarySort') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
           <RadioItem
             v-for="key in [
@@ -881,51 +894,51 @@ function getCargoState(cargoRatio: number) {
             :model-value="secondarySortKey === key"
             horizontal
             @update:model-value="setSecondarySort(key as SortKey)">
-            {{ key.toUpperCase() }}
+            {{ sortLabels[key] }}
             {{ secondarySortKey === key && key !== 'none' ? getSortIndicator(key as SortKey) : '' }}
           </RadioItem>
         </div>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Layout</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.layout') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
           <RadioItem
             :model-value="layoutMode === 'compact'"
             horizontal
             @update:model-value="layoutMode = 'compact'">
-            COMPACT
+            {{ t('flt.layout.compact') }}
           </RadioItem>
           <RadioItem
             :model-value="layoutMode === 'whitespace'"
             horizontal
             @update:model-value="layoutMode = 'whitespace'">
-            WHITESPACE
+            {{ t('flt.layout.whitespace') }}
           </RadioItem>
           <RadioItem
             :model-value="layoutMode === 'cargo'"
             horizontal
             @update:model-value="layoutMode = 'cargo'">
-            CARGO
+            {{ t('flt.layout.cargo') }}
           </RadioItem>
           <RadioItem
             :model-value="layoutMode === 'legacy'"
             horizontal
             @update:model-value="layoutMode = 'legacy'">
-            LEGACY
+            {{ t('flt.layout.legacy') }}
           </RadioItem>
         </div>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Route</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.route') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
-          <RadioItem v-model="hideReturningToCx" horizontal>HIDE CX RETURNS</RadioItem>
+          <RadioItem v-model="hideReturningToCx" horizontal>{{ t('flt.hideCxReturns') }}</RadioItem>
         </div>
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Fuel</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.fuel') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
           <RadioItem
             v-for="threshold in fuelAlertOptions"
@@ -939,7 +952,7 @@ function getCargoState(cargoRatio: number) {
       </div>
 
       <div :class="$style.filterGroup">
-        <div :class="$style.filterTitle">Problematic fuel level</div>
+        <div :class="$style.filterTitle">{{ t('flt.group.problemFuel') }}</div>
         <div :class="C.ComExOrdersPanel.filter">
           <RadioItem
             v-for="threshold in fuelAlertOptions"
@@ -960,7 +973,7 @@ function getCargoState(cargoRatio: number) {
             v-if="showColName"
             :class="[$style.headerCell, $style.sortable]"
             @click="setSort('name')">
-            Name
+            {{ t('flt.head.name') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('name'),
@@ -973,7 +986,7 @@ function getCargoState(cargoRatio: number) {
             v-if="showColShipClass"
             :class="[$style.headerCell, $style.sortable, $style.colShipClass]"
             @click="setSort('shipClass')">
-            Class
+            {{ t('flt.head.class') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('shipClass'),
@@ -986,7 +999,7 @@ function getCargoState(cargoRatio: number) {
             v-if="showColSize"
             :class="[$style.headerCell, $style.sortable, $style.colSize]"
             @click="setSort('size')">
-            Size
+            {{ t('flt.head.size') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('size'),
@@ -999,7 +1012,7 @@ function getCargoState(cargoRatio: number) {
             v-if="showColCargo"
             :class="[$style.headerCell, $style.sortable]"
             @click="setSort('cargo')">
-            Cargo
+            {{ t('flt.head.cargo') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('cargo'),
@@ -1012,7 +1025,7 @@ function getCargoState(cargoRatio: number) {
             v-if="showColCargoSize"
             :class="[$style.headerCell, $style.sortable]"
             @click="setSort('cargo')">
-            Cargo/Size
+            {{ t('flt.head.cargoSize') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('cargo'),
@@ -1024,7 +1037,7 @@ function getCargoState(cargoRatio: number) {
           <th
             :class="[$style.headerCell, $style.sortable, $style.colStatus]"
             @click="setSort('status')">
-            Status
+            {{ t('flt.head.status') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('status'),
@@ -1037,7 +1050,7 @@ function getCargoState(cargoRatio: number) {
             v-if="showColTime"
             :class="[$style.headerCell, $style.sortable, $style.colTime]"
             @click="setSort('eta')">
-            ETA
+            {{ t('flt.head.eta') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('eta'),
@@ -1050,7 +1063,7 @@ function getCargoState(cargoRatio: number) {
             v-if="showColRepair"
             :class="[$style.headerCell, $style.sortable, $style.colRepair]"
             @click="setSort('repair')">
-            Repair
+            {{ t('flt.head.repair') }}
             <span
               :class="{
                 [$style.sortPrimary]: isPrimarySort('repair'),
@@ -1060,7 +1073,7 @@ function getCargoState(cargoRatio: number) {
             </span>
           </th>
           <th v-if="showColFuel" :class="[$style.headerCell, $style.colFuel]">
-            <FuelHeaderButton @refuel="showBuffer('XIT REFUELACT')">
+            <FuelHeaderButton @refuel="showBuffer('XIT REFUELACT AUTO')">
               <span
                 :class="{
                   [$style.sortPrimary]: isPrimarySort('fuel'),
@@ -1073,7 +1086,7 @@ function getCargoState(cargoRatio: number) {
           <th
             v-if="showColProblems && hasAnyProblems"
             :class="[$style.headerCell, $style.colProblems]">
-            Problems
+            {{ t('flt.head.problems') }}
           </th>
         </tr>
       </thead>

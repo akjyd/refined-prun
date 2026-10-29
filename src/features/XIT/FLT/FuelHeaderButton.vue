@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import PrunButton from '@src/components/PrunButton.vue';
 
 const emit = defineEmits<{ refuel: [] }>();
@@ -6,7 +7,9 @@ const emit = defineEmits<{ refuel: [] }>();
 
 <template>
   <span :class="$style.container">
-    <PrunButton dark inline :class="$style.button" @click.stop="emit('refuel')"> Fuel </PrunButton>
+    <PrunButton dark inline :class="$style.button" @click.stop="emit('refuel')">
+      {{ t('flt.fuelButton') }}
+    </PrunButton>
     <slot />
   </span>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import SectionHeader from '@src/components/SectionHeader.vue';
 import Tooltip from '@src/components/Tooltip.vue';
 import Commands from '@src/components/forms/Commands.vue';
@@ -24,7 +25,7 @@ const showBackupMerge = ref(false);
 function confirmDataPointDelete(ev: Event, index: number) {
   index = balanceHistory.value.length - index - 1;
   showConfirmationOverlay(ev, () => deleteBalanceHistoryDataPoint(index), {
-    message: `You are about to delete a historical data point. Do you want to continue?`,
+    message: t('set.fin.deletePointConfirm'),
   });
 }
 
@@ -39,7 +40,7 @@ function deleteBalanceHistoryDataPoint(index: number) {
 
 function confirmAllDataDelete(ev: Event) {
   showConfirmationOverlay(ev, clearBalanceHistory, {
-    message: `You are about to clear all historical financial data. Do you want to continue?`,
+    message: t('set.fin.clearConfirm'),
   });
 }
 
@@ -65,44 +66,31 @@ function onIgnoredMaterialsSubmit() {
 </script>
 
 <template>
-  <SectionHeader>Equity Mode</SectionHeader>
-  <Active
-    label="Equity Mode"
-    tooltip="In this mode, equity includes the market value of all assets,
-     including ships, HQ upgrades, and ARC. Not recommended for beginners,
-     as starter ships have a disproportionate value compared to starting resources.
-     Note that even with this mode disabled, your financial data history is still
-     collected in full, so you can always switch to full equity mode later."
-    tooltip-position="bottom">
-    <RadioItem v-model="userData.fullEquityMode">full equity</RadioItem>
+  <SectionHeader>{{ t('set.fin.equity') }}</SectionHeader>
+  <Active :label="t('set.fin.equity')" :tooltip="t('set.fin.equityTip')" tooltip-position="bottom">
+    <RadioItem v-model="userData.fullEquityMode">{{ t('set.fin.equityToggle') }}</RadioItem>
   </Active>
-  <SectionHeader>Price Settings</SectionHeader>
-  <Active
-    label="MM Materials"
-    tooltip="Comma-separated list of Market Maker materials.
-     The price of these materials will be equal to MM Bid price.">
+  <SectionHeader>{{ t('set.fin.prices') }}</SectionHeader>
+  <Active :label="t('set.fin.mm')" :tooltip="t('set.fin.mmTip')">
     <TextInput
       v-model="mmMaterials"
       @keyup.enter="onMMMaterialsSubmit"
       @focusout="onMMMaterialsSubmit" />
   </Active>
-  <Active
-    label="Ignored Materials"
-    tooltip="Comma-separated list of ignored materials.
-     The price of these materials is considered to be zero.">
+  <Active :label="t('set.fin.ignored')" :tooltip="t('set.fin.ignoredTip')">
     <TextInput
       v-model="ignoredMaterials"
       @keyup.enter="onIgnoredMaterialsSubmit"
       @focusout="onIgnoredMaterialsSubmit" />
   </Active>
-  <SectionHeader>Collected Data Points</SectionHeader>
+  <SectionHeader>{{ t('set.fin.points') }}</SectionHeader>
   <form>
     <Commands>
       <PrunButton primary :disabled="!canCollectFinDataPoint()" @click="collectFinDataPoint">
-        Collect Data Point
+        {{ t('set.fin.collect') }}
       </PrunButton>
       <PrunButton primary @click="showBackupMerge = !showBackupMerge">
-        {{ showBackupMerge ? 'Hide Backup Merge' : 'Merge Financial Backups' }}
+        {{ showBackupMerge ? t('set.fin.hideMerge') : t('set.fin.merge') }}
       </PrunButton>
     </Commands>
   </form>
@@ -112,9 +100,9 @@ function onIgnoredMaterialsSubmit() {
   <table>
     <thead>
       <tr>
-        <th>Date</th>
-        <th>Equity</th>
-        <th>Command</th>
+        <th>{{ t('set.fin.date') }}</th>
+        <th>{{ t('set.fin.equityCol') }}</th>
+        <th>{{ t('set.fin.command') }}</th>
       </tr>
     </thead>
     <tbody>
@@ -122,18 +110,20 @@ function onIgnoredMaterialsSubmit() {
         <td>{{ hhmm(balance.timestamp) }} {{ ddmmyyyy(balance.timestamp) }}</td>
         <td>{{ formatValue(calcEquity(balance)) }}</td>
         <td>
-          <PrunButton dark inline @click="confirmDataPointDelete($event, i)">delete</PrunButton>
+          <PrunButton dark inline @click="confirmDataPointDelete($event, i)">{{
+            t('act.common.deleteSmall')
+          }}</PrunButton>
         </td>
       </tr>
     </tbody>
   </table>
   <SectionHeader>
-    Danger Zone
-    <Tooltip :class="$style.tooltip" tooltip="Clear all historical financial data" />
+    {{ t('set.game.danger') }}
+    <Tooltip :class="$style.tooltip" :tooltip="t('set.fin.clearTip')" />
   </SectionHeader>
   <form>
     <Commands>
-      <PrunButton danger @click="confirmAllDataDelete">Clear Financial Data</PrunButton>
+      <PrunButton danger @click="confirmAllDataDelete">{{ t('set.fin.clear') }}</PrunButton>
     </Commands>
   </form>
 </template>

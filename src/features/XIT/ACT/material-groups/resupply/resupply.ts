@@ -6,7 +6,10 @@ import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { workforcesStore } from '@src/infrastructure/prun-api/data/workforces';
 import { productionStore } from '@src/infrastructure/prun-api/data/production';
 import { configurableValue } from '@src/features/XIT/ACT/shared-types';
-import { computeResupplyBill } from '@src/features/XIT/ACT/material-groups/resupply/bill';
+import {
+  computeResupplyBill,
+  getExcludedProduction,
+} from '@src/features/XIT/ACT/material-groups/resupply/bill';
 import { watchWhile } from '@src/utils/watch';
 import {
   getEntityNameFromAddress,
@@ -31,7 +34,7 @@ act.addMaterialGroup<Config>({
   },
   editComponent: Edit,
   configureComponent: Configure,
-  needsConfigure: data => data.planet === configurableValue || data.days === configurableValue,
+  needsConfigure: () => true,
   isValidConfig: (data, config) =>
     (data.planet !== configurableValue || config.planet !== undefined) &&
     (data.days !== configurableValue || config.days !== undefined),
@@ -70,6 +73,12 @@ act.addMaterialGroup<Config>({
       );
     }
 
-    return computeResupplyBill(data, planet, days, config.materialFilter);
+    return computeResupplyBill(
+      data,
+      planet,
+      days,
+      config.materialFilter,
+      getExcludedProduction(planet),
+    );
   },
 });
