@@ -2,6 +2,7 @@ import { PartialBalanceSheet } from '@src/core/balance/balance-sheet';
 import * as summary from '@src/core/balance/balance-sheet-summary';
 import { userData } from '@src/store/user-data';
 import { calcDailyGrowthRate, ChartSeries } from '@src/features/XIT/FINCH/growth-rate';
+import { t } from '@src/i18n';
 
 export type ChartDef = {
   value: string;
@@ -17,12 +18,14 @@ export const charts = computed<ChartDef[]>(() => {
   return [
     {
       value: 'EQUITY',
-      label: userData.fullEquityMode ? 'Equity' : 'Equity (Partial)',
+      label: userData.fullEquityMode ? t('fin.term.Equity') : t('fin.term.Equity_Partial'),
       getValue: summary.calcEquity,
     },
     {
       value: 'EQUITY GROWTH',
-      label: userData.fullEquityMode ? 'Equity Growth' : 'Equity Growth (Partial)',
+      label: userData.fullEquityMode
+        ? t('fin.term.Equity_Growth')
+        : t('fin.term.Equity_Growth_Partial'),
       getValue: summary.calcEquity,
       deriveSeries: calcDailyGrowthRate,
       unit: 'percent',
@@ -33,7 +36,7 @@ export const charts = computed<ChartDef[]>(() => {
     // =========================
     {
       value: 'TOTAL ASSETS',
-      label: 'Total Assets',
+      label: t('fin.term.Total_Assets'),
       getValue: summary.calcTotalAssets,
     },
 
@@ -42,117 +45,117 @@ export const charts = computed<ChartDef[]>(() => {
     // =========================
     {
       value: 'CURRENT ASSETS',
-      label: 'Current Assets',
+      label: t('fin.term.Current_Assets'),
       getValue: summary.calcTotalCurrentAssets,
     },
     {
       value: 'CA CASH EQUIVALENTS',
-      label: '- Cash and Cash Equivalents',
+      label: '- ' + t('fin.term.Cash_and_Cash_Equivalents'),
       getValue: summary.calcTotalCashAndCashEquivalents,
     },
     {
       value: 'CA CASH',
-      label: '-- Cash',
+      label: '-- ' + t('fin.term.Cash'),
       getValue: x => x.assets?.current?.cashAndCashEquivalents?.cash,
     },
     {
       value: 'CA DEPOSITS',
-      label: '-- Deposits',
+      label: '-- ' + t('fin.term.Deposits'),
       getValue: summary.calcTotalDeposits,
     },
     {
       value: 'CA DEPOSITS CX',
-      label: '--- Deposits: CX',
+      label: '--- ' + t('fin.term.Deposits_CX'),
       getValue: x => x.assets?.current?.cashAndCashEquivalents?.deposits?.cx,
     },
     {
       value: 'CA DEPOSITS FX',
-      label: '--- Deposits: FX',
+      label: '--- ' + t('fin.term.Deposits_FX'),
       getValue: x => x.assets?.current?.cashAndCashEquivalents?.deposits?.fx,
     },
     {
       value: 'CA MM MATERIALS',
-      label: '-- MM Materials',
+      label: '-- ' + t('fin.term.MM_Materials'),
       getValue: x => x.assets?.current?.cashAndCashEquivalents?.mmMaterials,
     },
     {
       value: 'CA ACCOUNTS RECEIVABLE',
-      label: '- Accounts Receivable',
+      label: '- ' + t('fin.term.Accounts_Receivable'),
       getValue: x => x.assets?.current?.accountsReceivable,
     },
     {
       value: 'CA LOANS RECEIVABLE',
-      label: '- Loans Receivable',
+      label: '- ' + t('fin.term.Loans_Receivable'),
       getValue: summary.calcTotalLoansReceivable,
     },
     {
       value: 'CA LOANS PRINCIPAL',
-      label: '-- Loans Receivable: Principal',
+      label: '-- ' + t('fin.term.Loans_Receivable_Principal'),
       getValue: x => x.assets?.current?.loansReceivable?.principal,
     },
     {
       value: 'CA LOANS INTEREST',
-      label: '-- Loans Receivable: Interest',
+      label: '-- ' + t('fin.term.Loans_Receivable_Interest'),
       getValue: x => x.assets?.current?.loansReceivable?.interest,
     },
     {
       value: 'CA INVENTORY',
-      label: '- Inventory',
+      label: '- ' + t('fin.term.Inventory'),
       getValue: summary.calcTotalInventory,
     },
     {
       value: 'CA CX LISTED MATERIALS',
-      label: '-- CX-Listed Materials',
+      label: '-- ' + t('fin.term.CX_Listed_Materials'),
       getValue: x => x.assets?.current?.inventory?.cxListedMaterials,
     },
     {
       value: 'CA CX INVENTORY',
-      label: '-- CX Inventory',
+      label: '-- ' + t('fin.term.CX_Inventory'),
       getValue: x => x.assets?.current?.inventory?.cxInventory,
     },
     {
       value: 'CA MATERIALS IN TRANSIT',
-      label: '-- Materials in Transit',
+      label: '-- ' + t('fin.term.Materials_in_Transit'),
       getValue: x => x.assets?.current?.inventory?.materialsInTransit,
     },
     {
       value: 'CA BASE INVENTORY',
-      label: '-- Base Inventory',
+      label: '-- ' + t('fin.term.Base_Inventory'),
       getValue: summary.calcTotalBaseInventory,
     },
     {
       value: 'CA FINISHED GOODS',
-      label: '--- Finished Goods',
+      label: '--- ' + t('fin.term.Finished_Goods'),
       getValue: x => x.assets?.current?.inventory?.baseInventory?.finishedGoods,
     },
     {
       value: 'CA WORK IN PROGRESS',
-      label: '--- Work-in-Progress (WIP)',
+      label: '--- ' + t('fin.term.Work_in_Progress_WIP'),
       getValue: x => x.assets?.current?.inventory?.baseInventory?.workInProgress,
     },
     {
       value: 'CA RAW MATERIALS',
-      label: '--- Raw Materials',
+      label: '--- ' + t('fin.term.Raw_Materials'),
       getValue: x => x.assets?.current?.inventory?.baseInventory?.rawMaterials,
     },
     {
       value: 'CA WORKFORCE CONSUMABLES',
-      label: '--- Workforce Consumables',
+      label: '--- ' + t('fin.term.Workforce_Consumables'),
       getValue: x => x.assets?.current?.inventory?.baseInventory?.workforceConsumables,
     },
     {
       value: 'CA OTHER ITEMS',
-      label: '--- Other Items',
+      label: '--- ' + t('fin.term.Other_Items'),
       getValue: x => x.assets?.current?.inventory?.baseInventory?.otherItems,
     },
     {
       value: 'CA FUEL TANKS',
-      label: '-- Fuel Tanks',
+      label: '-- ' + t('fin.term.Fuel_Tanks'),
       getValue: x => x.assets?.current?.inventory?.fuelTanks,
     },
     {
       value: 'CA MATERIALS RECEIVABLE',
-      label: '-- Materials Receivable',
+      label: '-- ' + t('fin.term.Materials_Receivable'),
       getValue: x => x.assets?.current?.inventory?.materialsReceivable,
     },
 
@@ -161,94 +164,94 @@ export const charts = computed<ChartDef[]>(() => {
     // =========================
     {
       value: 'NON CURRENT ASSETS',
-      label: 'Non-Current Assets',
+      label: t('fin.term.Non_Current_Assets'),
       getValue: summary.calcTotalNonCurrentAssets,
     },
     {
       value: 'NCA BUILDINGS',
-      label: '- Buildings, net',
+      label: '- ' + t('fin.term.Buildings_net'),
       getValue: summary.calcTotalBuildings,
     },
     {
       value: 'NCA BUILDINGS VALUE',
-      label: '-- Buildings Market Value',
+      label: '-- ' + t('fin.term.Buildings_Market_Value'),
       getValue: summary.calcTotalBuildingsMarketValue,
     },
     {
       value: 'NCA BUILDINGS INFRASTRUCTURE',
-      label: '--- Buildings: Infrastructure',
+      label: '--- ' + t('fin.term.Buildings_Infrastructure'),
       getValue: x => x.assets?.nonCurrent?.buildings?.marketValue?.infrastructure,
     },
     {
       value: 'NCA BUILDINGS RESOURCE EXTRACTION',
-      label: '--- Buildings: Resource Extraction',
+      label: '--- ' + t('fin.term.Buildings_Resource_Extraction'),
       getValue: x => x.assets?.nonCurrent?.buildings?.marketValue?.resourceExtraction,
     },
     {
       value: 'NCA BUILDINGS PRODUCTION',
-      label: '--- Buildings: Production',
+      label: '--- ' + t('fin.term.Buildings_Production'),
       getValue: x => x.assets?.nonCurrent?.buildings?.marketValue?.production,
     },
     {
       value: 'NCA BUILDINGS DEPRECIATION',
-      label: '-- Buildings Acc. Depreciation',
+      label: '-- ' + t('fin.term.Buildings_Acc_Depreciation'),
       less: true,
       getValue: x => x.assets?.nonCurrent?.buildings?.accumulatedDepreciation,
     },
     {
       value: 'NCA SHIPS',
-      label: '- Ships, net',
+      label: '- ' + t('fin.term.Ships_net'),
       getValue: summary.calcTotalShips,
     },
     {
       value: 'NCA SHIPS VALUE',
-      label: '-- Ships Market Value',
+      label: '-- ' + t('fin.term.Ships_Market_Value'),
       getValue: x => x.assets?.nonCurrent?.ships?.marketValue,
     },
     {
       value: 'NCA SHIPS DEPRECIATION',
-      label: '-- Ships Acc. Depreciation',
+      label: '-- ' + t('fin.term.Ships_Acc_Depreciation'),
       less: true,
       getValue: x => x.assets?.nonCurrent?.ships?.accumulatedDepreciation,
     },
     {
       value: 'NCA LONG TERM RECEIVABLES',
-      label: '- Long-Term Receivables',
+      label: '- ' + t('fin.term.Long_Term_Receivables'),
       getValue: summary.calcTotalLongTermReceivables,
     },
     {
       value: 'NCA ACCOUNTS RECEIVABLE',
-      label: '-- LTR: Accounts Receivable',
+      label: '-- ' + t('fin.term.LTR_Accounts_Receivable'),
       getValue: x => x.assets?.nonCurrent?.longTermReceivables?.accountsReceivable,
     },
     {
       value: 'NCA MATERIALS IN TRANSIT',
-      label: '-- LTR: Materials in Transit',
+      label: '-- ' + t('fin.term.LTR_Materials_in_Transit'),
       getValue: x => x.assets?.nonCurrent?.longTermReceivables?.materialsInTransit,
     },
     {
       value: 'NCA MATERIALS RECEIVABLE',
-      label: '-- LTR: Materials Receivable',
+      label: '-- ' + t('fin.term.LTR_Materials_Receivable'),
       getValue: x => x.assets?.nonCurrent?.longTermReceivables?.materialsReceivable,
     },
     {
       value: 'NCA LOANS PRINCIPAL',
-      label: '-- LTR: Loans Principal',
+      label: '-- ' + t('fin.term.LTR_Loans_Principal'),
       getValue: x => x.assets?.nonCurrent?.longTermReceivables?.loansPrincipal,
     },
     {
       value: 'NCA INTANGIBLE ASSETS',
-      label: '- Intangible Assets',
+      label: '- ' + t('fin.term.Intangible_Assets'),
       getValue: summary.calcTotalIntangibleAssets,
     },
     {
       value: 'NCA HQ UPGRADES',
-      label: '-- HQ Upgrades',
+      label: '-- ' + t('fin.term.HQ_Upgrades'),
       getValue: x => x.assets?.nonCurrent?.intangibleAssets?.hqUpgrades,
     },
     {
       value: 'NCA ARC',
-      label: '-- APEX Representation Center',
+      label: '-- ' + t('fin.term.APEX_Representation_Center'),
       getValue: x => x.assets?.nonCurrent?.intangibleAssets?.arc,
     },
 
@@ -257,7 +260,7 @@ export const charts = computed<ChartDef[]>(() => {
     // =========================
     {
       value: 'TOTAL LIABILITIES',
-      label: 'Total Liabilities',
+      label: t('fin.term.Total_Liabilities'),
       getValue: summary.calcTotalLiabilities,
     },
 
@@ -266,32 +269,32 @@ export const charts = computed<ChartDef[]>(() => {
     // =========================
     {
       value: 'CURRENT LIABILITIES',
-      label: 'Current Liabilities',
+      label: t('fin.term.Current_Liabilities'),
       getValue: summary.calcTotalCurrentLiabilities,
     },
     {
       value: 'CL ACCOUNTS PAYABLE',
-      label: '- Accounts Payable',
+      label: '- ' + t('fin.term.Accounts_Payable'),
       getValue: x => x.liabilities?.current?.accountsPayable,
     },
     {
       value: 'CL MATERIALS PAYABLE',
-      label: '- Materials Payable',
+      label: '- ' + t('fin.term.Materials_Payable'),
       getValue: x => x.liabilities?.current?.materialsPayable,
     },
     {
       value: 'CL LOANS PAYABLE',
-      label: '- Loans Payable',
+      label: '- ' + t('fin.term.Loans_Payable'),
       getValue: summary.calcTotalLoansPayable,
     },
     {
       value: 'CL LOANS PRINCIPAL',
-      label: '-- Loans Payable: Principal',
+      label: '-- ' + t('fin.term.Loans_Payable_Principal'),
       getValue: x => x.liabilities?.current?.loansPayable?.principal,
     },
     {
       value: 'CL LOANS INTEREST',
-      label: '-- Loans Payable: Interest',
+      label: '-- ' + t('fin.term.Loans_Payable_Interest'),
       getValue: x => x.liabilities?.current?.loansPayable?.interest,
     },
 
@@ -300,27 +303,27 @@ export const charts = computed<ChartDef[]>(() => {
     // =========================
     {
       value: 'NON CURRENT LIABILITIES',
-      label: 'Non-Current Liabilities',
+      label: t('fin.term.Non_Current_Liabilities'),
       getValue: summary.calcTotalNonCurrentLiabilities,
     },
     {
       value: 'NCL LONG TERM PAYABLES',
-      label: '- Long-Term Payables',
+      label: '- ' + t('fin.term.Long_Term_Payables'),
       getValue: summary.calcTotalLongTermPayables,
     },
     {
       value: 'NCL ACCOUNTS PAYABLE',
-      label: '-- Long-Term Accounts Payable',
+      label: '-- ' + t('fin.term.Long_Term_Accounts_Payable'),
       getValue: x => x.liabilities?.nonCurrent?.longTermPayables?.accountsPayable,
     },
     {
       value: 'NCL MATERIALS PAYABLE',
-      label: '-- Long-Term Materials Payable',
+      label: '-- ' + t('fin.term.Long_Term_Materials_Payable'),
       getValue: x => x.liabilities?.nonCurrent?.longTermPayables?.materialsPayable,
     },
     {
       value: 'NCL LOANS PRINCIPAL',
-      label: '-- Long-Term Loans Principal',
+      label: '-- ' + t('fin.term.Long_Term_Loans_Principal'),
       getValue: x => x.liabilities?.nonCurrent?.longTermPayables?.loansPrincipal,
     },
   ];

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { PartialBalanceSheet } from '@src/core/balance/balance-sheet';
 import { SectionData } from '@src/features/XIT/FINBS/balance-section';
 import { formatAmount, formatChange } from '@src/features/XIT/FINBS/utils';
@@ -54,13 +55,9 @@ function calculateChange(selector: (x: PartialBalanceSheet) => number | undefine
         <RowExpandButton v-for="i in indent" :key="i" :class="$style.hidden" />
       </template>
       <RowExpandButton v-model="expanded" :class="!row.children ? $style.hidden : null" />
-      <template v-if="row.less"> Less:</template>
+      <template v-if="row.less"> {{ t('finbs.less') }}</template>
       {{ row.name }}
-      <Tooltip
-        v-if="row.excluded"
-        tooltip="This entry is not included in the Equity calculation.
-         To include it, turn on the full equity mode in XIT SET FIN."
-        :class="$style.tooltip" />
+      <Tooltip v-if="row.excluded" :tooltip="t('finbs.excluded')" :class="$style.tooltip" />
       <Tooltip v-else-if="row.tooltip" :tooltip="row.tooltip" :class="$style.tooltip" />
     </td>
     <td>{{ formatRowAmount(current, row) }}</td>

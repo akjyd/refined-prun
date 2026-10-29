@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { formatChange } from '@src/features/XIT/FINBS/utils';
 import { SectionData } from '@src/features/XIT/FINBS/balance-section';
 import { PartialBalanceSheet } from '@src/core/balance/balance-sheet';
@@ -60,7 +61,7 @@ const totalClass = computed(() => {
       :indent="0"
       :excluded="row.excluded" />
     <tr :class="C.IncomeStatementPanel.totals">
-      <td :class="C.IncomeStatementPanel.number">Total</td>
+      <td :class="C.IncomeStatementPanel.number">{{ t('finbs.total') }}</td>
       <td>{{ formatCurrency(calculate(current, section.value)) }}</td>
       <td>{{ formatCurrency(calculate(last, section.value)) }}</td>
       <td>{{ formatCurrency(calculate(previous, section.value)) }}</td>

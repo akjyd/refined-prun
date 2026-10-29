@@ -1,9 +1,10 @@
 import FINPR from '@src/features/XIT/FIN/FINPR.vue';
+import { t } from '@src/i18n';
 
 xit.add({
   command: ['FINPR'],
-  name: 'Profitability Report',
-  description: 'Base profitability report.',
+  name: t('finpr.title'),
+  description: t('finpr.description'),
   contextItems: () => [
     { cmd: 'XIT FIN' },
     { cmd: 'XIT FINBS' },

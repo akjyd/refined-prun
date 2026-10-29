@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import FinHeader from '@src/features/XIT/FIN/FinHeader.vue';
 import HistoryChart from '@src/features/XIT/FINCH/HistoryChart.vue';
 import AssetPieChart from '@src/features/XIT/FINCH/AssetPieChart.vue';
@@ -30,7 +31,7 @@ const chartDef = computed(() => charts.value.find(x => x.value === parameter));
       <div :style="{ marginTop: '5px' }" :class="$style.clickable">
         <HistoryChart />
       </div>
-      <FinHeader>Asset Breakdown</FinHeader>
+      <FinHeader>{{ t('finch.assetBreakdown') }}</FinHeader>
       <div :style="{ marginTop: '5px' }">
         <AssetPieChart :class="$style.clickable" @click="() => showBuffer('XIT FINCH ASSETS')" />
         <LocationsPieChart
@@ -44,7 +45,7 @@ const chartDef = computed(() => charts.value.find(x => x.value === parameter));
     <template v-else>
       <AssetPieChart v-if="parameter === 'ASSETS'" />
       <LocationsPieChart v-else-if="parameter === 'LOCATIONS'" />
-      <span v-else>Error: Not a valid chart type</span>
+      <span v-else>{{ t('finch.invalid') }}</span>
     </template>
   </div>
 </template>

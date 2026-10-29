@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { calculateLocationAssets } from '@src/core/financials';
 import KeyFigures from '@src/features/XIT/FIN/KeyFigures.vue';
 import FinHeader from '@src/features/XIT/FIN/FinHeader.vue';
@@ -59,77 +60,60 @@ function formatPercentage(ratio: number | undefined) {
 const figures = computed(() => {
   return [
     {
-      name: 'Quick Assets',
+      name: t('fin.fig.quickAssets'),
       value: formatCurrency(liveBalanceSummary.quickAssets),
-      tooltip:
-        'Quick Assets are: Cash and Cash Equivalents, Current Accounts Receivable, and' +
-        ' Current Loans Receivable (see XIT FINBS for more details). These assets are' +
-        ' either liquid or close-to-liquid and are used in Quick Ratio calculation.',
+      tooltip: t('fin.tip.quickAssets'),
     },
     {
-      name: 'Current Assets',
+      name: t('fin.fig.currentAssets'),
       value: formatCurrency(liveBalanceSummary.currentAssets),
     },
-    { name: 'Total Assets', value: formatCurrency(liveBalanceSummary.assets) },
-    { name: 'Equity', value: formatCurrency(liveBalanceSummary.equity) },
+    { name: t('fin.fig.totalAssets'), value: formatCurrency(liveBalanceSummary.assets) },
+    { name: t('fin.fig.equity'), value: formatCurrency(liveBalanceSummary.equity) },
     {
-      name: 'Quick Liabilities',
+      name: t('fin.fig.quickLiabilities'),
       value: formatCurrency(liveBalanceSummary.quickLiabilities),
-      tooltip:
-        'Quick Liabilities are: Current Accounts Payable and Current Loans Payable (see XIT FINBS' +
-        ' for more details). These liabilities represent immediate financial obligations and are' +
-        ' used in Quick Ratio calculation.',
+      tooltip: t('fin.tip.quickLiabilities'),
     },
     {
-      name: 'Current Liabilities',
+      name: t('fin.fig.currentLiabilities'),
       value: formatCurrency(liveBalanceSummary.currentLiabilities),
     },
     {
-      name: 'Total Liabilities',
+      name: t('fin.fig.totalLiabilities'),
       value: formatCurrency(liveBalanceSummary.liabilities),
     },
     {
-      name: 'Liquidation Value',
+      name: t('fin.fig.liquidation'),
       hidden: !userData.fullEquityMode,
       value: formatCurrency(liveBalanceSummary.liquidationValue),
-      tooltip:
-        'The market value of all company’s assets that can be converted to cash directly. ' +
-        'The Liquidation Value excludes such assets as ships, HQ upgrades, and ARC, since ' +
-        'they cannot be sold on the market.',
+      tooltip: t('fin.tip.liquidation'),
     },
     {
-      name: 'Quick Ratio',
+      name: t('fin.fig.quickRatio'),
       value: formatRatio(liveBalanceSummary.acidTestRatio),
-      tooltip:
-        "The quick, or acid-test ratio, compares a company's quick assets to its quick" +
-        ' liabilities to see if it has enough cash to pay its immediate liabilities,' +
-        ' such as short-term debt. Generally, a ratio of 1.0 or more indicates a company can pay' +
-        ' its short-term obligations, while a ratio of less than 1.0 indicates it might struggle' +
-        ' to pay them.',
+      tooltip: t('fin.tip.quickRatio'),
     },
     {
-      name: 'Debt Ratio',
+      name: t('fin.fig.debtRatio'),
       value: formatPercentage(liveBalanceSummary.debtRatio),
-      tooltip:
-        'The debt ratio is defined as the ratio of total debt to total assets. A debt ratio' +
-        ' of greater than 100% means a company has more debt than assets while a debt ratio' +
-        ' of less than 100% indicates that a company has more assets than debt.',
+      tooltip: t('fin.tip.debtRatio'),
     },
   ];
 });
 </script>
 
 <template>
-  <FinHeader>Key Figures</FinHeader>
+  <FinHeader>{{ t('fin.keyFigures') }}</FinHeader>
   <KeyFigures :figures="figures" />
-  <FinHeader>Inventory Breakdown</FinHeader>
+  <FinHeader>{{ t('fin.locations') }}</FinHeader>
   <table>
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Non-Current Assets</th>
-        <th>Current Assets</th>
-        <th>Total Assets</th>
+        <th>{{ t('fin.col.name') }}</th>
+        <th>{{ t('fin.col.nonCurrent') }}</th>
+        <th>{{ t('fin.col.current') }}</th>
+        <th>{{ t('fin.col.total') }}</th>
       </tr>
     </thead>
     <tbody>

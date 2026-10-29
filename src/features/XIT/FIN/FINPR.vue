@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import FinHeader from '@src/features/XIT/FIN/FinHeader.vue';
 import KeyFigures from '@src/features/XIT/FIN/KeyFigures.vue';
@@ -27,12 +28,12 @@ const dailyMargin = computed(() => {
 
 const figures = computed(() => {
   return [
-    { name: 'Daily Cost', value: formatCurrency(dailyCost.value) },
-    { name: 'Daily Repairs', value: formatCurrency(dailyRepairs.value) },
-    { name: 'Daily Revenue', value: formatCurrency(dailyRevenue.value) },
-    { name: 'Daily Profit', value: formatCurrency(dailyProfit.value) },
+    { name: t('finpr.fig.cost'), value: formatCurrency(dailyCost.value) },
+    { name: t('finpr.fig.repairs'), value: formatCurrency(dailyRepairs.value) },
+    { name: t('finpr.fig.revenue'), value: formatCurrency(dailyRevenue.value) },
+    { name: t('finpr.fig.profit'), value: formatCurrency(dailyProfit.value) },
     {
-      name: 'Daily Margin',
+      name: t('finpr.fig.margin'),
       value: dailyMargin.value !== undefined ? percent2(dailyMargin.value) : '--',
     },
   ];
@@ -48,19 +49,19 @@ function profitClass(value: number) {
 
 <template>
   <div>
-    <FinHeader>Production Overview</FinHeader>
+    <FinHeader>{{ t('finpr.overview') }}</FinHeader>
     <KeyFigures :figures="figures" />
-    <FinHeader>Breakdown by Planet</FinHeader>
+    <FinHeader>{{ t('finpr.byPlanet') }}</FinHeader>
     <table>
       <colgroup span="6" style="width: calc(100% / 6)"></colgroup>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Cost</th>
-          <th>Repairs</th>
-          <th>Revenue</th>
-          <th>Profit</th>
-          <th>Margin</th>
+          <th>{{ t('finpr.col.name') }}</th>
+          <th>{{ t('finpr.col.cost') }}</th>
+          <th>{{ t('finpr.col.repairs') }}</th>
+          <th>{{ t('finpr.col.revenue') }}</th>
+          <th>{{ t('finpr.col.profit') }}</th>
+          <th>{{ t('finpr.col.margin') }}</th>
         </tr>
       </thead>
       <tbody>

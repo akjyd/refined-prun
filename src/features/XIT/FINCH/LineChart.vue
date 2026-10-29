@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import { Line } from 'vue-chartjs';
 import {
   CategoryScale,
@@ -132,7 +133,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
       type: 'time',
       title: {
         display: true,
-        text: 'Date',
+        text: t('finch.date'),
         color: '#eeeeee',
         font: {
           family: '"Droid Sans", sans-serif',

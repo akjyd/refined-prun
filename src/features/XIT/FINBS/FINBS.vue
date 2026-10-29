@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@src/i18n';
 import BalanceSheetSection from '@src/features/XIT/FINBS/BalanceSheetSection.vue';
 import * as summary from '@src/core/balance/balance-sheet-summary';
 import { SectionData } from '@src/features/XIT/FINBS/balance-section';
@@ -8,129 +9,126 @@ import { lastBalance, previousBalance } from '@src/store/user-data-balance';
 import { userData } from '@src/store/user-data';
 
 const currentAssets = computed<SectionData>(() => ({
-  name: 'Current Assets',
+  name: t('fin.term.Current_Assets'),
   chartId: 'CURRENT ASSETS',
   value: summary.calcTotalCurrentAssets,
   children: [
     {
-      name: 'Cash and Cash Equivalents',
+      name: t('fin.term.Cash_and_Cash_Equivalents'),
       chartId: 'CA CASH EQUIVALENTS',
       value: summary.calcTotalCashAndCashEquivalents,
       children: [
         {
-          name: 'Cash',
+          name: t('fin.term.Cash'),
           chartId: 'CA CASH',
           value: x => x.assets?.current?.cashAndCashEquivalents?.cash,
         },
         {
-          name: 'Deposits',
+          name: t('fin.term.Deposits'),
           chartId: 'CA DEPOSITS',
           value: summary.calcTotalDeposits,
           children: [
             {
-              name: 'CX',
+              name: t('fin.term.CX'),
               chartId: 'CA DEPOSITS CX',
               value: x => x.assets?.current?.cashAndCashEquivalents?.deposits?.cx,
             },
             {
-              name: 'FX',
+              name: t('fin.term.FX'),
               chartId: 'CA DEPOSITS FX',
               value: x => x.assets?.current?.cashAndCashEquivalents?.deposits?.fx,
             },
           ],
         },
         {
-          name: 'MM Materials',
+          name: t('fin.term.MM_Materials'),
           chartId: 'CA MM MATERIALS',
-          tooltip:
-            'Market Maker materials currently stored in CX warehouses. You can customize the list of' +
-            ' these materials using XIT SET FIN. Since these materials can be converted into cash' +
-            ' immediately, they are considered Cash Equivalents.',
+          tooltip: t('finbs.mmTip'),
           value: x => x.assets?.current?.cashAndCashEquivalents?.mmMaterials,
         },
       ],
     },
     {
-      name: 'Accounts Receivable',
+      name: t('fin.term.Accounts_Receivable'),
       chartId: 'CA ACCOUNTS RECEIVABLE',
       value: x => x.assets?.current?.accountsReceivable,
     },
     {
-      name: 'Loans Receivable',
+      name: t('fin.term.Loans_Receivable'),
       chartId: 'CA LOANS RECEIVABLE',
       value: summary.calcTotalLoansReceivable,
       children: [
         {
-          name: 'Principal',
+          name: t('fin.term.Principal'),
           chartId: 'CA LOANS PRINCIPAL',
           value: x => x.assets?.current?.loansReceivable?.principal,
         },
         {
-          name: 'Interest',
+          name: t('fin.term.Interest'),
           chartId: 'CA LOANS INTEREST',
           value: x => x.assets?.current?.loansReceivable?.interest,
         },
       ],
     },
     {
-      name: 'Inventory',
+      name: t('fin.term.Inventory'),
       chartId: 'CA INVENTORY',
       value: summary.calcTotalInventory,
       children: [
         {
-          name: 'CX-Listed Materials',
+          name: t('fin.term.CX_Listed_Materials'),
           chartId: 'CA CX LISTED MATERIALS',
           value: x => x.assets?.current?.inventory?.cxListedMaterials,
         },
         {
-          name: 'CX Inventory',
+          name: t('fin.term.CX_Inventory'),
           chartId: 'CA CX INVENTORY',
           value: x => x.assets?.current?.inventory?.cxInventory,
         },
         {
-          name: 'Materials in Transit',
+          name: t('fin.term.Materials_in_Transit'),
           chartId: 'CA MATERIALS IN TRANSIT',
           value: x => x.assets?.current?.inventory?.materialsInTransit,
         },
         {
-          name: 'Base Inventory',
+          name: t('fin.term.Base_Inventory'),
           chartId: 'CA BASE INVENTORY',
           value: summary.calcTotalBaseInventory,
           children: [
             {
-              name: 'Finished Goods',
+              name: t('fin.term.Finished_Goods'),
               chartId: 'CA FINISHED GOODS',
               value: x => x.assets?.current?.inventory?.baseInventory?.finishedGoods,
             },
             {
-              name: 'Work-in-Progress (WIP)',
+              name: t('fin.term.Work_in_Progress_WIP'),
               chartId: 'CA WORK IN PROGRESS',
               value: x => x.assets?.current?.inventory?.baseInventory?.workInProgress,
             },
             {
-              name: 'Raw Materials',
+              name: t('fin.term.Raw_Materials'),
               chartId: 'CA RAW MATERIALS',
               value: x => x.assets?.current?.inventory?.baseInventory?.rawMaterials,
             },
             {
-              name: 'Workforce Consumables',
+              name: t('fin.term.Workforce_Consumables'),
               chartId: 'CA WORKFORCE CONSUMABLES',
               value: x => x.assets?.current?.inventory?.baseInventory?.workforceConsumables,
             },
             {
-              name: 'Other Items',
+              name: t('fin.term.Other_Items'),
               chartId: 'CA OTHER ITEMS',
               value: x => x.assets?.current?.inventory?.baseInventory?.otherItems,
             },
           ],
         },
         {
-          name: 'Fuel Tanks',
+          name: t('fin.term.Fuel_Tanks'),
           chartId: 'CA FUEL TANKS',
           value: x => x.assets?.current?.inventory?.fuelTanks,
         },
         {
-          name: 'Materials Receivable',
+          name: t('fin.term.Materials_Receivable'),
           chartId: 'CA MATERIALS RECEIVABLE',
           value: x => x.assets?.current?.inventory?.materialsReceivable,
         },
@@ -140,39 +138,39 @@ const currentAssets = computed<SectionData>(() => ({
 }));
 
 const nonCurrentAssets = computed<SectionData>(() => ({
-  name: 'Non-Current Assets',
+  name: t('fin.term.Non_Current_Assets'),
   chartId: 'NON CURRENT ASSETS',
   value: summary.calcTotalNonCurrentAssets,
   children: [
     {
-      name: 'Buildings, net',
+      name: t('fin.term.Buildings_net'),
       chartId: 'NCA BUILDINGS',
       value: summary.calcTotalBuildings,
       children: [
         {
-          name: 'Market Value',
+          name: t('fin.term.Market_Value'),
           chartId: 'NCA BUILDINGS VALUE',
           value: summary.calcTotalBuildingsMarketValue,
           children: [
             {
-              name: 'Infrastructure',
+              name: t('fin.term.Infrastructure'),
               chartId: 'NCA BUILDINGS INFRASTRUCTURE',
               value: x => x.assets?.nonCurrent?.buildings?.marketValue?.infrastructure,
             },
             {
-              name: 'Resource Extraction',
+              name: t('fin.term.Resource_Extraction'),
               chartId: 'NCA BUILDINGS RESOURCE EXTRACTION',
               value: x => x.assets?.nonCurrent?.buildings?.marketValue?.resourceExtraction,
             },
             {
-              name: 'Production',
+              name: t('fin.term.Production'),
               chartId: 'NCA BUILDINGS PRODUCTION',
               value: x => x.assets?.nonCurrent?.buildings?.marketValue?.production,
             },
           ],
         },
         {
-          name: 'Acc. Depreciation',
+          name: t('fin.term.Acc_Depreciation'),
           chartId: 'NCA BUILDINGS DEPRECIATION',
           less: true,
           value: x => x.assets?.nonCurrent?.buildings?.accumulatedDepreciation,
@@ -180,18 +178,18 @@ const nonCurrentAssets = computed<SectionData>(() => ({
       ],
     },
     {
-      name: 'Ships, net',
+      name: t('fin.term.Ships_net'),
       chartId: 'NCA SHIPS',
       value: summary.calcTotalShips,
       excluded: !userData.fullEquityMode,
       children: [
         {
-          name: 'Market Value',
+          name: t('fin.term.Market_Value'),
           chartId: 'NCA SHIPS VALUE',
           value: x => x.assets?.nonCurrent?.ships?.marketValue,
         },
         {
-          name: 'Acc. Depreciation',
+          name: t('fin.term.Acc_Depreciation'),
           chartId: 'NCA SHIPS DEPRECIATION',
           less: true,
           value: x => x.assets?.nonCurrent?.ships?.accumulatedDepreciation,
@@ -199,45 +197,45 @@ const nonCurrentAssets = computed<SectionData>(() => ({
       ],
     },
     {
-      name: 'Long-Term Receivables',
+      name: t('fin.term.Long_Term_Receivables'),
       chartId: 'NCA LONG TERM RECEIVABLES',
       value: summary.calcTotalLongTermReceivables,
       children: [
         {
-          name: 'Accounts Receivable',
+          name: t('fin.term.Accounts_Receivable'),
           chartId: 'NCA ACCOUNTS RECEIVABLE',
           value: x => x.assets?.nonCurrent?.longTermReceivables?.accountsReceivable,
         },
         {
-          name: 'Materials in Transit',
+          name: t('fin.term.Materials_in_Transit'),
           chartId: 'NCA MATERIALS IN TRANSIT',
           value: x => x.assets?.nonCurrent?.longTermReceivables?.materialsInTransit,
         },
         {
-          name: 'Materials Receivable',
+          name: t('fin.term.Materials_Receivable'),
           chartId: 'NCA MATERIALS RECEIVABLE',
           value: x => x.assets?.nonCurrent?.longTermReceivables?.materialsReceivable,
         },
         {
-          name: 'Loans Principal',
+          name: t('fin.term.Loans_Principal'),
           chartId: 'NCA LOANS PRINCIPAL',
           value: x => x.assets?.nonCurrent?.longTermReceivables?.loansPrincipal,
         },
       ],
     },
     {
-      name: 'Intangible Assets',
+      name: t('fin.term.Intangible_Assets'),
       chartId: 'NCA INTANGIBLE ASSETS',
       value: summary.calcTotalIntangibleAssets,
       excluded: !userData.fullEquityMode,
       children: [
         {
-          name: 'HQ Upgrades',
+          name: t('fin.term.HQ_Upgrades'),
           chartId: 'NCA HQ UPGRADES',
           value: x => x.assets?.nonCurrent?.intangibleAssets?.hqUpgrades,
         },
         {
-          name: 'APEX Representation Center',
+          name: t('fin.term.APEX_Representation_Center'),
           chartId: 'NCA ARC',
           value: x => x.assets?.nonCurrent?.intangibleAssets?.arc,
         },
@@ -247,32 +245,32 @@ const nonCurrentAssets = computed<SectionData>(() => ({
 }));
 
 const currentLiabilities = computed<SectionData>(() => ({
-  name: 'Current Liabilities',
+  name: t('fin.term.Current_Liabilities'),
   chartId: 'CURRENT LIABILITIES',
   value: summary.calcTotalCurrentLiabilities,
   children: [
     {
-      name: 'Accounts Payable',
+      name: t('fin.term.Accounts_Payable'),
       chartId: 'CL ACCOUNTS PAYABLE',
       value: x => x.liabilities?.current?.accountsPayable,
     },
     {
-      name: 'Materials Payable',
+      name: t('fin.term.Materials_Payable'),
       chartId: 'CL MATERIALS PAYABLE',
       value: x => x.liabilities?.current?.materialsPayable,
     },
     {
-      name: 'Loans Payable',
+      name: t('fin.term.Loans_Payable'),
       chartId: 'CL LOANS PAYABLE',
       value: summary.calcTotalLoansPayable,
       children: [
         {
-          name: 'Principal',
+          name: t('fin.term.Principal'),
           chartId: 'CL LOANS PRINCIPAL',
           value: x => x.liabilities?.current?.loansPayable?.principal,
         },
         {
-          name: 'Interest',
+          name: t('fin.term.Interest'),
           chartId: 'CL LOANS INTEREST',
           value: x => x.liabilities?.current?.loansPayable?.interest,
         },
@@ -282,27 +280,27 @@ const currentLiabilities = computed<SectionData>(() => ({
 }));
 
 const nonCurrentLiabilities = computed<SectionData>(() => ({
-  name: 'Non-Current Liabilities',
+  name: t('fin.term.Non_Current_Liabilities'),
   chartId: 'NON CURRENT LIABILITIES',
   value: summary.calcTotalNonCurrentLiabilities,
   children: [
     {
-      name: 'Long-Term Payables',
+      name: t('fin.term.Long_Term_Payables'),
       chartId: 'NCL LONG TERM PAYABLES',
       value: summary.calcTotalLongTermPayables,
       children: [
         {
-          name: 'Accounts Payable',
+          name: t('fin.term.Accounts_Payable'),
           chartId: 'NCL ACCOUNTS PAYABLE',
           value: x => x.liabilities?.nonCurrent?.longTermPayables?.accountsPayable,
         },
         {
-          name: 'Materials Payable',
+          name: t('fin.term.Materials_Payable'),
           chartId: 'NCL MATERIALS PAYABLE',
           value: x => x.liabilities?.nonCurrent?.longTermPayables?.materialsPayable,
         },
         {
-          name: 'Loans Principal',
+          name: t('fin.term.Loans_Principal'),
           chartId: 'NCL LOANS PRINCIPAL',
           value: x => x.liabilities?.nonCurrent?.longTermPayables?.loansPrincipal,
         },
@@ -312,18 +310,18 @@ const nonCurrentLiabilities = computed<SectionData>(() => ({
 }));
 
 const equity = computed<SectionData>(() => ({
-  name: 'Equity',
+  name: t('fin.term.Equity'),
   chartId: 'EQUITY',
   coloredChange: true,
   value: summary.calcEquity,
   children: [
     {
-      name: 'Total Assets',
+      name: t('fin.term.Total_Assets'),
       chartId: 'TOTAL ASSETS',
       value: summary.calcTotalAssets,
     },
     {
-      name: 'Total Liabilities',
+      name: t('fin.term.Total_Liabilities'),
       chartId: 'TOTAL LIABILITIES',
       less: true,
       value: summary.calcTotalLiabilities,
@@ -345,16 +343,16 @@ const sections = [
     <thead>
       <tr>
         <th>&nbsp;</th>
-        <th>Current Period</th>
+        <th>{{ t('finbs.current') }}</th>
         <th>
           <template v-if="lastBalance">{{ ddmmyyyy(lastBalance.timestamp) }}</template>
-          <template v-else>Last Period</template>
+          <template v-else>{{ t('finbs.last') }}</template>
         </th>
         <th>
           <template v-if="previousBalance">{{ ddmmyyyy(previousBalance.timestamp) }}</template>
-          <template v-else>Previous Period</template>
+          <template v-else>{{ t('finbs.previous') }}</template>
         </th>
-        <th>Change</th>
+        <th>{{ t('finbs.change') }}</th>
         <th />
       </tr>
     </thead>

@@ -1,10 +1,11 @@
 import FINCH from '@src/features/XIT/FINCH/FINCH.vue';
+import { t } from '@src/i18n';
 
 xit.add({
   command: ['FINCH'],
-  name: 'Financial Charts',
-  description: 'Financial charts for equity and assets.',
-  optionalParameters: 'Chart Identifier',
+  name: t('finch.title'),
+  description: t('finch.description'),
+  optionalParameters: t('finch.param'),
   contextItems: () => [
     { cmd: 'XIT FIN' },
     { cmd: 'XIT FINBS' },
