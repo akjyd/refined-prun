@@ -19,7 +19,7 @@ function onClick() {
 </script>
 
 <template>
-  <PrunButton v-if="ship" primary inline :disabled="running" @click="onClick">
+  <PrunButton v-if="ship" dark inline :disabled="running" @click="onClick">
     {{ running ? t('flt.refueling') : t('flt.refuelShip') }}
   </PrunButton>
 </template>

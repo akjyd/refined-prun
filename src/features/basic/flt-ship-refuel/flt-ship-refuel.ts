@@ -2,18 +2,21 @@ import { refPrunId } from '@src/infrastructure/prun-ui/attributes';
 import ShipRefuelButton from './ShipRefuelButton.vue';
 
 function onTileReady(tile: PrunTile) {
-  subscribe($$(tile.anchor, 'tr'), row => {
-    // The last cell holds the row command buttons.
+  subscribe($$(tile.anchor, 'tr'), async row => {
+    // The last cell holds the row command buttons. Put the button after the last one,
+    // in the same container, so it stays on the same line.
     const cell = row.lastElementChild;
     if (!(cell instanceof HTMLElement)) {
       return;
     }
+    const first = await $(cell, 'button');
+    const last = _$$(first.parentElement!, 'button').at(-1) ?? first;
     createFragmentApp(
       ShipRefuelButton,
       reactive({
         id: refPrunId(row),
       }),
-    ).appendTo(cell);
+    ).after(last);
   });
 }
 
