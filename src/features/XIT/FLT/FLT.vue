@@ -16,6 +16,7 @@ import StatusCell from './StatusCell.vue';
 import TimeCell from './TimeCell.vue';
 import CargoBar from '@src/components/CargoBar.vue';
 import FuelHeaderButton from './FuelHeaderButton.vue';
+import { runHidden } from '@src/features/XIT/ACT/hidden-act';
 import { fixed0, percent0 } from '@src/utils/format';
 import { timestampEachMinute } from '@src/utils/dayjs';
 import coloredValue from '@src/infrastructure/prun-ui/css/colored-value.module.css';
@@ -1073,7 +1074,7 @@ function getCargoState(cargoRatio: number) {
             </span>
           </th>
           <th v-if="showColFuel" :class="[$style.headerCell, $style.colFuel]">
-            <FuelHeaderButton @refuel="showBuffer('XIT REFUELACT AUTO')">
+            <FuelHeaderButton @refuel="runHidden('refuel all', 'XIT REFUELACT AUTO')">
               <span
                 :class="{
                   [$style.sortPrimary]: isPrimarySort('fuel'),

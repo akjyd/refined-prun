@@ -11,10 +11,12 @@ import ConfigWindow from '@src/features/XIT/ACT/ConfigureWindow.vue';
 import { ActionPackageConfig, ActionStep } from '@src/features/XIT/ACT/shared-types';
 import { act } from '@src/features/XIT/ACT/act-registry';
 
-const { pkg, afterExecute, extraSteps, autoAct } = defineProps<{
+const { pkg, afterExecute, extraSteps, autoAct, onFinish } = defineProps<{
   pkg: UserData.ActionPackageData;
   // Start at once and press ACT for every step without waiting for the player.
   autoAct?: boolean;
+  // Called once when the run ends. ok is false if the run had errors, warnings or was canceled.
+  onFinish?: (ok: boolean) => void;
   afterExecute?: (
     config: ActionPackageConfig,
     log: (tag: LogTag, message: LogContent) => void,
@@ -37,6 +39,8 @@ const isRunning = ref(false);
 const status = ref(undefined as string | undefined);
 const actReady = ref(false);
 const skipReady = ref(false);
+let started = false;
+let hasProblem = false;
 
 watch(config, clearLog, { deep: true });
 
@@ -99,11 +103,15 @@ const runner = new ActionRunner({
   tile,
   log: new Logger(logMessage),
   onBufferSplit: () => (goingToSplit.value = true),
-  onStart: () => (isRunning.value = true),
+  onStart: () => {
+    isRunning.value = true;
+    started = true;
+  },
   onEnd: () => {
     isRunning.value = false;
     status.value = undefined;
     afterExecute?.(config.value, logMessage);
+    onFinish?.(!hasProblem);
   },
   onStatusChanged: (title, keepReady) => {
     status.value = title;
@@ -118,6 +126,7 @@ const runner = new ActionRunner({
   onSkipReady: () => {
     skipReady.value = true;
   },
+  isAutoAct: () => autoMode.value,
 });
 
 function onConfigureApplyClick() {
@@ -137,12 +146,18 @@ async function onPreviewClick() {
   status.value = undefined;
 }
 
-function onExecuteClick() {
+async function onExecuteClick() {
   logScrolling.value = true;
   clearLog();
   actReady.value = false;
   skipReady.value = false;
-  runner.execute(pkg, config.value, extraSteps);
+  started = false;
+  hasProblem = false;
+  await runner.execute(pkg, config.value, extraSteps);
+  // The package can fail before it starts; report that too.
+  if (!started) {
+    onFinish?.(false);
+  }
 }
 
 function onCancelClick() {
@@ -166,6 +181,9 @@ function onSkipClick() {
 }
 
 function logMessage(tag: LogTag, message: LogContent) {
+  if (tag === 'ERROR' || tag === 'WARNING' || tag === 'CANCEL') {
+    hasProblem = true;
+  }
   return log.value.push({ tag, message });
 }
 
@@ -193,12 +211,15 @@ watch([actReady, autoMode], ([ready, auto]) => {
 
 function onAutoClick() {
   autoMode.value = !autoMode.value;
+  if (autoMode.value && isRunning.value) {
+    void runner.prepareAuto();
+  }
 }
 
 if (autoAct) {
   onMounted(() => {
-    if (!shouldShowConfigure.value) {
-      onExecuteClick();
+    if (!goingToSplit.value && !shouldShowConfigure.value) {
+      void onExecuteClick();
     }
   });
 }

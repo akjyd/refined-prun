@@ -854,6 +854,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.flt-flight-status-icons': 'FLT：飞行状态文字改成箭头图标。',
   'feature.flt-hide-transponder': 'FLT：隐藏「应答器」列。',
   'feature.flt-ship-condition': 'FLT：「名称」列显示船况。',
+  'feature.flt-ship-refuel':
+    'FLT：每艘船增加一个「加油」按钮，用船所在地点的库存只给这艘船加油，过程中不显示窗口。',
   'feature.flt-shorten-addresses': 'FLT：「位置」「目的地」里的地址缩短显示（只显示星球名）。',
   'feature.flt-shorten-cargo-capacity': 'FLT：货舱容量去掉「t」「m³」单位，用 k 表示千。',
   'feature.focus-buffers-on-click': '点击窗口任意位置都能聚焦窗口，不只是标题栏。',
@@ -1168,6 +1170,12 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   // 新功能 —— ACT 自动执行开关
   'act.exec.autoOn': '自动：开',
   'act.exec.autoOff': '自动：关',
+
+  // 新功能 —— 单船加油、隐藏窗口
+  'flt.refuelShip': '加油',
+  'flt.refueling': '加油中…',
+  'act.refuel.noShip': '找不到船 {0}。',
+  'act.run.preOpen': '自动模式：正在打开 {0} 个交易所窗口...',
 };
 
 export default zh;

@@ -86,6 +86,8 @@ declare namespace UserData {
     priceLimits?: Record<string, number>;
 
     buyMissingFuel?: boolean;
+    // Refuel: refuel only this ship (ship id).
+    shipId?: string;
 
     // GovBurn Data: planet natural ID or name.
     planet?: string;

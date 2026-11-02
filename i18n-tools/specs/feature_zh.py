@@ -110,6 +110,7 @@ ZH = {
  'audio-volume-slider': '在右上角的游戏设置里加音量滑块。',
  'lm-item-icons': 'LM：在广告上显示物资和运单图标。',
  'flt-ship-condition': 'FLT：「名称」列显示船况。',
+ 'flt-ship-refuel': 'FLT：每艘船增加一个「加油」按钮，用船所在地点的库存只给这艘船加油，过程中不显示窗口。',
  'always-visible-tile-controls': '窗口右上角的按钮始终显示（不用鼠标移上去）。',
  'bbl-clean-repair-info': 'BBL：「上次维修」「建立时间」「维修费用」为空或与维修无关时隐藏。',
  'bbl-collapsible-categories': 'BBL：分类可以折叠，「基础设施」默认折叠。',

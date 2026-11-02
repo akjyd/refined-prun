@@ -24,12 +24,15 @@ interface ActionRunnerOptions {
   onStatusChanged: (status: string, keepReady?: boolean) => void;
   onActReady: () => void;
   onSkipReady: () => void;
+  isAutoAct?: () => boolean;
 }
 
 export class ActionRunner {
   private readonly tileAllocator: TileAllocator;
   private readonly stepGenerator: StepGenerator;
   private stepMachine?: StepMachine;
+  // True when the current run has ended; closes the exchange windows opened for auto mode.
+  private runEnded = ref(true);
 
   constructor(private options: ActionRunnerOptions) {
     this.tileAllocator = new TileAllocator(options);
@@ -95,11 +98,52 @@ export class ActionRunner {
     }
     this.log.info(t('act.run.started'));
     this.log.info(formatTotals(steps));
+    const ended = ref(false);
+    this.runEnded = ended;
+    if (this.options.isAutoAct?.()) {
+      await this.prepareAuto(steps);
+    }
     this.stepMachine = new StepMachine(steps, {
       ...this.options,
       tileAllocator: this.tileAllocator,
+      onEnd: () => {
+        ended.value = true;
+        this.options.onEnd();
+      },
     });
     this.stepMachine.start();
+  }
+
+  // Auto mode presses ACT faster than one shared exchange window can change its material,
+  // and a purchase in a window that changes is canceled. So open one hidden exchange window
+  // for each purchase before the steps run. The windows close when the run ends.
+  async prepareAuto(steps = this.stepMachine?.remainingSteps ?? []) {
+    const ended = this.runEnded;
+    const cxTickers = new Set<string>();
+    for (const step of steps) {
+      if (step.type === 'CXPO_BUY') {
+        const data = step as unknown as { ticker: string; exchange: string };
+        cxTickers.add(`${data.ticker.toUpperCase()}.${data.exchange}`);
+      }
+    }
+    const missing = [...cxTickers].filter(x => tiles.find(`CXPO ${x}`, true).length === 0);
+    if (missing.length === 0) {
+      return;
+    }
+    // Log instead of status: a status change would clear the ACT button of a waiting step.
+    this.log.info(t('act.run.preOpen', missing.length));
+    for (const cxTicker of missing) {
+      await showBuffer(`CXPO ${cxTicker}`, { force: true, autoClose: true, closeWhen: ended });
+    }
+    const timedOut = ref(false);
+    const timer = setTimeout(() => (timedOut.value = true), orderBookTimeoutMs);
+    try {
+      await watchUntil(
+        () => timedOut.value || missing.every(x => cxobStore.getByTicker(x) !== undefined),
+      );
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   act() {

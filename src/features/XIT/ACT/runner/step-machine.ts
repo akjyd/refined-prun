@@ -38,6 +38,10 @@ export class StepMachine {
     return this.next !== undefined;
   }
 
+  get remainingSteps() {
+    return this.steps;
+  }
+
   get log() {
     return this.options.log;
   }

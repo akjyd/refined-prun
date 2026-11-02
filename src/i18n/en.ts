@@ -895,6 +895,8 @@ export default {
   'feature.flt-flight-status-icons': 'FLT: Replaces the flight status text with arrow icons.',
   'feature.flt-hide-transponder': 'FLT: Hides the "Transponder" column.',
   'feature.flt-ship-condition': 'FLT: Adds a ship condition label to the "Name" column.',
+  'feature.flt-ship-refuel':
+    'FLT: Adds a button that refuels one ship from the storage at its location without showing windows.',
   'feature.flt-shorten-addresses': 'FLT: Shortens addresses in "Location" and "Destination".',
   'feature.flt-shorten-cargo-capacity':
     'FLT: Removes "t" and "m³" and converts cargo capacity label to k-notation.',
@@ -1237,4 +1239,10 @@ export default {
   // 新功能 —— ACT 自动执行开关
   'act.exec.autoOn': 'AUTO: ON',
   'act.exec.autoOff': 'AUTO: OFF',
+
+  // 新功能 —— 单船加油、隐藏窗口
+  'flt.refuelShip': 'REFUEL',
+  'flt.refueling': 'REFUELING…',
+  'act.refuel.noShip': 'Ship {0} not found.',
+  'act.run.preOpen': 'Opening {0} exchange windows for auto mode...',
 };

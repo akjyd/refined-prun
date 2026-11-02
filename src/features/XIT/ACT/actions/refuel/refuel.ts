@@ -18,6 +18,7 @@ import {
   serializeStorage,
 } from '@src/features/XIT/ACT/actions/utils';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
+import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { getEntityNaturalIdFromAddress } from '@src/infrastructure/prun-api/data/addresses';
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
@@ -99,7 +100,11 @@ function refuelFromOrigin(
   planned?: Set<string>,
 ) {
   const originName = serializeStorage(origin);
-  const isFree = (store: PrunApi.Store) => !planned?.has(store.id);
+  // With shipId, refuel only the fuel tanks of that ship.
+  const ship = data.shipId ? shipsStore.getById(data.shipId) : undefined;
+  const isTarget = (store: PrunApi.Store) =>
+    !data.shipId || store.id === ship?.idStlFuelStore || store.id === ship?.idFtlFuelStore;
+  const isFree = (store: PrunApi.Store) => !planned?.has(store.id) && isTarget(store);
   const exchangeCode = getExchangeCode(origin);
   const isCX = exchangeCode !== undefined;
 
