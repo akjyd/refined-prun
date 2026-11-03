@@ -5,6 +5,7 @@ import {
   findContributionTable,
 } from '@src/features/XIT/ACT/action-steps/contribute-utils';
 import { fixed0 } from '@src/utils/format';
+import { waitUntil } from '@src/utils/wait';
 import { t } from '@src/i18n';
 
 interface Data {
@@ -31,11 +32,27 @@ export const CONTRIBUTE = act.addActionStep<Data>({
       data.building !== undefined
         ? `POPID P-${data.planet} T-${data.building}`
         : `COGCU ${data.planet}`;
-    const tile = await requestTile(command);
-    if (!tile) {
+    const requested = await requestTile(command);
+    if (!requested) {
       return;
     }
     setStatus(t('act.contribute.setup'));
+    // When the window changes its command, the returned tile can be the old frame.
+    // Find the live tile again and wait until its contribute block shows.
+    const liveTile = () => {
+      const found = tiles.find(command, true)[0] ?? requested;
+      return found.anchor.isConnected ? found : undefined;
+    };
+    const ready = await waitUntil(
+      () => liveTile()?.anchor.getElementsByClassName(C.Contribution.contribute).length,
+      15000,
+    );
+    const tile = liveTile();
+    if (!ready || !tile) {
+      log.warning(t('act.contribute.noTable', command));
+      skip();
+      return;
+    }
     const { contribute, table } = await findContributionTable(tile.anchor);
     if (!table) {
       log.warning(t('act.contribute.noTable', command));
