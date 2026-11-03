@@ -15,7 +15,8 @@ export function downloadFile(fileData, fileName, isJSON: boolean = true) {
   urlElement.href = url;
   urlElement.setAttribute('target', '_blank');
   urlElement.click();
-  URL.revokeObjectURL(url);
+  // Revoke later: some browsers read the blob after click() returns.
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
   return;
 }
 

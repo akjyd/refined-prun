@@ -22,6 +22,11 @@ const middleware: Middleware<Message> = {
     dispatch(storeAction);
   },
   onMessage: async message => {
+    // Record before the context check, so XIT DEV also captures messages from other
+    // contexts (for example, a planet administration context).
+    if (isRecordingPrunLog.value && message?.messageType) {
+      prunLog.value.push({ ...message, context: context.value } as Message);
+    }
     if (context.value === companyContextId.value || !companyContextId.value || !context.value) {
       return (await processEvent(message)) ?? false;
     }
@@ -48,9 +53,6 @@ async function processEvent(message: Message | undefined) {
     if (message.messageType === 'ACTION_COMPLETED') {
       return processEvent(message.payload.message);
     } else {
-      if (isRecordingPrunLog.value) {
-        prunLog.value.push(message);
-      }
       const storeAction = {
         type: message.messageType,
         data: message.payload,
