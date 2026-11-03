@@ -28,3 +28,11 @@ for k, en, zh in [('SAFETY', 'Safety', '安全'), ('HEALTH', 'Health', '健康')
     E(f'gov.sum.need.{k}', en, zh)
 for k, en, zh in [('SST', 'Safety Station', '安全站'), ('SDP', 'Security Drone Post', '安保无人机岗'), ('EMC', 'Emergency Center', '应急中心'), ('INF', 'Infirmary', '医务室'), ('HOS', 'Hospital', '医院'), ('WCE', 'Wellness Center', '康养中心'), ('PAR', 'Wildlife Park', '野生动物园'), ('4DA', '4D Arcades', '4D 游戏厅'), ('ACA', 'Art Cafe', '艺术咖啡馆'), ('ART', 'Art Gallery', '艺术画廊'), ('VRT', 'VR Theater', 'VR 剧场'), ('PBH', 'Planetary Broadcasting Hub', '行星广播中心'), ('LIB', 'Library', '图书馆'), ('UNI', 'University', '大学')]:
     E(f'gov.sum.bld.{k}', en, zh)
+for k, en, zh in [
+    ('minutesAgo', 'Updated {0} min ago', '更新于 {0} 分钟前'),
+    ('hoursAgo', 'Updated {0} h ago', '更新于 {0} 小时前'),
+    ('daysAgo', 'Updated {0} d ago', '更新于 {0} 天前'),
+    ('buildings', 'Buildings', '建筑'),
+    ('perWeek', '/wk', '/周'),
+]:
+    E(f'gov.sum.{k}', en, zh)

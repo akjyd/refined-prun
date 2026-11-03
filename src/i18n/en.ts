@@ -1288,4 +1288,9 @@ export default {
   'gov.sum.bld.PBH': 'Planetary Broadcasting Hub',
   'gov.sum.bld.LIB': 'Library',
   'gov.sum.bld.UNI': 'University',
+  'gov.sum.minutesAgo': 'Updated {0} min ago',
+  'gov.sum.hoursAgo': 'Updated {0} h ago',
+  'gov.sum.daysAgo': 'Updated {0} d ago',
+  'gov.sum.buildings': 'Buildings',
+  'gov.sum.perWeek': '/wk',
 };

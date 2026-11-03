@@ -1218,6 +1218,11 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'gov.sum.bld.PBH': '行星广播中心',
   'gov.sum.bld.LIB': '图书馆',
   'gov.sum.bld.UNI': '大学',
+  'gov.sum.minutesAgo': '更新于 {0} 分钟前',
+  'gov.sum.hoursAgo': '更新于 {0} 小时前',
+  'gov.sum.daysAgo': '更新于 {0} 天前',
+  'gov.sum.buildings': '建筑',
+  'gov.sum.perWeek': '/周',
 };
 
 export default zh;

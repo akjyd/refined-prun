@@ -100,6 +100,7 @@ function paymentText(contract: PrunApi.Contract) {
 .table {
   width: 100%;
   margin-bottom: 8px;
+  font-size: 13px;
 }
 
 .section {

@@ -9,7 +9,7 @@ import {
   TIERS,
   weekHappiness,
 } from '@src/core/population/engine';
-import { cogcDays, materialDays, resolveSlots } from '@src/features/XIT/GOVBURN/utils';
+import { cogcDays, cogcPaid, materialDays, resolveSlots } from '@src/features/XIT/GOVBURN/utils';
 import { INFRASTRUCTURE_POINTS } from '@src/features/XIT/GOVBURN/infrastructure-points';
 import { getPrice } from '@src/infrastructure/fio/cx';
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
@@ -21,11 +21,18 @@ const DAYS_IN_WEEK = 7;
 // The CoGC upkeep is paid every 10 days.
 const COGC_PERIOD_DAYS = 10;
 
+// A building store as a battery: one cell is one consumption tick.
+export interface Battery {
+  cells: number;
+  filled: number;
+}
+
 export interface SlotView {
   ticker: string;
   on: boolean;
   // Days the material in the building lasts.
   days: number;
+  battery: Battery;
   // Cost of one need point per day; undefined without a price.
   pointCost?: number;
   // Days the planet warehouse stock of this material lasts for all selected slots.
@@ -43,7 +50,7 @@ export interface BuildingView {
 }
 
 export interface CogcView {
-  program?: string | null;
+  paid: boolean;
   materials: { ticker: string; amount: number }[];
   days: number;
   warehouseDays?: number;
@@ -66,10 +73,32 @@ export interface PlanetView {
   naturalId: string;
   weeklyCost: number;
   days?: number;
+  // The battery of the selected slot that runs out first.
+  battery?: Battery;
   warehouseDays?: number;
   cogc?: CogcView;
   buildings: BuildingView[];
   stats?: PlanetStats;
+}
+
+const MS_IN_DAY = 24 * 60 * 60 * 1000;
+
+// Ticks left now: the captured amount minus the ticks that happened since the capture.
+// A building store holds 30 days of a material when no capacity was captured.
+export function upkeepBattery(upkeep: UserData.GovBurnUpkeep, now: number): Battery {
+  if (upkeep.amount <= 0) {
+    return { cells: 0, filled: 0 };
+  }
+  const durationMs = upkeep.duration * MS_IN_DAY;
+  const passed =
+    now >= upkeep.nextTick && durationMs > 0
+      ? Math.floor((now - upkeep.nextTick) / durationMs) + 1
+      : 0;
+  const capacity = upkeep.storeCapacity ?? (30 / upkeep.duration) * upkeep.amount;
+  return {
+    cells: Math.max(1, Math.round(capacity / upkeep.amount)),
+    filled: Math.max(0, Math.floor(upkeep.stored / upkeep.amount) - passed),
+  };
 }
 
 function minOf(values: (number | undefined)[]) {
@@ -168,6 +197,7 @@ export function buildPlanetView(
         ticker: upkeep.ticker,
         on,
         days: materialDays(upkeep, now),
+        battery: upkeepBattery(upkeep, now),
         pointCost,
         warehouseDays: on ? stockDays(upkeep.ticker) : undefined,
       };
@@ -197,6 +227,7 @@ export function buildPlanetView(
   let cogc: CogcView | undefined;
   if (planet.cogc !== undefined) {
     cogc = {
+      paid: cogcPaid(planet.cogc),
       materials: cogcMaterials.map(x => ({ ticker: x.ticker, amount: x.amount })),
       days: cogcDays(planet.cogc, now),
       warehouseDays: minOf(cogcMaterials.map(x => stockDays(x.ticker))),
@@ -208,7 +239,13 @@ export function buildPlanetView(
   }
 
   const levels = Object.fromEntries(planet.buildings.map(x => [x.ticker, x.level]));
+  const onSlots = buildings.flatMap(x => x.slots.filter(y => y.on));
+  const first = onSlots.reduce<SlotView | undefined>(
+    (a, x) => (a === undefined || x.days < a.days ? x : a),
+    undefined,
+  );
   return {
+    battery: first?.battery,
     naturalId,
     weeklyCost: sumBy(buildings, x => x.weeklyCost) + (cogc?.weeklyCost ?? 0),
     days: minOf(buildings.map(x => x.days)),
