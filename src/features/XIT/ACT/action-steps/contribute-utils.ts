@@ -12,34 +12,41 @@ function key(element: Element, name: string, code: number) {
   element.dispatchEvent(event);
 }
 
-function sliderValue(handle: Element) {
-  const value = Number(handle.getAttribute('aria-valuenow'));
+function sliderAttribute(handle: Element, name: string) {
+  const value = Number(handle.getAttribute(name));
   return Number.isFinite(value) ? value : undefined;
 }
 
-// Sets the slider to `amount`, or to its maximum when that is lower. Returns the set value.
-export async function setSliderValue(slider: Element, amount: number) {
+export interface SliderResult {
+  value?: number;
+  max?: number;
+}
+
+// Sets the slider to `amount`, or to its maximum when that is lower.
+export async function setSliderValue(slider: Element, amount: number): Promise<SliderResult> {
   const handle = slider.getElementsByClassName('rc-slider-handle')[0] as HTMLElement | undefined;
   if (!handle) {
-    return undefined;
+    return {};
   }
+  const value = () => sliderAttribute(handle, 'aria-valuenow') ?? 0;
+  const max = sliderAttribute(handle, 'aria-valuemax');
+  const target = max !== undefined ? Math.min(amount, max) : amount;
   handle.focus();
   key(handle, 'Home', 36);
   await sleep(0);
-  for (let i = 0; i < amount; i++) {
-    const before = sliderValue(handle);
-    key(handle, 'ArrowRight', 39);
-    // Stop at the maximum: the value no longer grows.
-    if (i % 10 === 9) {
-      await sleep(0);
-      if (sliderValue(handle) === before) {
-        break;
-      }
+  let stalls = 0;
+  while (value() < target && stalls < 3) {
+    const before = value();
+    const presses = Math.min(10, target - before);
+    for (let i = 0; i < presses; i++) {
+      key(handle, 'ArrowRight', 39);
     }
+    // Let the game render the new value before the next group of presses.
+    await sleep(20);
+    stalls = value() > before ? 0 : stalls + 1;
   }
-  await sleep(0);
   handle.blur();
-  return sliderValue(handle);
+  return { value: sliderAttribute(handle, 'aria-valuenow'), max };
 }
 
 // The material ticker of a contribution row.
@@ -58,7 +65,7 @@ export async function findContributionTable(anchor: HTMLElement) {
 
 // Sets every slider in the table: listed materials to their amounts, the rest to 0.
 export async function fillContribution(table: Element, materials: Record<string, number>) {
-  const result: Record<string, number | undefined> = {};
+  const result: Record<string, SliderResult | undefined> = {};
   for (const row of Array.from(table.getElementsByTagName('tr'))) {
     const ticker = rowTicker(row);
     const slider = row.getElementsByClassName('rc-slider')[0];
@@ -67,12 +74,12 @@ export async function fillContribution(table: Element, materials: Record<string,
     }
     const amount = materials[ticker] ?? 0;
     if (slider.classList.contains('rc-slider-disabled')) {
-      result[ticker] = amount > 0 ? 0 : undefined;
+      result[ticker] = amount > 0 ? { value: 0, max: 0 } : undefined;
       continue;
     }
-    const value = await setSliderValue(slider, amount);
+    const set = await setSliderValue(slider, amount);
     if (amount > 0) {
-      result[ticker] = value;
+      result[ticker] = set;
     }
   }
   return result;

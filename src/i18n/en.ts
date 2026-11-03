@@ -1311,6 +1311,6 @@ export default {
   'act.contribute.setup': 'Setting contribution amounts...',
   'act.contribute.noTable': 'No contribution table in {0}.',
   'act.contribute.noRow': 'No {0} row in {1}.',
-  'act.contribute.short': '{0}: could only set {1} of {2}.',
+  'act.contribute.short': '{0}: could only set {1} of {2} (slider max {3}).',
   'type.GovBurn Maintain': 'GovBurn Maintain',
 };

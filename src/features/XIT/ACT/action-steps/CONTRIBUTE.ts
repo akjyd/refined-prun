@@ -62,13 +62,21 @@ export const CONTRIBUTE = act.addActionStep<Data>({
     const set = await fillContribution(table, data.materials);
     let total = 0;
     for (const [ticker, amount] of Object.entries(data.materials)) {
-      const value = set[ticker];
+      const value = set[ticker]?.value;
       if (value === undefined) {
         log.warning(t('act.contribute.noRow', ticker, command));
         continue;
       }
       if (value < amount) {
-        log.warning(t('act.contribute.short', ticker, fixed0(value), fixed0(amount)));
+        log.warning(
+          t(
+            'act.contribute.short',
+            ticker,
+            fixed0(value),
+            fixed0(amount),
+            set[ticker]?.max !== undefined ? fixed0(set[ticker].max) : '?',
+          ),
+        );
       }
       total += value;
     }

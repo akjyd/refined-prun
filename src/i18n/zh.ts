@@ -1240,7 +1240,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'act.contribute.setup': '正在设置捐献数量...',
   'act.contribute.noTable': '{0} 里找不到捐献表。',
   'act.contribute.noRow': '{1} 里找不到 {0} 这一行。',
-  'act.contribute.short': '{0}：只能设置 {1}（计划 {2}）。',
+  'act.contribute.short': '{0}：只能设置 {1}（计划 {2}，滑块上限 {3}）。',
   'type.GovBurn Maintain': '仓库维护',
 };
 

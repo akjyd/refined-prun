@@ -19,5 +19,5 @@ E('act.contribute.desc', 'Contribute {0} to {1} on {2}', '向 {2} 的 {1} 捐献
 E('act.contribute.setup', 'Setting contribution amounts...', '正在设置捐献数量...')
 E('act.contribute.noTable', 'No contribution table in {0}.', '{0} 里找不到捐献表。')
 E('act.contribute.noRow', 'No {0} row in {1}.', '{1} 里找不到 {0} 这一行。')
-E('act.contribute.short', '{0}: could only set {1} of {2}.', '{0}：只能设置 {1}（计划 {2}）。')
+E('act.contribute.short', '{0}: could only set {1} of {2} (slider max {3}).', '{0}：只能设置 {1}（计划 {2}，滑块上限 {3}）。')
 E('type.GovBurn Maintain', 'GovBurn Maintain', '仓库维护')
