@@ -2,14 +2,31 @@ import { clickElement } from '@src/util';
 import { sleep } from '@src/utils/sleep';
 
 // Contribution tables (POPID upkeep, COGCU) have one slider per material and no number field.
-// The slider handle takes keyboard input, so Home and ArrowRight set an exact value.
+// The game keeps the amount in its own state. It takes a new amount only through the slider
+// callbacks (onChange, then onChangeComplete). Key presses move the handle, but the game
+// does not get the amount, so the contribute button stays off.
 
-function key(element: Element, name: string, code: number) {
-  const event = new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true });
-  // Some slider versions read the legacy key codes.
-  Object.defineProperty(event, 'keyCode', { get: () => code });
-  Object.defineProperty(event, 'which', { get: () => code });
-  element.dispatchEvent(event);
+interface SliderCallbacks {
+  onChange: (value: number) => void;
+  onChangeComplete?: (value: number) => void;
+}
+
+interface Fiber {
+  memoizedProps?: Record<string, unknown>;
+  return?: Fiber;
+}
+
+// The props of the slider component, read from the React fiber of the slider element.
+function sliderCallbacks(slider: Element): SliderCallbacks | undefined {
+  const fiberKey = Object.keys(slider).find(x => x.startsWith('__reactFiber'));
+  let fiber = fiberKey ? (slider as unknown as Record<string, Fiber>)[fiberKey] : undefined;
+  for (let i = 0; i < 6 && fiber; i++, fiber = fiber.return) {
+    const props = fiber.memoizedProps;
+    if (typeof props?.onChange === 'function' && typeof props.onChangeComplete === 'function') {
+      return props as unknown as SliderCallbacks;
+    }
+  }
+  return undefined;
 }
 
 function sliderAttribute(handle: Element, name: string) {
@@ -28,25 +45,23 @@ export async function setSliderValue(slider: Element, amount: number): Promise<S
   if (!handle) {
     return {};
   }
-  const value = () => sliderAttribute(handle, 'aria-valuenow') ?? 0;
+  const value = () => sliderAttribute(handle, 'aria-valuenow');
   const max = sliderAttribute(handle, 'aria-valuemax');
-  const target = max !== undefined ? Math.min(amount, max) : amount;
-  handle.focus();
-  key(handle, 'Home', 36);
-  await sleep(0);
-  let stalls = 0;
-  while (value() < target && stalls < 3) {
-    const before = value();
-    const presses = Math.min(10, target - before);
-    for (let i = 0; i < presses; i++) {
-      key(handle, 'ArrowRight', 39);
-    }
-    // Let the game render the new value before the next group of presses.
-    await sleep(20);
-    stalls = value() > before ? 0 : stalls + 1;
+  const target = Math.max(0, max !== undefined ? Math.min(amount, max) : amount);
+  const callbacks = sliderCallbacks(slider);
+  if (callbacks) {
+    callbacks.onChange(target);
+    callbacks.onChangeComplete?.(target);
+    await sleep(50);
   }
-  handle.blur();
-  return { value: sliderAttribute(handle, 'aria-valuenow'), max };
+  // Fallback: the marks at the ends of the slider also send the amount to the game.
+  if (value() !== target && (target === 0 || target === max)) {
+    const marks = slider.getElementsByClassName('rc-slider-mark')[0];
+    const mark = target === 0 ? marks?.firstElementChild : marks?.lastElementChild;
+    await clickElement(mark as HTMLElement | null);
+    await sleep(50);
+  }
+  return { value: value(), max };
 }
 
 // The material ticker of a contribution row.
