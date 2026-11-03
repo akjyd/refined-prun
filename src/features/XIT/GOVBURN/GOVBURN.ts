@@ -1,4 +1,4 @@
-import GovBurnOverview from '@src/features/XIT/GOVBURN/GovBurnOverview.vue';
+import GovBurnSummary from '@src/features/XIT/GOVBURN/GovBurnSummary.vue';
 import GovBurnPlanetView from '@src/features/XIT/GOVBURN/GovBurnPlanetView.vue';
 import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
 import { t } from '@src/i18n';
@@ -16,5 +16,5 @@ xit.add({
   },
   description: t('gov.description'),
   optionalParameters: t('gov.parameters'),
-  component: params => (params.length > 0 ? GovBurnPlanetView : GovBurnOverview),
+  component: params => (params.length > 0 ? GovBurnPlanetView : GovBurnSummary),
 });

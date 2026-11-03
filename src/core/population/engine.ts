@@ -88,7 +88,7 @@ export function requiredNeeds(population: PerTier) {
 }
 
 // The game counts open jobs as negative unemployment: -openJobs / previous population.
-function effectiveUnemployment(reports: Report[], i: number) {
+export function effectiveUnemployment(reports: Report[], i: number) {
   const r = reports[i];
   const prev = i > 0 ? reports[i - 1] : undefined;
   return perTier(t => {
@@ -156,6 +156,8 @@ export interface TierForecast {
   change: number;
   next: number;
   averageHappiness: number;
+  // Unemployment next week; negative when there are open jobs.
+  unemployment: number;
 }
 
 // Population change in the next report.
@@ -186,17 +188,15 @@ export function forecast(
   let result = {} as Record<Tier, TierForecast>;
   // Population and unemployment depend on each other: iterate until stable.
   for (let iteration = 0; iteration < 50; iteration++) {
-    const average = perTier(t => {
+    const unemployment = perTier(t => {
       const n = next[t];
-      const u =
-        n >= jobs[t]
-          ? n > 0
-            ? (n - jobs[t]) / n
-            : 0
-          : pop[t] > 0
-            ? -(jobs[t] - n) / pop[t]
-            : -100;
-      const h = weekHappiness(t, nextFulfillment, u, r.explorersGrace);
+      if (n >= jobs[t]) {
+        return n > 0 ? (n - jobs[t]) / n : 0;
+      }
+      return pop[t] > 0 ? -(jobs[t] - n) / pop[t] : -100;
+    });
+    const average = perTier(t => {
+      const h = weekHappiness(t, nextFulfillment, unemployment[t], r.explorersGrace);
       const model = clamp01(weighted([h, ...past.recent.slice(0, 4).map(x => x[t])]) + fest);
       const offset = Number.isFinite(past.offset[t]) && pop[t] > 0 ? past.offset[t] : 0;
       return clamp01(model + offset);
@@ -227,7 +227,12 @@ export function forecast(
     for (const t of TIERS) {
       const value = Math.max(0, pop[t] + change[t]);
       moved = Math.max(moved, Math.abs(value - next[t]));
-      result[t] = { change: change[t], next: value, averageHappiness: average[t] };
+      result[t] = {
+        change: change[t],
+        next: value,
+        averageHappiness: average[t],
+        unemployment: unemployment[t],
+      };
     }
     next = perTier(t => result[t].next);
     if (moved < 1e-6) {

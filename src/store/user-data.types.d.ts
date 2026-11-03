@@ -169,6 +169,8 @@ declare namespace UserData {
     capturedAt: number;
     buildings: GovBurnBuilding[];
     cogc?: GovBurnCogc;
+    // Player bases on the planet, from the planet plots (PLI or POPR).
+    bases?: number;
   }
 
   interface GovBurnBuilding {
@@ -195,6 +197,8 @@ declare namespace UserData {
     amount: number;
     duration: number;
     nextTick: number;
+    // Most the building can hold of this material.
+    storeCapacity?: number;
   }
 
   interface GovBurnCogc {

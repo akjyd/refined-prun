@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import ExecuteActionPackage from '@src/features/XIT/ACT/ExecuteActionPackage.vue';
+import { reportHiddenRun } from '@src/features/XIT/ACT/hidden-act';
 import { useXitParameters } from '@src/hooks/use-xit-parameters';
 import { userData } from '@src/store/user-data';
 import { comparePlanets } from '@src/util';
 
+// XIT GOVBURNDATA AUTO <run id>: collect all planets and press ACT for every step.
 const parameters = useXitParameters();
-const parameter = parameters.join(' ');
+const isAuto = parameters[0]?.toUpperCase() === 'AUTO';
+const runId = isAuto ? parameters[1] : undefined;
+const parameter = isAuto ? '' : parameters.join(' ');
 
 const pkg: UserData.ActionPackageData = parameter
   ? {
@@ -24,8 +28,12 @@ const pkg: UserData.ActionPackageData = parameter
           planet: naturalId,
         })),
     };
+
+function onFinish(ok: boolean) {
+  reportHiddenRun(runId, ok ? 'ok' : 'problem');
+}
 </script>
 
 <template>
-  <ExecuteActionPackage :pkg="pkg" />
+  <ExecuteActionPackage :pkg="pkg" :auto-act="isAuto" :on-finish="onFinish" />
 </template>

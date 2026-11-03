@@ -4,6 +4,7 @@ import { cogcsStore } from '@src/infrastructure/prun-api/data/cogcs';
 import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { userData } from '@src/store/user-data';
+import { planetSitesStore } from '@src/infrastructure/prun-api/data/planet-sites';
 
 // Ignore capture timestamps to avoid saving identical payloads again.
 function comparable(value: unknown) {
@@ -105,6 +106,9 @@ function capturePopulations() {
     if (existing?.cogc !== undefined) {
       next.cogc = existing.cogc;
     }
+    if (existing?.bases !== undefined) {
+      next.bases = existing.bases;
+    }
     if (existing !== undefined && comparable(existing) === comparable(next)) {
       continue;
     }
@@ -147,6 +151,7 @@ function captureProjects() {
         amount: x.amount,
         duration: x.duration,
         nextTick: x.nextTick.timestamp,
+        storeCapacity: x.storeCapacity,
       }));
       const contribHistory = mergeContribHistory(
         building.contribHistory,
@@ -171,7 +176,19 @@ function captureProjects() {
   }
 }
 
+function captureBases() {
+  for (const entry of planetSitesStore.all.value ?? []) {
+    const planet =
+      entry.naturalId !== undefined ? userData.govburn.planets[entry.naturalId] : undefined;
+    const bases = planetSitesStore.countBases(entry);
+    if (planet !== undefined && bases !== undefined && planet.bases !== bases) {
+      planet.bases = bases;
+    }
+  }
+}
+
 export function initializeGovBurnCapture() {
+  watchEffect(captureBases);
   watchEffect(capturePopulations);
   watchEffect(captureProjects);
   watchEffect(captureCogcs);
