@@ -3,7 +3,13 @@ import PrunButton from '@src/components/PrunButton.vue';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import GovBurnConfig from '@src/features/XIT/GOVBURN/GovBurnConfig.vue';
 import BatteryBar from '@src/features/XIT/GOVBURN/BatteryBar.vue';
-import { buildPlanetView, PlanetView, toggleSlot } from '@src/features/XIT/GOVBURN/summary';
+import GovBurnStats from '@src/features/XIT/GOVBURN/GovBurnStats.vue';
+import {
+  Battery,
+  buildPlanetView,
+  PlanetView,
+  toggleSlot,
+} from '@src/features/XIT/GOVBURN/summary';
 import { getPopulationReports } from '@src/features/XIT/GOVBURN/population-source';
 import { runHidden, isHiddenRunning } from '@src/features/XIT/ACT/hidden-act';
 import { getPlanetName } from '@src/core/planet-name';
@@ -11,8 +17,7 @@ import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { userData } from '@src/store/user-data';
 import { comparePlanets } from '@src/util';
 import { timestampEachMinute } from '@src/utils/dayjs';
-import { fixed0, fixed02, percent0 } from '@src/utils/format';
-import { TIERS } from '@src/core/population/engine';
+import { fixed0, fixed02 } from '@src/utils/format';
 import { INFRASTRUCTURE_POINTS } from '@src/features/XIT/GOVBURN/infrastructure-points';
 import { t } from '@src/i18n';
 
@@ -103,47 +108,23 @@ function formatDays(days: number | undefined) {
   return days > 999 ? '∞' : fixed0(days) + 'd';
 }
 
-// Below 70% red, below 100% yellow, otherwise the normal color.
-function needClass(value: number) {
-  return {
-    [C.ColoredValue.negative]: value < 0.7,
-    [$style.warning]: value >= 0.7 && value < 1,
-  };
-}
-
-function trendClass(now: number, next: number) {
-  return {
-    [C.ColoredValue.positive]: next > now + 1e-9,
-    [C.ColoredValue.negative]: next < now - 1e-9,
-  };
-}
-
-function delta(now: number, next: number, format: (x: number) => string) {
-  const d = next - now;
-  if (format(Math.abs(d)) === format(0)) {
-    return '';
-  }
-  return (d > 0 ? '+' : '−') + format(Math.abs(d));
-}
-
-const percentPoints = (x: number) => fixed0(x * 100) + '%';
-
-// Tiers that have people in this or next week.
-function shownTiers(view: PlanetView) {
-  const stats = view.stats!;
-  return TIERS.filter(t => stats.population[t].now > 0.5 || stats.population[t].next > 0.5);
-}
-
-const needKeys = ['SAFETY', 'HEALTH', 'COMFORT', 'CULTURE', 'EDUCATION'] as const;
-
 function cheapest(building: PlanetView['buildings'][number]) {
   const costs = building.slots.map(x => x.pointCost).filter(x => x !== undefined);
   return costs.length > 0 ? Math.min(...costs) : undefined;
 }
 
 type Key = Parameters<typeof t>[0];
-const tierLabel = (tier: string) => t(`gov.sum.tier.${tier}` as Key);
-const needLabel = (need: string) => t(`gov.sum.need.${need}` as Key);
+
+// The planet battery always has 5 cells; at least one stays lit while anything is left.
+function planetBattery(battery: Battery | undefined): Battery | undefined {
+  if (battery === undefined || battery.cells === 0) {
+    return battery;
+  }
+  const cells = 5;
+  const filled =
+    battery.filled > 0 ? Math.max(1, Math.round((cells * battery.filled) / battery.cells)) : 0;
+  return { cells, filled: Math.min(cells, filled) };
+}
 
 function buildingName(ticker: string) {
   if (!(ticker in INFRASTRUCTURE_POINTS)) {
@@ -178,7 +159,7 @@ function buildingName(ticker: string) {
           </span>
           <span :class="$style.tag">
             <span :class="$style.muted">{{ t('gov.sum.buildings') }}</span>
-            <BatteryBar :battery="planet.view?.battery" wide />
+            <BatteryBar :battery="planetBattery(planet.view?.battery)" wide />
           </span>
           <span :class="$style.tag">
             <span :class="$style.muted">COGC</span>
@@ -209,94 +190,13 @@ function buildingName(ticker: string) {
       <div v-if="open.has(planet.naturalId)" :class="$style.details">
         <p v-if="!planet.view" :class="$style.muted">{{ t('gov.noDataTip') }}</p>
         <template v-else>
-          <div v-if="planet.view.stats" :class="$style.stats">
-            <table :class="$style.statTable">
-              <thead>
-                <tr>
-                  <th :class="$style.muted">{{ t('gov.sum.nowNext') }}</th>
-                  <th v-for="tier in shownTiers(planet.view)" :key="tier" :class="$style.num">
-                    {{ tierLabel(tier) }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{{ t('gov.sum.population') }}</td>
-                  <td v-for="tier in shownTiers(planet.view)" :key="tier" :class="$style.num">
-                    {{ fixed0(planet.view.stats.population[tier].now) }}
-                    <span
-                      :class="[
-                        $style.delta,
-                        trendClass(
-                          planet.view.stats.population[tier].now,
-                          planet.view.stats.population[tier].next,
-                        ),
-                      ]">
-                      {{
-                        delta(
-                          planet.view.stats.population[tier].now,
-                          planet.view.stats.population[tier].next,
-                          fixed0,
-                        )
-                      }}
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>{{ t('gov.sum.happiness') }}</td>
-                  <td v-for="tier in shownTiers(planet.view)" :key="tier" :class="$style.num">
-                    {{ percent0(planet.view.stats.happiness[tier].now) }}
-                    <span
-                      :class="[
-                        $style.delta,
-                        trendClass(
-                          planet.view.stats.happiness[tier].now,
-                          planet.view.stats.happiness[tier].next,
-                        ),
-                      ]">
-                      {{
-                        delta(
-                          planet.view.stats.happiness[tier].now,
-                          planet.view.stats.happiness[tier].next,
-                          percentPoints,
-                        )
-                      }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table :class="$style.statTable">
-              <thead>
-                <tr>
-                  <th />
-                  <th v-for="need in needKeys" :key="need" :class="$style.num">
-                    {{ needLabel(need) }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{{ t('gov.sum.needs') }}</td>
-                  <td v-for="(need, i) in planet.view.stats.needs" :key="i" :class="$style.num">
-                    <span :class="needClass(need.now)">{{ percent0(need.now) }}</span>
-                    <span :class="[$style.delta, trendClass(need.now, need.next)]">
-                      {{ delta(need.now, need.next, percentPoints) }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p v-else :class="$style.muted">{{ t('gov.sum.noPopulation') }}</p>
-
           <div v-if="planet.view.cogc" :class="[$style.grid, $style.subRow]">
             <span :class="$style.label">
               <span :class="$style.labelName">COGC</span>
               <span :class="$style.items">
                 <span v-for="m in planet.view.cogc.materials" :key="m.ticker" :class="$style.item">
                   <span :class="$style.icon"
-                    ><MaterialIcon size="medium" :ticker="m.ticker"
+                    ><MaterialIcon size="inline-table" :ticker="m.ticker"
                   /></span>
                   {{ fixed0(m.amount) }}
                 </span>
@@ -335,7 +235,7 @@ function buildingName(ticker: string) {
                   @click="onSlotClick(planet.naturalId, building.ticker, slot.ticker)">
                   <span :class="$style.lamp" />
                   <span :class="$style.icon"
-                    ><MaterialIcon size="medium" :ticker="slot.ticker"
+                    ><MaterialIcon size="inline-table" :ticker="slot.ticker"
                   /></span>
                   <span :class="$style.slotText">
                     <BatteryBar :battery="slot.battery" />
@@ -364,6 +264,10 @@ function buildingName(ticker: string) {
             </span>
             <span />
           </div>
+          <div :class="$style.statsBox">
+            <GovBurnStats v-if="planet.view.stats" :stats="planet.view.stats" />
+            <p v-else :class="$style.muted">{{ t('gov.sum.noPopulation') }}</p>
+          </div>
         </template>
       </div>
     </div>
@@ -372,7 +276,7 @@ function buildingName(ticker: string) {
 
 <style module>
 .root {
-  font-size: 13px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -450,33 +354,13 @@ function buildingName(ticker: string) {
   padding: 2px 6px 8px 22px;
 }
 
-.stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  padding: 4px 0 8px;
-  border-bottom: 1px solid #2c2c2c;
-}
-
-.statTable {
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.statTable th,
-.statTable td {
-  padding: 2px 6px;
-  border: none;
-  background: none;
-}
-
-.statTable th {
-  color: #8c8c8c;
-  font-weight: normal;
-}
-
 .delta {
   font-size: 12px;
+}
+
+.statsBox {
+  padding-top: 8px;
+  border-top: 1px solid #2a2a2a;
 }
 
 .subRow {

@@ -6,22 +6,19 @@ const { battery, wide } = defineProps<{ battery?: Battery; wide?: boolean }>();
 
 const $style = useCssModule();
 
+// A one-cell battery (CoGC) is green when full. Otherwise 3 or more cells are green,
+// 2 cells yellow and 1 cell red.
 const color = computed(() => {
   const filled = battery?.filled ?? 0;
-  if (filled <= 0) {
-    return $style.empty;
+  if (battery?.cells === 1 || filled >= 3) {
+    return $style.full;
   }
-  return filled <= 1 ? $style.low : $style.full;
+  return filled === 2 ? $style.low : $style.empty;
 });
 </script>
 
 <template>
-  <span
-    :class="[
-      $style.battery,
-      wide ? $style.wide : undefined,
-      battery && battery.filled <= 0 ? $style.emptyBox : undefined,
-    ]">
+  <span :class="[$style.battery, wide ? $style.wide : undefined]">
     <template v-if="battery">
       <span
         v-for="i in battery.cells"
@@ -53,10 +50,6 @@ const color = computed(() => {
 
 .wide .cell {
   height: 12px;
-}
-
-.emptyBox {
-  border-color: #d9534f;
 }
 
 .full {
