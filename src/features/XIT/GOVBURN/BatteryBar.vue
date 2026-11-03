@@ -6,14 +6,22 @@ const { battery, wide } = defineProps<{ battery?: Battery; wide?: boolean }>();
 
 const $style = useCssModule();
 
-// A one-cell battery (CoGC) is green when full. Otherwise 3 or more cells are green,
-// 2 cells yellow and 1 cell red.
+// A one-cell battery (CoGC) is green when full. Otherwise the color comes from the days left:
+// 5 days or less red, 10 days or less yellow, more green. Slots have different tick lengths,
+// so the cell count alone does not tell how long the store lasts.
 const color = computed(() => {
-  const filled = battery?.filled ?? 0;
-  if (battery?.cells === 1 || filled >= 3) {
+  if (battery?.cells === 1) {
     return $style.full;
   }
-  return filled === 2 ? $style.low : $style.empty;
+  const days = battery?.days;
+  if (days === undefined) {
+    const filled = battery?.filled ?? 0;
+    return filled >= 3 ? $style.full : filled === 2 ? $style.low : $style.empty;
+  }
+  if (days <= 5) {
+    return $style.empty;
+  }
+  return days <= 10 ? $style.low : $style.full;
 });
 </script>
 

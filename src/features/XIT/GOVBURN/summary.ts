@@ -25,6 +25,8 @@ const COGC_PERIOD_DAYS = 10;
 export interface Battery {
   cells: number;
   filled: number;
+  // Days until the first tick the store cannot pay; sets the color.
+  days?: number;
 }
 
 export interface SlotView {
@@ -98,6 +100,7 @@ export function upkeepBattery(upkeep: UserData.GovBurnUpkeep, now: number): Batt
   return {
     cells: Math.max(1, Math.round(capacity / upkeep.amount)),
     filled: Math.max(0, Math.floor(upkeep.stored / upkeep.amount) - passed),
+    days: materialDays(upkeep, now),
   };
 }
 

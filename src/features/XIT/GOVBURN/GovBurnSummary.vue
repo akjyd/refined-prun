@@ -136,7 +136,7 @@ function planetBattery(battery: Battery | undefined): Battery | undefined {
   const cells = 5;
   const filled =
     battery.filled > 0 ? Math.max(1, Math.round((cells * battery.filled) / battery.cells)) : 0;
-  return { cells, filled: Math.min(cells, filled) };
+  return { cells, filled: Math.min(cells, filled), days: battery.days };
 }
 
 function buildingName(ticker: string) {
