@@ -27,9 +27,9 @@ export function isHiddenRunning(key: string) {
 // The window closes when the run ends without problems. When the run has a problem or
 // takes too long, the window becomes visible, so the player can read its log.
 // A second call with the same key does nothing while the first run is active.
-export async function runHidden(key: string, command: string) {
+export async function runHidden(key: string, command: string): Promise<Result | undefined> {
   if (running.has(key)) {
-    return;
+    return undefined;
   }
   running.add(key);
   const runId = createId();
@@ -46,6 +46,7 @@ export async function runHidden(key: string, command: string) {
     if (results.get(runId) !== 'ok' && window?.isConnected) {
       revealWindow(window);
     }
+    return results.get(runId) ?? 'problem';
   } finally {
     clearTimeout(timer);
     running.delete(key);

@@ -52,6 +52,9 @@ const updatedAgo = computed(() => {
       .map(x => x.upkeepsCapturedAt)
       .filter(x => x !== undefined),
   );
+  if (userData.govburn.refreshedAt > 0) {
+    times.push(userData.govburn.refreshedAt);
+  }
   if (times.length === 0) {
     return undefined;
   }
@@ -86,8 +89,11 @@ function onSlotClick(naturalId: string, buildingTicker: string, ticker: string) 
 
 const refreshing = computed(() => isHiddenRunning('govburn data'));
 
-function onRefreshClick() {
-  void runHidden('govburn data', 'XIT GOVBURNDATA AUTO');
+async function onRefreshClick() {
+  const result = await runHidden('govburn data', 'XIT GOVBURNDATA AUTO');
+  if (result === 'ok') {
+    userData.govburn.refreshedAt = Date.now();
+  }
 }
 
 function dayClass(days: number | undefined) {
@@ -142,7 +148,7 @@ function buildingName(ticker: string) {
       <span v-if="updatedAgo" :class="$style.muted">{{ updatedAgo }}</span>
       <span :class="$style.muted">{{ t('gov.sum.weekly') }}</span>
       <span>{{ fixed0(weeklyTotal) }}</span>
-      <PrunButton dark :disabled="refreshing" @click="onRefreshClick">
+      <PrunButton dark :disabled="refreshing" @click="void onRefreshClick()">
         {{ refreshing ? t('gov.sum.refreshing') : t('gov.sum.refresh') }}
       </PrunButton>
       <PrunButton dark @click="showConfig = true">{{ t('gov.ov.config') }}</PrunButton>
@@ -170,20 +176,22 @@ function buildingName(ticker: string) {
               wide />
           </span>
         </span>
-        <span :class="$style.num">
-          {{ planet.view ? fixed0(planet.view.weeklyCost) : '--' }}
-          <span :class="$style.muted">{{ t('gov.sum.perWeek') }}</span>
-        </span>
-        <span :class="$style.num">
-          <span :class="$style.muted">{{ t('gov.sum.warehouse') }}</span>
-          <span :class="dayClass(planet.view?.warehouseDays)">
-            {{ formatDays(planet.view?.warehouseDays) }}
+        <span :class="$style.side">
+          <span :class="$style.num">
+            {{ planet.view ? fixed0(planet.view.weeklyCost) : '--' }}
+            <span :class="$style.muted">{{ t('gov.sum.perWeek') }}</span>
           </span>
-        </span>
-        <span :class="$style.actions">
-          <PrunButton dark inline @click.stop="showBuffer(`XIT GOVBURNACT ${planet.naturalId}`)">
-            {{ t('gov.sum.restock') }}
-          </PrunButton>
+          <span :class="$style.num">
+            <span :class="$style.muted">{{ t('gov.sum.warehouse') }}</span>
+            <span :class="dayClass(planet.view?.warehouseDays)">
+              {{ formatDays(planet.view?.warehouseDays) }}
+            </span>
+          </span>
+          <span :class="$style.actions">
+            <PrunButton dark inline @click.stop="showBuffer(`XIT GOVBURNACT ${planet.naturalId}`)">
+              {{ t('gov.sum.restock') }}
+            </PrunButton>
+          </span>
         </span>
       </div>
 
@@ -202,17 +210,19 @@ function buildingName(ticker: string) {
                 </span>
               </span>
             </span>
-            <span :class="$style.num">
-              {{ fixed0(planet.view.cogc.weeklyCost) }}
-              <span :class="$style.muted">{{ t('gov.sum.perWeek') }}</span>
-            </span>
-            <span :class="$style.num">
-              <span :class="$style.muted">{{ t('gov.sum.warehouse') }}</span>
-              <span :class="dayClass(planet.view.cogc.warehouseDays)">
-                {{ formatDays(planet.view.cogc.warehouseDays) }}
+            <span :class="$style.side">
+              <span :class="$style.num">
+                {{ fixed0(planet.view.cogc.weeklyCost) }}
+                <span :class="$style.muted">{{ t('gov.sum.perWeek') }}</span>
               </span>
+              <span :class="$style.num">
+                <span :class="$style.muted">{{ t('gov.sum.warehouse') }}</span>
+                <span :class="dayClass(planet.view.cogc.warehouseDays)">
+                  {{ formatDays(planet.view.cogc.warehouseDays) }}
+                </span>
+              </span>
+              <span />
             </span>
-            <span />
           </div>
 
           <div
@@ -252,17 +262,19 @@ function buildingName(ticker: string) {
                 </button>
               </span>
             </span>
-            <span :class="$style.num">
-              {{ fixed0(building.weeklyCost) }}
-              <span :class="$style.muted">{{ t('gov.sum.perWeek') }}</span>
-            </span>
-            <span :class="$style.num">
-              <span :class="$style.muted">{{ t('gov.sum.warehouse') }}</span>
-              <span :class="dayClass(building.warehouseDays)">
-                {{ formatDays(building.warehouseDays) }}
+            <span :class="$style.side">
+              <span :class="$style.num">
+                {{ fixed0(building.weeklyCost) }}
+                <span :class="$style.muted">{{ t('gov.sum.perWeek') }}</span>
               </span>
+              <span :class="$style.num">
+                <span :class="$style.muted">{{ t('gov.sum.warehouse') }}</span>
+                <span :class="dayClass(building.warehouseDays)">
+                  {{ formatDays(building.warehouseDays) }}
+                </span>
+              </span>
+              <span />
             </span>
-            <span />
           </div>
           <div :class="$style.statsBox">
             <GovBurnStats v-if="planet.view.stats" :stats="planet.view.stats" />
@@ -300,10 +312,26 @@ function buildingName(ticker: string) {
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 110px 90px 80px;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   column-gap: 10px;
+  row-gap: 4px;
+}
+
+/* The main part takes the free width; the numbers keep fixed widths and move
+   to their own line when the tile is narrow. */
+.grid > :first-child {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.side {
+  display: grid;
+  grid-template-columns: 110px 90px 80px;
+  align-items: center;
+  column-gap: 10px;
+  margin-left: auto;
 }
 
 .num {
@@ -359,6 +387,7 @@ function buildingName(ticker: string) {
 }
 
 .statsBox {
+  overflow-x: auto;
   padding-top: 8px;
   border-top: 1px solid #2a2a2a;
 }
@@ -401,7 +430,7 @@ function buildingName(ticker: string) {
 
 .slots {
   display: grid;
-  grid-template-columns: repeat(3, 120px);
+  grid-template-columns: repeat(auto-fill, 120px);
   gap: 6px;
 }
 

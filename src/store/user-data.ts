@@ -92,6 +92,8 @@ export const initialUserData = deepFreeze({
       red: 3,
       yellow: 7,
     },
+    // Last time XIT GOVBURN refreshed all building data.
+    refreshedAt: 0,
   },
 
   // Used in user-data-migrations.ts
