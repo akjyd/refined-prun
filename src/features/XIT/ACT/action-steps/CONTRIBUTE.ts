@@ -3,8 +3,10 @@ import {
   clickContribute,
   fillContribution,
   findContributionTable,
+  rowTicker,
 } from '@src/features/XIT/ACT/action-steps/contribute-utils';
 import { fixed0 } from '@src/utils/format';
+import { userData } from '@src/store/user-data';
 import { waitUntil } from '@src/utils/wait';
 import { t } from '@src/i18n';
 
@@ -19,6 +21,40 @@ function materialsText(materials: Record<string, number>) {
   return Object.entries(materials)
     .map(([ticker, amount]) => `${fixed0(amount)} ${ticker}`)
     .join(', ');
+}
+
+// The materials the contribution table of this building (or the CoGC) must show.
+function expectedTickers(data: Data) {
+  const planet = userData.govburn.planets[data.planet];
+  const tickers =
+    data.building !== undefined
+      ? planet?.buildings.find(x => x.ticker === data.building)?.upkeeps?.map(x => x.ticker)
+      : planet?.cogc?.materials.map(x => x.ticker);
+  return tickers !== undefined && tickers.length > 0 ? new Set(tickers) : undefined;
+}
+
+function tableTickers(anchor: HTMLElement) {
+  const contribute = anchor.getElementsByClassName(C.Contribution.contribute)[0];
+  const table = contribute?.previousElementSibling;
+  if (!table) {
+    return undefined;
+  }
+  const tickers = Array.from(table.getElementsByTagName('tr')).map(rowTicker);
+  return new Set(tickers.filter(x => x !== undefined));
+}
+
+// True when the table shows the rows of this building, not the rows of the window's
+// previous command. The game reuses the window and can show the old rows for a moment.
+function showsTarget(anchor: HTMLElement, data: Data) {
+  const shown = tableTickers(anchor);
+  if (shown === undefined) {
+    return false;
+  }
+  const expected = expectedTickers(data);
+  if (expected !== undefined) {
+    return shown.size === expected.size && [...expected].every(x => shown.has(x));
+  }
+  return Object.keys(data.materials).every(x => shown.has(x));
 }
 
 // Contributes materials from the base on the planet to a population building or the CoGC.
@@ -38,15 +74,15 @@ export const CONTRIBUTE = act.addActionStep<Data>({
     }
     setStatus(t('act.contribute.setup'));
     // When the window changes its command, the returned tile can be the old frame.
-    // Find the live tile again and wait until its contribute block shows.
+    // Find the live tile again and wait until its table shows the rows of this target.
     const liveTile = () => {
       const found = tiles.find(command, true)[0] ?? requested;
       return found.anchor.isConnected ? found : undefined;
     };
-    const ready = await waitUntil(
-      () => liveTile()?.anchor.getElementsByClassName(C.Contribution.contribute).length,
-      15000,
-    );
+    const ready = await waitUntil(() => {
+      const anchor = liveTile()?.anchor;
+      return anchor !== undefined && showsTarget(anchor, data);
+    }, 15000);
     const tile = liveTile();
     if (!ready || !tile) {
       log.warning(t('act.contribute.noTable', command));
