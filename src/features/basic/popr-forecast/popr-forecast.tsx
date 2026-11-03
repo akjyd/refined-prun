@@ -3,7 +3,7 @@ import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
 import { populationsStore } from '@src/infrastructure/prun-api/data/populations';
 import { planetSitesStore } from '@src/infrastructure/prun-api/data/planet-sites';
 import { refTextContent } from '@src/utils/reactive-dom';
-import { fixed0, percent0 } from '@src/utils/format';
+import { fixed0 } from '@src/utils/format';
 import {
   capFulfillment,
   forecast,
@@ -103,8 +103,6 @@ function onTileReady(tile: PrunTile) {
     return forecast(reports.value, index.value, nextFulfillment, levels.value);
   });
 
-  const formatNeed = (x: NeedValue) =>
-    Number.isFinite(x.value) ? (x.exact ? '' : '≥') + percent0(x.value) : '--';
   const signed = (x: number) => (Math.round(x) > 0 ? '+' : '') + fixed0(x);
 
   subscribe($$(tile.anchor, 'tr'), element => {
@@ -132,17 +130,6 @@ function onTileReady(tile: PrunTile) {
         const p = prediction.value;
         return p !== undefined ? signed(p[TIERS[i]].change) : '--';
       });
-      return;
-    }
-    if (is(L.PopulationNeedsTable.NEED_FULFILLMENT())) {
-      // Replace the capped values, and add the expected values for next week.
-      const now = addRow(row, row, undefined, i =>
-        needs.value !== undefined ? formatNeed(needs.value.now[i]) : '--',
-      );
-      addRow(row, now, t('popr.nextFulfillment'), i =>
-        needs.value !== undefined ? formatNeed(needs.value.next[i]) : '--',
-      );
-      row.classList.add(css.hidden);
     }
   });
 }
@@ -187,5 +174,5 @@ function init() {
 features.add(
   import.meta.url,
   init,
-  'POPR: Shows unemployment as people, uncapped need fulfillment, need fulfillment next week, and the forecast population change.',
+  'POPR: Shows unemployment as people and adds the forecast population change for next week.',
 );

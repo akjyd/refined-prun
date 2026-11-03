@@ -969,7 +969,7 @@ export default {
   'feature.pli-warehouse-open-button':
     'PLI: Adds an "open" button to the warehouse row when the player has a warehouse.',
   'feature.popr-forecast':
-    'POPR: Shows unemployment as people, uncapped need fulfillment, need fulfillment next week, and the forecast population change.',
+    'POPR: Shows unemployment as people and adds the forecast population change for next week.',
   'feature.prevent-delete-button-misclicks':
     'Makes the "delete" button in chats work only when shift is held down.',
   'feature.prod-burn-link': 'PROD: Adds a XIT BURN link to the context bar.',
@@ -1250,5 +1250,4 @@ export default {
 
   // 新功能 —— POPR 预测
   'popr.nextChange': 'Next week change',
-  'popr.nextFulfillment': 'Next week fulfillment',
 };

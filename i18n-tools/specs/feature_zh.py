@@ -142,7 +142,7 @@ ZH = {
  'nots-clean-notifications': 'NOTS：去掉通知里的多余信息。',
  'pli-cogc-label': 'PLI：把「Chamber of Global Commerce」一行改成「COGC（计划类型）」。',
  'prod-hide-percent': 'PROD：订单列表里隐藏百分比。',
- 'popr-forecast': 'POPR：失业显示为人数，需求满足度不封顶，并增加「下周满足度」和「下周变化」两行。',
+ 'popr-forecast': 'POPR：失业显示为人数，并增加「下周变化」一行（预测下期人口增减）。',
  'prodq-hide-government-links': 'PRODQ：隐藏收费方链接。',
  'prodq-shorten-material-links': 'PRODQ：物资全名缩短成带链接的物资代码。',
  'sfc-auto-close': 'SFC：操作成功后自动关闭窗口。',
