@@ -14,6 +14,8 @@ import {
   TIERS,
 } from '@src/core/population/engine';
 import { t } from '@src/i18n';
+import { watchEffectWhileNodeAlive } from '@src/utils/watch';
+import { onNodeDisconnected } from '@src/utils/on-node-disconnected';
 
 function toReport(r: PrunApi.PopulationReport) {
   return {
@@ -112,59 +114,70 @@ function onTileReady(tile: PrunTile) {
       return;
     }
     const label = row.cells[0]?.textContent?.trim() ?? '';
-    const labelCell = row.cells[0]?.textContent ?? '';
     const is = (text: string | undefined) => text !== undefined && label.startsWith(text);
     if (is(L.Population.report.unemployment())) {
       // Replace the rates with the number of unemployed people.
+      addRow(row, row, undefined, i => {
+        const r = report.value;
+        const tier = TIERS[i];
+        return r !== undefined
+          ? fixed0(Math.max(0, r.unemployment[tier]) * r.population[tier])
+          : '--';
+      });
       row.classList.add(css.hidden);
-      createFragmentApp(() => (
-        <tr data-rp-popr="1">
-          <td>{labelCell}</td>
-          {TIERS.map(tier => (
-            <td>
-              {report.value !== undefined
-                ? fixed0(
-                    Math.max(0, report.value.unemployment[tier]) * report.value.population[tier],
-                  )
-                : '--'}
-            </td>
-          ))}
-        </tr>
-      )).after(row);
       return;
     }
     if (is(L.Population.report.openJobs())) {
-      createFragmentApp(() => (
-        <tr data-rp-popr="1">
-          <td>{t('popr.nextChange')}</td>
-          {TIERS.map(tier => (
-            <td>{prediction.value ? signed(prediction.value[tier].change) : '--'}</td>
-          ))}
-        </tr>
-      )).after(row);
+      addRow(row, row, t('popr.nextChange'), i => {
+        const p = prediction.value;
+        return p !== undefined ? signed(p[TIERS[i]].change) : '--';
+      });
       return;
     }
     if (is(L.PopulationNeedsTable.NEED_FULFILLMENT())) {
       // Replace the capped values, and add the expected values for next week.
+      const now = addRow(row, row, undefined, i =>
+        needs.value !== undefined ? formatNeed(needs.value.now[i]) : '--',
+      );
+      addRow(row, now, t('popr.nextFulfillment'), i =>
+        needs.value !== undefined ? formatNeed(needs.value.next[i]) : '--',
+      );
       row.classList.add(css.hidden);
-      createFragmentApp(() => (
-        <tr data-rp-popr="1">
-          <td>{labelCell}</td>
-          {NEEDS.map((_, n) => (
-            <td>{needs.value ? formatNeed(needs.value.now[n]) : '--'}</td>
-          ))}
-        </tr>
-      )).after(row);
-      createFragmentApp(() => (
-        <tr data-rp-popr="1">
-          <td>{t('popr.nextFulfillment')}</td>
-          {NEEDS.map((_, n) => (
-            <td>{needs.value ? formatNeed(needs.value.next[n]) : '--'}</td>
-          ))}
-        </tr>
-      )).after(row.nextElementSibling ?? row);
     }
   });
+}
+
+// Copies a game row, so the new row keeps the game's styles, and puts it after `after`.
+// The copy goes away with the source row.
+function addRow(
+  source: HTMLTableRowElement,
+  after: Element,
+  label: string | undefined,
+  value: (index: number) => string,
+) {
+  const copy = source.cloneNode(true) as HTMLTableRowElement;
+  copy.dataset.rpPopr = '1';
+  if (label !== undefined && copy.cells.length > 0) {
+    copy.cells[0].textContent = label;
+  }
+  after.after(copy);
+  const cells = Array.from(copy.cells).slice(1);
+  watchEffectWhileNodeAlive(copy, () => {
+    for (let i = 0; i < cells.length; i++) {
+      setText(cells[i], value(i));
+    }
+  });
+  onNodeDisconnected(source, () => copy.remove());
+  return copy;
+}
+
+// Sets the text of the innermost element, so the game's inner styles stay.
+function setText(cell: Element, text: string) {
+  let target = cell;
+  while (target.children.length === 1) {
+    target = target.children[0];
+  }
+  target.textContent = text;
 }
 
 function init() {
