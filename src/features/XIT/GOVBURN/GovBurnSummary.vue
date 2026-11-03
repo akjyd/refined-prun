@@ -89,6 +89,13 @@ function onSlotClick(naturalId: string, buildingTicker: string, ticker: string) 
 
 const refreshing = computed(() => isHiddenRunning('govburn data'));
 
+const maintaining = (target: string) =>
+  isHiddenRunning(`maintain ${target}`) || isHiddenRunning('maintain ALL');
+
+function maintain(target: string) {
+  void runHidden(`maintain ${target}`, `XIT GOVBURNMAINT ${target}`);
+}
+
 async function onRefreshClick() {
   const result = await runHidden('govburn data', 'XIT GOVBURNDATA AUTO');
   if (result === 'ok') {
@@ -152,6 +159,9 @@ function buildingName(ticker: string) {
         {{ refreshing ? t('gov.sum.refreshing') : t('gov.sum.refresh') }}
       </PrunButton>
       <PrunButton dark @click="showConfig = true">{{ t('gov.ov.config') }}</PrunButton>
+      <PrunButton primary :disabled="maintaining('ALL')" @click="maintain('ALL')">
+        {{ maintaining('ALL') ? t('gov.sum.maintaining') : t('gov.sum.maintainAll') }}
+      </PrunButton>
     </div>
 
     <p v-if="planets.length === 0" :class="$style.muted">{{ t('gov.ov.empty') }}</p>
@@ -188,6 +198,13 @@ function buildingName(ticker: string) {
             </span>
           </span>
           <span :class="$style.actions">
+            <PrunButton
+              dark
+              inline
+              :disabled="maintaining(planet.naturalId)"
+              @click.stop="maintain(planet.naturalId)">
+              {{ maintaining(planet.naturalId) ? t('gov.sum.maintaining') : t('gov.sum.maintain') }}
+            </PrunButton>
             <PrunButton dark inline @click.stop="showBuffer(`XIT GOVBURNACT ${planet.naturalId}`)">
               {{ t('gov.sum.restock') }}
             </PrunButton>
@@ -328,7 +345,7 @@ function buildingName(ticker: string) {
 
 .side {
   display: grid;
-  grid-template-columns: 110px 90px 80px;
+  grid-template-columns: 110px 90px 130px;
   align-items: center;
   column-gap: 10px;
   margin-left: auto;
@@ -376,6 +393,7 @@ function buildingName(ticker: string) {
 .actions {
   display: flex;
   justify-content: flex-end;
+  gap: 4px;
 }
 
 .details {

@@ -1293,4 +1293,24 @@ export default {
   'gov.sum.daysAgo': 'Updated {0} d ago',
   'gov.sum.buildings': 'Buildings',
   'gov.sum.perWeek': '/wk',
+
+  // 新功能 —— GOVBURN 维护
+  'gov.sum.maintain': 'MAINTAIN',
+  'gov.sum.maintainAll': 'MAINTAIN ALL',
+  'gov.sum.maintaining': 'MAINTAINING…',
+  'gov.maint.title': 'Maintain',
+  'gov.maint.description':
+    'Moves upkeep materials from the planet warehouse to your base and contributes them to the selected slots and the CoGC.',
+  'gov.maint.params': 'Planet or ALL',
+  'act.gbm.short': 'Maintain planet from warehouse',
+  'act.gbm.desc': 'Maintain {0} from its warehouse',
+  'act.gbm.noBase': 'You have no base on {0}.',
+  'act.gbm.noWarehouse': 'You have no warehouse on {0}.',
+  'act.gbm.nothing': 'Nothing to maintain on {0} from the warehouse.',
+  'act.contribute.desc': 'Contribute {0} to {1} on {2}',
+  'act.contribute.setup': 'Setting contribution amounts...',
+  'act.contribute.noTable': 'No contribution table in {0}.',
+  'act.contribute.noRow': 'No {0} row in {1}.',
+  'act.contribute.short': '{0}: could only set {1} of {2}.',
+  'type.GovBurn Maintain': 'GovBurn Maintain',
 };

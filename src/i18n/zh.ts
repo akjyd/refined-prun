@@ -1223,6 +1223,25 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'gov.sum.daysAgo': '更新于 {0} 天前',
   'gov.sum.buildings': '建筑',
   'gov.sum.perWeek': '/周',
+
+  // 新功能 —— GOVBURN 维护
+  'gov.sum.maintain': '维护',
+  'gov.sum.maintainAll': '一键维护',
+  'gov.sum.maintaining': '维护中…',
+  'gov.maint.title': '维护',
+  'gov.maint.description': '把星球仓库里的维护物资转到你的基地，再捐给选中的槽位和 COGC。',
+  'gov.maint.params': '星球或 ALL',
+  'act.gbm.short': '用仓库物资维护星球',
+  'act.gbm.desc': '用仓库物资维护 {0}',
+  'act.gbm.noBase': '你在 {0} 没有基地。',
+  'act.gbm.noWarehouse': '你在 {0} 没有仓库。',
+  'act.gbm.nothing': '{0} 没有可以用仓库物资维护的项目。',
+  'act.contribute.desc': '向 {2} 的 {1} 捐献 {0}',
+  'act.contribute.setup': '正在设置捐献数量...',
+  'act.contribute.noTable': '{0} 里找不到捐献表。',
+  'act.contribute.noRow': '{1} 里找不到 {0} 这一行。',
+  'act.contribute.short': '{0}：只能设置 {1}（计划 {2}）。',
+  'type.GovBurn Maintain': '仓库维护',
 };
 
 export default zh;
