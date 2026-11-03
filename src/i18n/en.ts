@@ -968,6 +968,8 @@ export default {
     'PLI: Replaces "Chamber of Global Commerce" row label with "CoGC ({program type})".',
   'feature.pli-warehouse-open-button':
     'PLI: Adds an "open" button to the warehouse row when the player has a warehouse.',
+  'feature.popr-forecast':
+    'POPR: Shows unemployment as people, uncapped need fulfillment, need fulfillment next week, and the forecast population change.',
   'feature.prevent-delete-button-misclicks':
     'Makes the "delete" button in chats work only when shift is held down.',
   'feature.prod-burn-link': 'PROD: Adds a XIT BURN link to the context bar.',
@@ -1245,4 +1247,8 @@ export default {
   'flt.refueling': 'REFUELING…',
   'act.refuel.noShip': 'Ship {0} not found.',
   'act.run.preOpen': 'Opening {0} exchange windows for auto mode...',
+
+  // 新功能 —— POPR 预测
+  'popr.nextChange': 'Next week change',
+  'popr.nextFulfillment': 'Next week fulfillment',
 };

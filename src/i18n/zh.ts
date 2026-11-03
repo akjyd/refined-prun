@@ -910,6 +910,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.other-context-notification-count': '在 NOTS 标题里显示其他上下文的通知数。',
   'feature.pli-cogc-label': 'PLI：把「Chamber of Global Commerce」一行改成「COGC（计划类型）」。',
   'feature.pli-warehouse-open-button': 'PLI：有仓库时在仓库行加「打开」按钮。',
+  'feature.popr-forecast':
+    'POPR：失业显示为人数，需求满足度不封顶，并增加「下周满足度」和「下周变化」两行。',
   'feature.prevent-delete-button-misclicks':
     '聊天里的「删除」按钮必须按住 Shift 才生效，防止误删。',
   'feature.prod-burn-link': 'PROD：在按钮栏加 XIT BURN 链接。',
@@ -1176,6 +1178,10 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'flt.refueling': '加油中…',
   'act.refuel.noShip': '找不到船 {0}。',
   'act.run.preOpen': '自动模式：正在打开 {0} 个交易所窗口...',
+
+  // 新功能 —— POPR 预测
+  'popr.nextChange': '下周变化',
+  'popr.nextFulfillment': '下周满足度',
 };
 
 export default zh;

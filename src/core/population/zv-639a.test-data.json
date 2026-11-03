@@ -1,0 +1,3087 @@
+{
+  "id": "34937e37bd880613a32da30e8b0a78da",
+  "infrastructure": [
+    {
+      "type": "SAFETY_STATION",
+      "ticker": "SST",
+      "projectId": "7819744fdc69c419fe6732b4f61d504f",
+      "projectName": "planetaryProjectSafetySmall",
+      "level": 1,
+      "activeLevel": -1,
+      "currentLevel": 1,
+      "upkeepStatus": 0.5501532452837166,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "SECURITY_DRONE_POST",
+      "ticker": "SDP",
+      "projectId": "3b90346b8aee0fb509cd1419d85b6a25",
+      "projectName": "planetaryProjectSafetyBig",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "EMERGENCY_CENTER",
+      "ticker": "EMC",
+      "projectId": "70818ddfb9d48645b67781cb7d82b18b",
+      "projectName": "planetaryProjectSafetyHealth",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "INFIRMARY",
+      "ticker": "INF",
+      "projectId": "be9d97917e80fa6c749a160fbc0f9edd",
+      "projectName": "planetaryProjectHealthSmall",
+      "level": 1,
+      "activeLevel": -1,
+      "currentLevel": 1,
+      "upkeepStatus": 0.6666666666666666,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "HOSPITAL",
+      "ticker": "HOS",
+      "projectId": "207a65293b79ac832d5063154ed8f1fd",
+      "projectName": "planetaryProjectHealthBig",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "WELLNESS_CENTER",
+      "ticker": "WCE",
+      "projectId": "ff7ce867008aeca85bfb765b59367ec2",
+      "projectName": "planetaryProjectHealthComfort",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "WILDLIFE_PARK",
+      "ticker": "PAR",
+      "projectId": "2aa1f832be3104609b6d35e38a23d339",
+      "projectName": "planetaryProjectComfortSmall",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "ARCADES",
+      "ticker": "4DA",
+      "projectId": "2001e83e775dfbc52cdfd799938bc319",
+      "projectName": "planetaryProjectComfortBig",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "ART_CAFE",
+      "ticker": "ACA",
+      "projectId": "2946b8ba8a7381b4a12f7ceada6ae561",
+      "projectName": "planetaryProjectComfortCulture",
+      "level": 1,
+      "activeLevel": -1,
+      "currentLevel": 1,
+      "upkeepStatus": 0.3333333333333333,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "ART_GALLERY",
+      "ticker": "ART",
+      "projectId": "92d719c2699201272a496d8b572cb65c",
+      "projectName": "planetaryProjectCultureSmall",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "THEATER",
+      "ticker": "VRT",
+      "projectId": "5211ebde68ae734d61a3057aca2bf0f3",
+      "projectName": "planetaryProjectCultureBig",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "PLANETARY_BROADCASTING_HUB",
+      "ticker": "PBH",
+      "projectId": "d7819c46cf5f1557c0ed3b47e0d122bb",
+      "projectName": "planetaryProjectCultureEducation",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "LIBRARY",
+      "ticker": "LIB",
+      "projectId": "6c8f9a6386e50a09f9ce7df768638f54",
+      "projectName": "planetaryProjectEducationSmall",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    },
+    {
+      "type": "UNIVERSITY",
+      "ticker": "UNI",
+      "projectId": "671a7a94b7e12fc1a2fd1066efed07df",
+      "projectName": "planetaryProjectEducationBig",
+      "level": 0,
+      "activeLevel": -1,
+      "currentLevel": 0,
+      "upkeepStatus": 0,
+      "upgradeStatus": 0
+    }
+  ],
+  "reports": [
+    {
+      "time": { "timestamp": 1762372646000 },
+      "simulationPeriod": 28,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 57,
+        "SETTLER": 3417,
+        "TECHNICIAN": 691,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -15,
+        "SETTLER": -28,
+        "TECHNICIAN": 2,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.5725711711099664,
+        "TECHNICIAN": 0.421894134662586,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.23859649117927448
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.2975326560232221,
+        "TECHNICIAN": 0.17271407837445574,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.9108233843394429,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1762977446000 },
+      "simulationPeriod": 29,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 3195,
+        "TECHNICIAN": 675,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -222,
+        "TECHNICIAN": -16,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.2745193477731808,
+        "SETTLER": 0.3711208879877746,
+        "TECHNICIAN": 0.37959557822144263,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.21655832520728582
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.5990635059994147,
+        "TECHNICIAN": 0.1751085383502171,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.7301046483329278,
+        "SAFETY": 0.7301046483329278,
+        "HEALTH": 0.7301046483329278,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.19354838709677422 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.19354838709677422 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8064516129032258
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8064516129032258
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1763582246000 },
+      "simulationPeriod": 30,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 2850,
+        "TECHNICIAN": 654,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -345,
+        "TECHNICIAN": -21,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.46297216404514063,
+        "SETTLER": 0.27289399425894456,
+        "TECHNICIAN": 0.3701082700578714,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.20718874490761513
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.5712050078247262,
+        "TECHNICIAN": 0.15555555555555556,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.7749935417204856,
+        "SAFETY": 0.7749935417204856,
+        "HEALTH": 0.7749935417204856,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.19354838709677422 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.19354838709677422 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8064516129032258
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8064516129032258
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1764187046000 },
+      "simulationPeriod": 31,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 2496,
+        "TECHNICIAN": 639,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -354,
+        "TECHNICIAN": -15,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.6412091191010331,
+        "SETTLER": 0.2378339687503006,
+        "TECHNICIAN": 0.3861395683378886,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.2066394124065499
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.5192982456140351,
+        "TECHNICIAN": 0.12844036697247707,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.8559201141226819,
+        "SAFETY": 0.8559201141226819,
+        "HEALTH": 0.8559201141226819,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.19354838709677422 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.19354838709677422 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8064516129032258
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8064516129032258
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1764791846000 },
+      "simulationPeriod": 32,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 191,
+        "SETTLER": 2382,
+        "TECHNICIAN": 765,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -9,
+        "SETTLER": -114,
+        "TECHNICIAN": 126,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.4154698496055768,
+        "SETTLER": 0.4184470548729468,
+        "TECHNICIAN": 0.5151985560670986,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.2225514173487123
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.1826923076923077,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 41, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": "IMMIGRATION_TECHNICIAN"
+    },
+    {
+      "time": { "timestamp": 1765396646000 },
+      "simulationPeriod": 33,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 170,
+        "SETTLER": 2360,
+        "TECHNICIAN": 790,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -21,
+        "SETTLER": -22,
+        "TECHNICIAN": 25,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.26807729284843745,
+        "SETTLER": 0.5569845019591239,
+        "TECHNICIAN": 0.529469784382494,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.23379715235330784
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.1435768261964736,
+        "TECHNICIAN": 0.11111111111111116,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1766001446000 },
+      "simulationPeriod": 34,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 147,
+        "SETTLER": 2337,
+        "TECHNICIAN": 816,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -23,
+        "SETTLER": -23,
+        "TECHNICIAN": 26,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.11688118718839494,
+        "SETTLER": 0.679490905357633,
+        "TECHNICIAN": 0.5420588536001612,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.24358542212457313
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.13559322033898302,
+        "TECHNICIAN": 0.1392405063291139,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1766606246000 },
+      "simulationPeriod": 35,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 117,
+        "SETTLER": 2423,
+        "TECHNICIAN": 840,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -30,
+        "SETTLER": 86,
+        "TECHNICIAN": 24,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.040228245363766055,
+        "SETTLER": 0.7457621487377362,
+        "TECHNICIAN": 0.5216126453195559,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.24819900142653353
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.12708600770218226,
+        "TECHNICIAN": 0.16666666666666663,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1767211046000 },
+      "simulationPeriod": 36,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 92,
+        "SETTLER": 2455,
+        "TECHNICIAN": 866,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -25,
+        "SETTLER": 32,
+        "TECHNICIAN": 26,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.7231190004926964,
+        "TECHNICIAN": 0.5392489253382462,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.2612463887742468,
+        "TECHNICIAN": 0.08333333333333337,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1767815846000 },
+      "simulationPeriod": 37,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 73,
+        "SETTLER": 2430,
+        "TECHNICIAN": 892,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -19,
+        "SETTLER": -25,
+        "TECHNICIAN": 26,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.6901827324232981,
+        "TECHNICIAN": 0.5320119257591851,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.27087576374745415,
+        "TECHNICIAN": 0.11085450346420322,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1768420646000 },
+      "simulationPeriod": 38,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 56,
+        "SETTLER": 2406,
+        "TECHNICIAN": 918,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -17,
+        "SETTLER": -24,
+        "TECHNICIAN": 26,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.6651937252824366,
+        "TECHNICIAN": 0.527282495304788,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.26337448559670784,
+        "TECHNICIAN": 0.13677130044843044,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1769025446000 },
+      "simulationPeriod": 39,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 44,
+        "SETTLER": 2382,
+        "TECHNICIAN": 943,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -12,
+        "SETTLER": -24,
+        "TECHNICIAN": 25,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.6550916465222979,
+        "TECHNICIAN": 0.5124815900991913,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.256026600166251,
+        "TECHNICIAN": 0.1612200435729847,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1769630246000 },
+      "simulationPeriod": 40,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 35,
+        "SETTLER": 2359,
+        "TECHNICIAN": 963,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -9,
+        "SETTLER": -23,
+        "TECHNICIAN": 20,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.6537562984194247,
+        "TECHNICIAN": 0.4937057912192512,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.24853064651553314,
+        "TECHNICIAN": 0.18345705196182394,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1770235046000 },
+      "simulationPeriod": 41,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 27,
+        "SETTLER": 2338,
+        "TECHNICIAN": 972,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -8,
+        "SETTLER": -21,
+        "TECHNICIAN": 9,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.6602992216077792,
+        "TECHNICIAN": 0.47250572562102683,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.24120389995760916,
+        "TECHNICIAN": 0.2004153686396677,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1770839846000 },
+      "simulationPeriod": 42,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 22,
+        "SETTLER": 2310,
+        "TECHNICIAN": 1100,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -5,
+        "SETTLER": -28,
+        "TECHNICIAN": 128,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.5990316055085498,
+        "TECHNICIAN": 0.5846886225124428,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.4054747647562019,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 108, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": "IMMIGRATION_TECHNICIAN"
+    },
+    {
+      "time": { "timestamp": 1771444646000 },
+      "simulationPeriod": 43,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 17,
+        "SETTLER": 2283,
+        "TECHNICIAN": 1128,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -5,
+        "SETTLER": -27,
+        "TECHNICIAN": 28,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.5634287748522026,
+        "TECHNICIAN": 0.6040152694022854,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.3982683982683982,
+        "TECHNICIAN": 0.018181818181818188,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1772049446000 },
+      "simulationPeriod": 44,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 14,
+        "SETTLER": 2255,
+        "TECHNICIAN": 1156,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -3,
+        "SETTLER": -28,
+        "TECHNICIAN": 28,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.5363302279634513,
+        "TECHNICIAN": 0.621441101618965,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.25
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.3911519929916776,
+        "TECHNICIAN": 0.04255319148936165,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1772654246000 },
+      "simulationPeriod": 45,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 11,
+        "SETTLER": 2212,
+        "TECHNICIAN": 1182,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -3,
+        "SETTLER": -43,
+        "TECHNICIAN": 26,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.48275318211887197,
+        "TECHNICIAN": 0.5708736283755103,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.23331897272981464
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.38359201773835916,
+        "TECHNICIAN": 0.06574394463667821,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.7400348282421512,
+        "HEALTH": 0.8429394900032152,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.37070332292705244 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.37070332292705244 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.6292966770729475
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.6292966770729475
+        }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1773259046000 },
+      "simulationPeriod": 46,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 9,
+        "SETTLER": 2053,
+        "TECHNICIAN": 1159,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -2,
+        "SETTLER": -159,
+        "TECHNICIAN": -23,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.3580425115351502,
+        "TECHNICIAN": 0.4292035944348984,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.18316917311734862
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.3716094032549728,
+        "TECHNICIAN": 0.08629441624365486,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.276900924849089,
+        "HEALTH": 0.3129694541812719,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1773863846000 },
+      "simulationPeriod": 47,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 178,
+        "SETTLER": 1977,
+        "TECHNICIAN": 1285,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -31,
+        "SETTLER": -76,
+        "TECHNICIAN": 126,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.44314651975254077,
+        "TECHNICIAN": 0.6426087147896525,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.3259412809294958
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.3229420360448124,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 251, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.8999717204437334,
+        "HEALTH": 0.965320527827724,
+        "COMFORT": 0.5099776161012468,
+        "CULTURE": 0.8412513586987137,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.37036143277837935 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.39348898865972115 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.6296385672216206
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.6065110113402788
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": "IMMIGRATION_TECHNICIAN"
+    },
+    {
+      "time": { "timestamp": 1774468646000 },
+      "simulationPeriod": 48,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 139,
+        "SETTLER": 1949,
+        "TECHNICIAN": 1508,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -39,
+        "SETTLER": -28,
+        "TECHNICIAN": 223,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.5186675633639626,
+        "TECHNICIAN": 0.7714821482229125,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.45444834893581537
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.2969145169448659,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 125, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0.7763975155279503,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.2647058823529412 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.2647058823529412 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7352941176470588
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7352941176470588
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": "IMMIGRATION_TECHNICIAN"
+    },
+    {
+      "time": { "timestamp": 1775073446000 },
+      "simulationPeriod": 49,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 109,
+        "SETTLER": 1919,
+        "TECHNICIAN": 1728,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -30,
+        "SETTLER": -30,
+        "TECHNICIAN": 220,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0,
+        "SETTLER": 0.5934831567596355,
+        "TECHNICIAN": 0.8244163487119222,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5497571084757867
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0.2868137506413545,
+        "TECHNICIAN": 0.06498673740053051,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0.6857017471680518,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.2647058823529412 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.2647058823529412 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7352941176470588
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7352941176470588
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1775678246000 },
+      "simulationPeriod": 50,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1891,
+        "TECHNICIAN": 1821,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -28,
+        "TECHNICIAN": 93,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.3811187862598606,
+        "SETTLER": 0.5455049293463874,
+        "TECHNICIAN": 0.737784453547206,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.594865129852968
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.4945284002084419,
+        "TECHNICIAN": 0.2997685185185185,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9731359649122807,
+        "SAFETY": 0.9731359649122807,
+        "HEALTH": 0.9731359649122807,
+        "COMFORT": 0.6195479777954004,
+        "CULTURE": 0.9731359649122807,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1776283046000 },
+      "simulationPeriod": 51,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1866,
+        "TECHNICIAN": 1846,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -25,
+        "TECHNICIAN": 25,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.6124628683832319,
+        "SETTLER": 0.5124204541018444,
+        "TECHNICIAN": 0.6530214340451115,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.611711695636074
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.4870438921205711,
+        "TECHNICIAN": 0.33552992861065345,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9561001885267978,
+        "SAFETY": 0.9561001885267978,
+        "HEALTH": 0.9561001885267978,
+        "COMFORT": 0.5934295480440561,
+        "CULTURE": 0.9561001885267978,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1776887846000 },
+      "simulationPeriod": 52,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1820,
+        "TECHNICIAN": 1867,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -46,
+        "TECHNICIAN": 21,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.7986666641061254,
+        "SETTLER": 0.47030416940009706,
+        "TECHNICIAN": 0.56409053571521,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.6059777758760485
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.4801714898177921,
+        "TECHNICIAN": 0.34452871072589386,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9561001885267978,
+        "SAFETY": 0.9561001885267978,
+        "HEALTH": 0.9561001885267978,
+        "COMFORT": 0.5875026437618968,
+        "CULTURE": 0.9561001885267978,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1777492646000 },
+      "simulationPeriod": 53,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1764,
+        "TECHNICIAN": 1886,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -56,
+        "TECHNICIAN": 19,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.8929166801037804,
+        "SETTLER": 0.45463504309408653,
+        "TECHNICIAN": 0.5137695652523884,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.6003466910236913
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.46703296703296704,
+        "TECHNICIAN": 0.3519014461703267,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9625813449023861,
+        "SAFETY": 0.9625813449023861,
+        "HEALTH": 0.9625813449023861,
+        "COMFORT": 0.5836348780203103,
+        "CULTURE": 0.9625813449023861,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1778097446000 },
+      "simulationPeriod": 54,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1714,
+        "TECHNICIAN": 1896,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -50,
+        "TECHNICIAN": 10,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.9440450751583481,
+        "SETTLER": 0.4584750401499085,
+        "TECHNICIAN": 0.4922120738413817,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.599740130269028
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.4501133786848073,
+        "TECHNICIAN": 0.3584305408271474,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9723363462065188,
+        "SAFETY": 0.9723363462065188,
+        "HEALTH": 0.9723363462065188,
+        "COMFORT": 0.5807605640346597,
+        "CULTURE": 0.9723363462065188,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1778702246000 },
+      "simulationPeriod": 55,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1681,
+        "TECHNICIAN": 1903,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -33,
+        "TECHNICIAN": 7,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.9508391298331045,
+        "SETTLER": 0.47946074495469243,
+        "TECHNICIAN": 0.4897253734330806,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.602603840568059
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.43407234539089845,
+        "TECHNICIAN": 0.36181434599156115,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9831071725283855,
+        "SAFETY": 0.9831071725283855,
+        "HEALTH": 0.9831071725283855,
+        "COMFORT": 0.5800867809824348,
+        "CULTURE": 0.9831071725283855,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1779307046000 },
+      "simulationPeriod": 56,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1633,
+        "TECHNICIAN": 1823,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -48,
+        "TECHNICIAN": -80,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.9227893884015699,
+        "SETTLER": 0.4525196671740046,
+        "TECHNICIAN": 0.4018415921795505,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5271487938285947
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.4229625223081499,
+        "TECHNICIAN": 0.36416184971098264,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9902370990237099,
+        "SAFETY": 0.9902370990237099,
+        "HEALTH": 0.4809021778802251,
+        "COMFORT": 0.4809021778802251,
+        "CULTURE": 0.4809021778802251,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.5730021980243045 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.4269978019756954
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1779911846000 },
+      "simulationPeriod": 57,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1568,
+        "TECHNICIAN": 1664,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -65,
+        "TECHNICIAN": -159,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.8929124242194838,
+        "SETTLER": 0.4250306952055416,
+        "TECHNICIAN": 0.3132565708268211,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.43785931246368126
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.40600122473974276,
+        "TECHNICIAN": 0.3362589138782227,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 0.28615578320837864,
+        "COMFORT": 0.28615578320837864,
+        "CULTURE": 0.28615578320837864,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1780516646000 },
+      "simulationPeriod": 58,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1475,
+        "TECHNICIAN": 1462,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -93,
+        "TECHNICIAN": -202,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.840099065515351,
+        "SETTLER": 0.3760302955002374,
+        "TECHNICIAN": 0.2487039137588496,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.3603075763723038
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.38137755102040816,
+        "TECHNICIAN": 0.27283653846153844,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.6913309099084441,
+        "HEALTH": 0.3075219878221293,
+        "COMFORT": 0.24094225513252837,
+        "CULTURE": 0.3075219878221293,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.4501697068339255 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.5498302931660746
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1781121446000 },
+      "simulationPeriod": 59,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1412,
+        "TECHNICIAN": 1350,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -63,
+        "TECHNICIAN": -112,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.8517725479501552,
+        "SETTLER": 0.41856239018631536,
+        "TECHNICIAN": 0.33281308819313343,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.36866202687194694
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.34237288135593225,
+        "TECHNICIAN": 0.1723666210670315,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.8348862838786306,
+        "HEALTH": 0.7564171823218531,
+        "COMFORT": 0.32369243872953063,
+        "CULTURE": 0.5721707414206758,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.40740405129378676 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.4504333197581873 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.5925959487062132
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.5495666802418127
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1781726246000 },
+      "simulationPeriod": 60,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1397,
+        "TECHNICIAN": 1365,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -15,
+        "TECHNICIAN": 15,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.8975425866759301,
+        "SETTLER": 0.5053371289250521,
+        "TECHNICIAN": 0.5152653330973465,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.4745659045741121
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.31303116147308785,
+        "TECHNICIAN": 0.10370370370370374,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0.7994627610245914,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1782331046000 },
+      "simulationPeriod": 61,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1379,
+        "TECHNICIAN": 1383,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -18,
+        "TECHNICIAN": 18,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.9357751241921922,
+        "SETTLER": 0.5755605812061266,
+        "TECHNICIAN": 0.6461983544972073,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5546598503738075
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.30565497494631355,
+        "TECHNICIAN": 0.1135531135531136,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0.7929962570576667,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1782935846000 },
+      "simulationPeriod": 62,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1359,
+        "TECHNICIAN": 1447,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -20,
+        "TECHNICIAN": 64,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.963119547290135,
+        "SETTLER": 0.6268362936270033,
+        "TECHNICIAN": 0.731473487335923,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.6148970439016608
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.29659173313995646,
+        "TECHNICIAN": 0.12509038322487342,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0.7853732093490826,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23076923076923078 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23076923076923078 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7692307692307692
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7692307692307692
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1783540646000 },
+      "simulationPeriod": 63,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 197,
+        "SETTLER": 1397,
+        "TECHNICIAN": 1465,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -3,
+        "SETTLER": 38,
+        "TECHNICIAN": 18,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.5852135817109496,
+        "SETTLER": 0.7393627056712129,
+        "TECHNICIAN": 0.6588824436260886,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5381996255277778
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0,
+        "TECHNICIAN": 0.16378714581893572,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 51, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.8101527300983047,
+        "HEALTH": 0.822425269926572,
+        "COMFORT": 0.27220918809828826,
+        "CULTURE": 0.48296428522610835,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.49558424531565815 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.49558424531565815 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.5044157546843419
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.5044157546843419
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1784145446000 },
+      "simulationPeriod": 64,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 181,
+        "SETTLER": 1388,
+        "TECHNICIAN": 1456,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": -16,
+        "SETTLER": -9,
+        "TECHNICIAN": -9,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.3442904221688044,
+        "SETTLER": 0.698243763952046,
+        "TECHNICIAN": 0.4706222267488014,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.37916898727526427
+      },
+      "unemploymentRate": {
+        "PIONEER": 1,
+        "SETTLER": 0,
+        "TECHNICIAN": 0.174061433447099,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 13, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.39398515989231075,
+        "HEALTH": 0.40074806305102856,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1784750246000 },
+      "simulationPeriod": 65,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1376,
+        "TECHNICIAN": 1427,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -12,
+        "TECHNICIAN": -29,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.49106447895910776,
+        "SETTLER": 0.5778480483270998,
+        "TECHNICIAN": 0.4431966348653558,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.35539198176265147
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.43804034582132567,
+        "TECHNICIAN": 0.1689560439560439,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.7575225718469972,
+        "HEALTH": 0.7502199571960843,
+        "COMFORT": 0.25756068040805163,
+        "CULTURE": 0.45783527051407774,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.4663320182705307 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.46635729233984197 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.5336679817294693
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.5336427076601581
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1785355046000 },
+      "simulationPeriod": 66,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1361,
+        "TECHNICIAN": 1442,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -15,
+        "TECHNICIAN": 15,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.6566274417386355,
+        "SETTLER": 0.5488248546760629,
+        "TECHNICIAN": 0.5350967039540211,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.4476127113234382
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.4331395348837209,
+        "TECHNICIAN": 0.15206727400140152,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0.7291742778075483,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.2392604557071306 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23926253792149207 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7607395442928694
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7607374620785079
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1785959846000 },
+      "simulationPeriod": 67,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1289,
+        "TECHNICIAN": 1456,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -72,
+        "TECHNICIAN": 14,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.7755461402017267,
+        "SETTLER": 0.40409446791679643,
+        "TECHNICIAN": 0.521883948997732,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5097434410293943
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.6473181484202792,
+        "TECHNICIAN": 0.32732316227461855,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9094151212553495,
+        "SAFETY": 0.9094151212553495,
+        "HEALTH": 0.9094151212553495,
+        "COMFORT": 0.7585411736149037,
+        "CULTURE": 0.9094151212553495,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.19354838709677422 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.19354838709677422 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8064516129032258
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8064516129032258
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1786564646000 },
+      "simulationPeriod": 68,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1182,
+        "TECHNICIAN": 1470,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -107,
+        "TECHNICIAN": 14,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.8718797080101607,
+        "SETTLER": 0.33847393130836084,
+        "TECHNICIAN": 0.5352403682578721,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5702094806687137
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.6276183087664857,
+        "TECHNICIAN": 0.3337912087912088,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9286234522942461,
+        "SAFETY": 0.9286234522942461,
+        "HEALTH": 0.9286234522942461,
+        "COMFORT": 0.7570710435467264,
+        "CULTURE": 0.9286234522942461,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.19354838709677422 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.19354838709677422 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8064516129032258
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8064516129032258
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1787169446000 },
+      "simulationPeriod": 69,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 1073,
+        "TECHNICIAN": 1482,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -109,
+        "TECHNICIAN": 12,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.925156903035053,
+        "SETTLER": 0.315537361597547,
+        "TECHNICIAN": 0.5274413536076388,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5985793671796077
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.5939086294416244,
+        "TECHNICIAN": 0.34013605442176875,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9611760271390878,
+        "SAFETY": 0.9611760271390878,
+        "HEALTH": 0.9611760271390878,
+        "COMFORT": 0.6026096635083628,
+        "CULTURE": 0.9611760271390878,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.23188702153492236 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.23188702153492236 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.7681129784650776
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.7681129784650776
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1787774246000 },
+      "simulationPeriod": 70,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 918,
+        "TECHNICIAN": 1353,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -155,
+        "TECHNICIAN": -129,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.8227474111063888,
+        "SETTLER": 0.19061310622214123,
+        "TECHNICIAN": 0.31596811290331195,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.41137881955033156
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.5526561043802423,
+        "TECHNICIAN": 0.3454790823211876,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 0.9976525821596244,
+        "SAFETY": 0.3234152652005175,
+        "HEALTH": 0.30332903617198753,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1788379046000 },
+      "simulationPeriod": 71,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 772,
+        "TECHNICIAN": 1150,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -146,
+        "TECHNICIAN": -203,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.7636160336179797,
+        "SETTLER": 0.15160044989601307,
+        "TECHNICIAN": 0.19375587440941605,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.28847133941698555
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.4771241830065359,
+        "TECHNICIAN": 0.28307464892830747,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.3662332906061161,
+        "HEALTH": 0.33918426185025013,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1788983846000 },
+      "simulationPeriod": 72,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 658,
+        "TECHNICIAN": 960,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -114,
+        "TECHNICIAN": -190,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.7267561550026675,
+        "SETTLER": 0.1733428338621063,
+        "TECHNICIAN": 0.1664022220987245,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.19688582379133218
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.37823834196891193,
+        "TECHNICIAN": 0.15652173913043477,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.4331817197314273,
+        "HEALTH": 0.4003603242918627,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1789588646000 },
+      "simulationPeriod": 73,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 583,
+        "TECHNICIAN": 842,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -75,
+        "TECHNICIAN": -118,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.7230598098402711,
+        "SETTLER": 0.25588323010744185,
+        "TECHNICIAN": 0.24592639120027704,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.15835622181659276
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.270516717325228,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 10, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.5134788189987163,
+        "HEALTH": 0.47647409172126265,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1790193446000 },
+      "simulationPeriod": 74,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 544,
+        "TECHNICIAN": 791,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -39,
+        "TECHNICIAN": -51,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.7348586016654598,
+        "SETTLER": 0.3638646751334127,
+        "TECHNICIAN": 0.36879441899990145,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.14655781182453356
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.176672384219554,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 128, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.5824111822947,
+        "HEALTH": 0.5414918099363748,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1790798246000 },
+      "simulationPeriod": 75,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 533,
+        "TECHNICIAN": 786,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -11,
+        "TECHNICIAN": -5,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.757496989266663,
+        "SETTLER": 0.47436027967859135,
+        "TECHNICIAN": 0.47553678182044573,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.15774719361698464
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.11764705882352944,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 179, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 0.6220839813374806,
+        "HEALTH": 0.5776173285198556,
+        "COMFORT": 0,
+        "CULTURE": 0,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 1 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1791403046000 },
+      "simulationPeriod": 76,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 525,
+        "TECHNICIAN": 800,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": -8,
+        "TECHNICIAN": 14,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.84364978980301,
+        "SETTLER": 0.6390014632247948,
+        "TECHNICIAN": 0.7076414918754331,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.2887715281564023
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.09943714821763605,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 184, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 0.35059397472061693,
+        "CULTURE": 0.6418617826038175,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.42610162109749977 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.3304692859201948 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.5738983789025003
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.6695307140798052
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1792007846000 },
+      "simulationPeriod": 77,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 545,
+        "TECHNICIAN": 922,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": 20,
+        "TECHNICIAN": 122,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.9069461802777,
+        "SETTLER": 0.7537747576776921,
+        "TECHNICIAN": 0.8424661228804179,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.4578288808218268
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.08571428571428574,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 170, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 1,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.10714285714285715 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.10714285714285715 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8928571428571428
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8928571428571428
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1792612646000 },
+      "simulationPeriod": 78,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 597,
+        "TECHNICIAN": 1151,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": 52,
+        "TECHNICIAN": 229,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.9527286987931803,
+        "SETTLER": 0.8146999382044746,
+        "TECHNICIAN": 0.9360816949906394,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.5762333761787444
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.11926605504587151,
+        "TECHNICIAN": 0,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 48, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 1,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.10714285714285715 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.11087663937156512 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8928571428571428
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8891233606284349
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    },
+    {
+      "time": { "timestamp": 1793217446000 },
+      "simulationPeriod": 79,
+      "explorersGraceEnabled": false,
+      "nextPopulation": {
+        "PIONEER": 0,
+        "SETTLER": 654,
+        "TECHNICIAN": 1387,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "populationDifference": {
+        "PIONEER": 0,
+        "SETTLER": 57,
+        "TECHNICIAN": 236,
+        "ENGINEER": 0,
+        "SCIENTIST": 0
+      },
+      "averageHappiness": {
+        "PIONEER": 0.9769436852199869,
+        "SETTLER": 0.8129074018109739,
+        "TECHNICIAN": 0.89619880516309,
+        "ENGINEER": 0,
+        "SCIENTIST": 0.6515569306087945
+      },
+      "unemploymentRate": {
+        "PIONEER": 0,
+        "SETTLER": 0.1959798994974874,
+        "TECHNICIAN": 0.15725456125108606,
+        "ENGINEER": 1,
+        "SCIENTIST": 0
+      },
+      "openJobs": { "PIONEER": 0, "SETTLER": 0, "TECHNICIAN": 0, "ENGINEER": 0, "SCIENTIST": 0 },
+      "needFulfillment": {
+        "LIFE_SUPPORT": 1,
+        "SAFETY": 1,
+        "HEALTH": 1,
+        "COMFORT": 1,
+        "CULTURE": 1,
+        "EDUCATION": 0
+      },
+      "needFulfillments": [
+        { "infrastructureType": "BASE", "needType": "SAFETY", "fulfillment": 0.10714285714285715 },
+        { "infrastructureType": "BASE", "needType": "HEALTH", "fulfillment": 0.10714285714285715 },
+        {
+          "infrastructureType": "SAFETY_STATION",
+          "needType": "SAFETY",
+          "fulfillment": 0.8928571428571428
+        },
+        {
+          "infrastructureType": "INFIRMARY",
+          "needType": "HEALTH",
+          "fulfillment": 0.8928571428571428
+        },
+        { "infrastructureType": "ART_CAFE", "needType": "COMFORT", "fulfillment": 1 },
+        { "infrastructureType": "ART_CAFE", "needType": "CULTURE", "fulfillment": 1 }
+      ],
+      "governmentProgramType": null
+    }
+  ]
+}
