@@ -142,7 +142,6 @@ function onRightClick(e: MouseEvent, ticker: string) {
   min-width: 1100px;
   gap: 10px;
   padding: 6px 8px;
-  font-size: 13px;
 }
 
 .tabs {

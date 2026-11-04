@@ -15,6 +15,9 @@ import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format'
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
 import link from '@src/infrastructure/prun-ui/css/link.module.css';
+import { repriceOrder } from '@src/features/XIT/ORDERS/reprice';
+import { dropPrice } from '@src/core/price-step';
+import { showErrorOverlay } from '@src/infrastructure/prun-ui/tile-overlay';
 
 // The order book of one material with your orders in it.
 const { ticker, exchange } = defineProps<{ ticker: string; exchange: string }>();
@@ -71,7 +74,87 @@ const rows = computed(() => {
   return all;
 });
 
-// Scroll the card to your first order once the book arrives.
+// Drag one of your orders to another place in the book to place it again there.
+const dragged = ref<Row>();
+// Index of the row the drop line is above; rows.length means below the last row.
+const dropAt = ref<number>();
+const busy = ref(false);
+
+function onDragStart(e: DragEvent, row: Row) {
+  if (!row.own || busy.value) {
+    e.preventDefault();
+    return;
+  }
+  dragged.value = row;
+  e.dataTransfer?.setData('text/plain', row.id);
+}
+
+function onDragOver(e: DragEvent, index: number) {
+  if (!dragged.value) {
+    return;
+  }
+  e.preventDefault();
+  const el = e.currentTarget as HTMLElement;
+  const below = e.offsetY > el.clientHeight / 2;
+  dropAt.value = below ? index + 1 : index;
+}
+
+function onDragEnd() {
+  dragged.value = undefined;
+  dropAt.value = undefined;
+}
+
+// The new price at the drop line, or undefined when the order would cross the spread.
+const newPrice = computed(() => {
+  const row = dragged.value;
+  const at = dropAt.value;
+  if (!row || at === undefined) {
+    return undefined;
+  }
+  const list = rows.value;
+  const above = list
+    .slice(0, at)
+    .filter(x => x.id !== row.id)
+    .at(-1);
+  const below = list.slice(at).find(x => x.id !== row.id);
+  const price = dropPrice(row.ask, above?.price, below?.price);
+  if (price === undefined || price === row.price) {
+    return undefined;
+  }
+  const bestBid = list.find(x => !x.ask && x.id !== row.id)?.price;
+  const bestAsk = list.filter(x => x.ask && x.id !== row.id).at(-1)?.price;
+  if (row.ask && bestBid !== undefined && price <= bestBid) {
+    return undefined;
+  }
+  if (!row.ask && bestAsk !== undefined && price >= bestAsk) {
+    return undefined;
+  }
+  return price;
+});
+
+async function onDrop(e: DragEvent) {
+  e.preventDefault();
+  const row = dragged.value;
+  const price = newPrice.value;
+  onDragEnd();
+  const order = row ? cxosStore.getById(row.id) : undefined;
+  const target = e.target as Element;
+  if (!row || !order) {
+    return;
+  }
+  if (price === undefined) {
+    showErrorOverlay(target, t('orders.badDrop'));
+    return;
+  }
+  busy.value = true;
+  try {
+    await repriceOrder(target, order, price);
+  } finally {
+    busy.value = false;
+  }
+}
+
+// Scroll the card to the spread (between offers and requests) once the book arrives.
 const body = ref<HTMLElement>();
 let scrolled = false;
 watch(
@@ -81,7 +164,7 @@ watch(
       return;
     }
     await nextTick();
-    const own = body.value?.querySelector<HTMLElement>(`.${$style.own}`);
+    const own = body.value?.querySelector<HTMLElement>(`.${$style.spread}`);
     if (body.value && own) {
       body.value.scrollTop = own.offsetTop - body.value.clientHeight / 2;
       scrolled = true;
@@ -106,9 +189,21 @@ watch(
     <div ref="body" :class="$style.body">
       <p v-if="!book" :class="$style.muted">{{ t('cx4.loading') }}</p>
       <div
-        v-for="r in rows"
+        v-for="(r, index) in rows"
         :key="r.id"
-        :class="[$style.row, r.own ? $style.own : undefined, r.first ? $style.spread : undefined]">
+        :draggable="r.own"
+        :data-price="newPrice !== undefined ? fixed02(newPrice) : ''"
+        :class="[
+          $style.row,
+          r.own ? $style.own : undefined,
+          r.first ? $style.spread : undefined,
+          dropAt === index ? $style.dropAbove : undefined,
+          dropAt === rows.length && index === rows.length - 1 ? $style.dropBelow : undefined,
+        ]"
+        @dragstart="onDragStart($event, r)"
+        @dragover="onDragOver($event, index)"
+        @dragend="onDragEnd"
+        @drop="onDrop">
         <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
         <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
           <DeleteExchangeOrderButton v-if="r.own" :order-id="r.id" screen-command="CXOS" />
@@ -164,11 +259,22 @@ watch(
   position: relative;
   height: 260px;
   overflow-y: auto;
+  /* Match the game scrollbar. */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 51, 51) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(51, 51, 51);
+    border-radius: 5px;
+  }
 }
 
 .row {
   border-top: 1px solid #2a2a2a;
-  line-height: 17px;
 }
 
 .spread {
@@ -177,6 +283,38 @@ watch(
 
 .own {
   font-weight: bold;
+  cursor: grab;
+}
+
+/* The drop line, with the new price on it. */
+.dropAbove,
+.dropBelow {
+  position: relative;
+}
+
+.dropAbove::before,
+.dropBelow::after {
+  content: attr(data-price);
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 0;
+  border-top: 2px solid #f7a600;
+  color: #f7a600;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+.dropAbove::before {
+  top: -1px;
+}
+
+.dropBelow::after {
+  bottom: -1px;
 }
 
 .amount {

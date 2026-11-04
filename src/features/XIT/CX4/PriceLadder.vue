@@ -199,7 +199,6 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 .cell {
   padding: 2px 8px;
-  line-height: 16px;
   border-top: 1px solid #262626;
 }
 

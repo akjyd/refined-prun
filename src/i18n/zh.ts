@@ -1299,6 +1299,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'orders.title': '我的挂单',
   'orders.description': '你在一个市场有挂单的每种物资，显示它们的订单簿。',
   'orders.none': '你在这个市场没有挂单。',
+  'orders.badDrop': '不能放在这里：会越过价差，直接成交。',
+  'orders.replaceFailed': '原单已撤销，但重新挂 {0} 个 {1} 失败（{3}）。原价是 {2}。',
 };
 
 export default zh;

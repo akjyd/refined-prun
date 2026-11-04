@@ -63,7 +63,6 @@ onUnmounted(() => books.close());
 <style module>
 .root {
   padding: 6px 8px;
-  font-size: 13px;
 }
 
 .tabs {
