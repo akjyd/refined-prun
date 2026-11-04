@@ -98,7 +98,7 @@ const resources = computed(() => {
   const tickers = Object.keys(d.resources)
     .filter(x => !hiddenResources.has(x))
     .sort();
-  return tickers.map(ticker => {
+  const list = tickers.map(ticker => {
     const sites = d.resources[ticker];
     let best: ResourceSite | undefined;
     let bestProfit = -Infinity;
@@ -140,9 +140,33 @@ const resources = computed(() => {
         },
       ];
     });
-    return { ticker, name: getMaterialNameByTicker(ticker) ?? ticker, volume, rows };
+    // The highest daily profit over all shown planets and exchanges.
+    let top:
+      | { row: (typeof rows)[number]; cell: (typeof rows)[number]['cells'][number] }
+      | undefined;
+    for (const row of rows) {
+      for (const cell of row.cells) {
+        if (cell.profit !== undefined && (top === undefined || cell.profit > top.cell.profit!)) {
+          top = { row, cell };
+        }
+      }
+    }
+    return { ticker, name: getMaterialNameByTicker(ticker) ?? ticker, volume, rows, top };
   });
+  return list.sort((a, b) => (b.top?.cell.profit ?? -Infinity) - (a.top?.cell.profit ?? -Infinity));
 });
+
+const open = ref(new Set<string>());
+
+function toggle(ticker: string) {
+  const next = new Set(open.value);
+  if (next.has(ticker)) {
+    next.delete(ticker);
+  } else {
+    next.add(ticker);
+  }
+  open.value = next;
+}
 
 watchEffect(() => {
   requestLiveCogc(resources.value.flatMap(x => x.rows.map(r => r.id)));
@@ -155,38 +179,61 @@ function cogcName(cogc: string) {
 
 <template>
   <div :class="$style.root">
-    <div :class="[$style.row, $style.head]">
-      <span>{{ t('extract.planet') }}</span>
-      <span :class="$style.num">{{ t('extract.outputVolume') }}</span>
-      <span :class="$style.marketsHead">{{ t('extract.profitJumps') }}</span>
-    </div>
     <p v-if="resources.length === 0" :class="$style.muted">{{ t('extract.loading') }}</p>
     <div v-for="r in resources" :key="r.ticker" :class="$style.resource">
-      <div :class="$style.title">
-        <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="r.ticker" /></span>
-        <span :class="$style.name">{{ r.name }}</span>
-      </div>
-      <div v-for="p in r.rows" :key="p.id" :class="$style.row">
-        <span>
-          <span :class="$style.name">{{ p.name }}</span>
-          <span :class="$style.muted"> {{ cogcName(p.cogc) }}</span>
+      <div :class="[$style.top, $style.clickable]" @click="toggle(r.ticker)">
+        <span :class="$style.resourceName">
+          <span :class="$style.arrow">{{ open.has(r.ticker) ? '▾' : '▸' }}</span>
+          <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="r.ticker" /></span>
+          <span :class="$style.name">{{ r.name }}</span>
         </span>
-        <span :class="$style.num">
-          <span :class="p.tooMuch ? C.ColoredValue.negative : $style.name">{{
-            fixed0(p.output)
-          }}</span>
-          <span :class="$style.muted">
-            / {{ r.volume !== undefined ? fixed0(r.volume) : '--' }}</span
-          >
-        </span>
-        <span v-for="c in p.cells" :key="c.code" :class="$style.cell">
-          <span :class="$style.muted">{{ c.code }}</span>
-          <span :class="profitClass(c.profit)">{{ formatProfit(c.profit) }}</span>
-          <span :class="$style.muted">
-            · {{ c.jumps !== undefined ? t('extract.jumps', c.jumps) : '--' }}
+        <template v-if="r.top">
+          <span>
+            <span :class="$style.name">{{ r.top.row.name }}</span>
+            <span :class="$style.muted"> {{ cogcName(r.top.row.cogc) }}</span>
           </span>
-        </span>
+          <span :class="$style.num">
+            <span :class="r.top.row.tooMuch ? C.ColoredValue.negative : $style.name">
+              {{ fixed0(r.top.row.output) }}
+            </span>
+            <span :class="$style.muted">
+              / {{ r.volume !== undefined ? fixed0(r.volume) : '--' }}
+            </span>
+          </span>
+          <span :class="$style.cell">
+            <span :class="$style.muted">{{ r.top.cell.code }}</span>
+            <span :class="profitClass(r.top.cell.profit)">{{
+              formatProfit(r.top.cell.profit)
+            }}</span>
+            <span :class="$style.muted">
+              · {{ r.top.cell.jumps !== undefined ? t('extract.jumps', r.top.cell.jumps) : '--' }}
+            </span>
+          </span>
+        </template>
       </div>
+      <template v-if="open.has(r.ticker)">
+        <div v-for="p in r.rows" :key="p.id" :class="$style.row">
+          <span>
+            <span :class="$style.name">{{ p.name }}</span>
+            <span :class="$style.muted"> {{ cogcName(p.cogc) }}</span>
+          </span>
+          <span :class="$style.num">
+            <span :class="p.tooMuch ? C.ColoredValue.negative : $style.name">
+              {{ fixed0(p.output) }}
+            </span>
+            <span :class="$style.muted">
+              / {{ r.volume !== undefined ? fixed0(r.volume) : '--' }}
+            </span>
+          </span>
+          <span v-for="c in p.cells" :key="c.code" :class="$style.cell">
+            <span :class="$style.muted">{{ c.code }}</span>
+            <span :class="profitClass(c.profit)">{{ formatProfit(c.profit) }}</span>
+            <span :class="$style.muted">
+              · {{ c.jumps !== undefined ? t('extract.jumps', c.jumps) : '--' }}
+            </span>
+          </span>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -200,20 +247,35 @@ function cogcName(cogc: string) {
 .row {
   display: grid;
   grid-template-columns: 190px 120px repeat(4, minmax(0, 1fr));
+  margin-left: 24px;
   gap: 0 8px;
   align-items: center;
   padding: 4px 4px;
   border-top: 1px solid #2c2c2c;
 }
 
-.head {
-  color: #8c8c8c;
-  border-top: none;
+.top {
+  display: grid;
+  grid-template-columns: 170px 190px 120px 160px;
+  gap: 0 8px;
+  align-items: center;
+  padding: 4px;
+  background-color: #252525;
 }
 
-.marketsHead {
-  grid-column: span 4;
-  text-align: center;
+.clickable {
+  cursor: pointer;
+}
+
+.resourceName {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arrow {
+  width: 10px;
+  color: #8c8c8c;
 }
 
 .resource {

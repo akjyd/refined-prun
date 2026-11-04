@@ -1,28 +1,56 @@
 <script setup lang="ts">
+import OrderBook from '@src/features/XIT/CX4/OrderBook.vue';
 import { materialCategoriesStore } from '@src/infrastructure/prun-api/data/material-categories';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
-import { showMaterial, toggleFavorite } from '@src/features/XIT/CX4/cx4-tiles';
+import {
+  closeHiddenBooks,
+  CX4_EXCHANGES,
+  showMaterial,
+  toggleFavorite,
+} from '@src/features/XIT/CX4/cx4-tiles';
 import { userData } from '@src/store/user-data';
 import { t } from '@src/i18n';
+import en from '@src/i18n/en';
 
 const $style = useCssModule();
+
+type Key = Parameters<typeof t>[0];
 
 const ALL = 'all';
 const FAVORITES = 'favorites';
 const RECENT = 'recent';
 
 const tab = ref(RECENT);
-const current = ref<string>();
+const current = ref<string>(userData.cx4.recent[0] ?? '');
+
+onMounted(() => {
+  if (current.value !== '') {
+    void showMaterial(current.value);
+  }
+});
+onUnmounted(closeHiddenBooks);
+
+// "consumables (basic)" -> "consumablesbasic"
+function categoryKey(name: string) {
+  return name.toLowerCase().replace(/[^a-z]/g, '');
+}
+
+function categoryName(name: string) {
+  const key = `cx4.cat.${categoryKey(name)}`;
+  return key in en ? t(key as Key) : name;
+}
 
 const categories = computed(() =>
-  [...(materialCategoriesStore.all.value ?? [])].sort((a, b) => a.name.localeCompare(b.name)),
+  [...(materialCategoriesStore.all.value ?? [])]
+    .map(x => ({ ...x, label: categoryName(x.name) }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'zh')),
 );
 
 const tabs = computed(() => [
   { id: ALL, name: t('cx4.all') },
   { id: FAVORITES, name: t('cx4.favorites') },
   { id: RECENT, name: t('cx4.recent') },
-  ...categories.value.map(x => ({ id: x.id, name: x.name })),
+  ...categories.value.map(x => ({ id: x.id, name: x.label })),
 ]);
 
 const shown = computed(() => {
@@ -53,35 +81,43 @@ function onRightClick(e: MouseEvent, ticker: string) {
 
 <template>
   <div :class="$style.root">
-    <div :class="$style.tabs">
-      <span
-        v-for="x in tabs"
-        :key="x.id"
-        :class="[$style.tab, x.id === tab ? $style.tabOn : undefined]"
-        @click="tab = x.id">
-        {{ x.name }}
-      </span>
+    <div :class="$style.picker">
+      <div :class="$style.tabs">
+        <span
+          v-for="x in tabs"
+          :key="x.id"
+          :class="[$style.tab, x.id === tab ? $style.tabOn : undefined]"
+          @click="tab = x.id">
+          {{ x.name }}
+        </span>
+      </div>
+      <div :class="$style.items">
+        <span
+          v-for="ticker in shown"
+          :key="ticker"
+          :class="[
+            $style.item,
+            ticker === current ? $style.itemOn : undefined,
+            userData.cx4.favorites.includes(ticker) ? $style.favorite : undefined,
+          ]"
+          @click="pick(ticker)"
+          @contextmenu="onRightClick($event, ticker)">
+          {{ ticker }}
+        </span>
+      </div>
+      <p :class="$style.muted">{{ t('cx4.note') }}</p>
     </div>
-    <div :class="$style.items">
-      <span
-        v-for="ticker in shown"
-        :key="ticker"
-        :class="[
-          $style.item,
-          ticker === current ? $style.itemOn : undefined,
-          userData.cx4.favorites.includes(ticker) ? $style.favorite : undefined,
-        ]"
-        @click="pick(ticker)"
-        @contextmenu="onRightClick($event, ticker)">
-        {{ ticker }}
-      </span>
+    <div v-if="current !== ''" :class="$style.books">
+      <OrderBook v-for="code in CX4_EXCHANGES" :key="code" :ticker="current" :exchange="code" />
     </div>
-    <p :class="$style.muted">{{ t('cx4.note') }}</p>
   </div>
 </template>
 
 <style module>
 .root {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 10px;
   padding: 6px 8px;
   font-size: 13px;
 }
@@ -125,6 +161,13 @@ function onRightClick(e: MouseEvent, ticker: string) {
 
 .favorite {
   box-shadow: inset 0 -2px 0 #f7a600;
+}
+
+.books {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  align-content: start;
 }
 
 .muted {

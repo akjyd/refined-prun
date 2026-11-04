@@ -1,47 +1,48 @@
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { dispatchClientPrunMessage } from '@src/infrastructure/prun-api/prun-api-listener';
 import { UI_TILES_CHANGE_COMMAND } from '@src/infrastructure/prun-api/client-messages';
+import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
 import { userData } from '@src/store/user-data';
-import { sleep } from '@src/utils/sleep';
-import { waitUntil } from '@src/utils/wait';
 
 export const CX4_EXCHANGES = ['AI1', 'CI1', 'IC1', 'NC1'];
 
-// Points the CXOB window of each exchange to the material. A window that is still open is
-// changed in place, so it keeps the place the player gave it; a missing window is opened.
+// The game sends order book data only for open CXOB windows. XIT CX4 keeps one hidden CXOB
+// window per exchange and changes its command when the player picks a material, so the
+// order books update. The windows close when XIT CX4 closes.
+const tileIds = new Map<string, string>();
+let closeSignal = ref(false);
+
 export async function showMaterial(ticker: string) {
   const recent = userData.cx4.recent.filter(x => x !== ticker);
   recent.unshift(ticker);
   userData.cx4.recent = recent.slice(0, 10);
 
-  const active = tiles.snapshotMetadata();
+  const active = new Set(tiles.snapshotMetadata().map(x => x.id));
   for (const code of CX4_EXCHANGES) {
     const command = `CXOB ${ticker}.${code}`;
-    const id = userData.cx4.tiles[code];
-    const tile = active.find(x => x.id === id && x.command === 'CXOB');
-    if (tile) {
-      if (tile.fullCommand !== command) {
-        await changeCommand(tile.id, command);
+    const id = tileIds.get(code);
+    if (id !== undefined && active.has(id)) {
+      if (dispatchClientPrunMessage(UI_TILES_CHANGE_COMMAND(id, command))) {
+        continue;
       }
-      continue;
     }
-    await showBuffer(command, { force: true });
-    const find = () => tiles.snapshotMetadata().findLast(x => x.fullCommand === command);
-    await waitUntil(find, 3000);
-    const opened = find();
-    if (opened) {
-      userData.cx4.tiles[code] = opened.id;
+    const window = await showBuffer(command, {
+      force: true,
+      autoClose: true,
+      closeWhen: closeSignal,
+    });
+    const tile = window !== undefined ? _$(window, C.Tile.tile) : undefined;
+    const tileId = tile ? getPrunId(tile) : null;
+    if (tileId !== null) {
+      tileIds.set(code, tileId);
     }
   }
 }
 
-// The game first clears the command, then sets the new one, as in the tile ":" control.
-async function changeCommand(id: string, command: string) {
-  if (!dispatchClientPrunMessage(UI_TILES_CHANGE_COMMAND(id, null))) {
-    return false;
-  }
-  await sleep(0);
-  return dispatchClientPrunMessage(UI_TILES_CHANGE_COMMAND(id, command));
+export function closeHiddenBooks() {
+  closeSignal.value = true;
+  closeSignal = ref(false);
+  tileIds.clear();
 }
 
 export function toggleFavorite(ticker: string) {
