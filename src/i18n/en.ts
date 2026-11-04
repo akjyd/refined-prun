@@ -1329,4 +1329,28 @@ export default {
     'Click a recipe to select it. A material that was never picked uses the recipe with the highest daily profit. Prices are the 30-day VWAP averaged over all exchanges. Daily profit: one base with the PRUNplanner optimal layout runs the recipe all day, with COGC and 5 experts.',
   'cxob.profitHead': 'Daily profit',
   'version.priceAge': 'prices {0} min ago',
+
+  // 新功能 —— XIT EXTRACT 开采
+  'extract.title': 'EXTRACT',
+  'extract.description':
+    'Daily profit of extraction bases: the best planet for each resource and your watched planets.',
+  'extract.planet': 'Planet',
+  'extract.outputVolume': 'Output / avg daily volume',
+  'extract.profitJumps': 'Daily profit · jumps',
+  'extract.loading': 'Loading planet data...',
+  'extract.jumps': '{0} j',
+  'extract.cogc.RESOURCE_EXTRACTION': 'Resource extraction',
+  'extract.cogc.METALLURGY': 'Metallurgy',
+  'extract.cogc.CHEMISTRY': 'Chemistry',
+  'extract.cogc.AGRICULTURE': 'Agriculture',
+  'extract.cogc.CONSTRUCTION': 'Construction',
+  'extract.cogc.MANUFACTURING': 'Manufacturing',
+  'extract.cogc.ELECTRONICS': 'Electronics',
+  'extract.cogc.FOOD_INDUSTRIES': 'Food industries',
+  'extract.cogc.FUEL_REFINING': 'Fuel refining',
+  'extract.cogc.WORKFORCE_PIONEERS': 'Pioneers',
+  'extract.cogc.WORKFORCE_SETTLERS': 'Settlers',
+  'extract.cogc.WORKFORCE_TECHNICIANS': 'Technicians',
+  'extract.cogc.WORKFORCE_ENGINEERS': 'Engineers',
+  'extract.cogc.WORKFORCE_SCIENTISTS': 'Scientists',
 };

@@ -1257,6 +1257,29 @@ const zh: Partial<Record<keyof typeof en, string>> = {
     '点配方行选中它。没选过的物资自动用日利最高的配方。价格是全部交易所的 30 天成交均价。日利：一个按 PRUNplanner 最优布局建的基地全天跑这个配方（COGC 加成、5 名专家）。',
   'cxob.profitHead': '日利',
   'version.priceAge': '价格 {0} 分钟前',
+
+  // 新功能 —— XIT EXTRACT 开采
+  'extract.title': '开采',
+  'extract.description': '开采基地的日利：每种资源日利最高的星球，以及你关注的星球。',
+  'extract.planet': '星球',
+  'extract.outputVolume': '日产 / 日均成交',
+  'extract.profitJumps': '日利 · 跳数',
+  'extract.loading': '正在读取星球数据...',
+  'extract.jumps': '{0} 跳',
+  'extract.cogc.RESOURCE_EXTRACTION': '资源开采',
+  'extract.cogc.METALLURGY': '冶金',
+  'extract.cogc.CHEMISTRY': '化工',
+  'extract.cogc.AGRICULTURE': '农业',
+  'extract.cogc.CONSTRUCTION': '建筑',
+  'extract.cogc.MANUFACTURING': '制造',
+  'extract.cogc.ELECTRONICS': '电子',
+  'extract.cogc.FOOD_INDUSTRIES': '食品',
+  'extract.cogc.FUEL_REFINING': '燃料',
+  'extract.cogc.WORKFORCE_PIONEERS': '先驱者',
+  'extract.cogc.WORKFORCE_SETTLERS': '定居者',
+  'extract.cogc.WORKFORCE_TECHNICIANS': '技术员',
+  'extract.cogc.WORKFORCE_ENGINEERS': '工程师',
+  'extract.cogc.WORKFORCE_SCIENTISTS': '科学家',
 };
 
 export default zh;
