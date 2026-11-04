@@ -93,6 +93,8 @@ async function pick(ticker: string) {
   await showMaterial(ticker);
 }
 
+const favorites = computed(() => new Set(userData.cx4.favorites));
+
 function onRightClick(e: MouseEvent, ticker: string) {
   e.preventDefault();
   toggleFavorite(ticker);
@@ -122,7 +124,11 @@ function onRightClick(e: MouseEvent, ticker: string) {
         <span
           v-for="ticker in shown"
           :key="ticker"
-          :class="[$style.item, ticker === current ? $style.itemOn : undefined]"
+          :class="[
+            $style.item,
+            ticker === current ? $style.itemOn : undefined,
+            tab !== FAVORITES && favorites.has(ticker) ? $style.favorite : undefined,
+          ]"
           @click="pick(ticker)"
           @contextmenu="onRightClick($event, ticker)">
           <MaterialIcon size="inline-table" :ticker="ticker" />

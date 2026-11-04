@@ -6,6 +6,9 @@ import { watchEffectWhileNodeAlive } from '@src/utils/watch';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { fxobStore } from '@src/infrastructure/prun-api/data/fxob';
+import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
+import { createReactiveSpan } from '@src/utils/reactive-element';
+import { fixed0 } from '@src/utils/format';
 
 type GetOwnOrders = (parameter?: string) => { id: string }[] | undefined;
 
@@ -35,6 +38,14 @@ function onTileReady(tile: PrunTile, getOwnOrders: GetOwnOrders, orderCommand: s
         e.stopPropagation();
       }
     });
+    if (orderCommand === 'CXOS') {
+      // Your own CX orders show the amount left / the amount placed.
+      const placed = computed(() => {
+        const order = ownOrder.value ? cxosStore.getById(ownOrder.value.id) : undefined;
+        return order ? `/${fixed0(order.initialAmount)}` : undefined;
+      });
+      amountColumn.appendChild(createReactiveSpan(tr, placed));
+    }
     watchEffectWhileNodeAlive(tr, () => {
       const isOwnOrder = ownOrder.value !== undefined;
       tr.classList.toggle($style.ownOrder, isOwnOrder);

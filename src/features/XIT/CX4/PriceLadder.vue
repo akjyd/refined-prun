@@ -3,6 +3,7 @@ import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton
 import PrunLink from '@src/components/PrunLink.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
+import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import {
   chosenRecipe,
   exchangePrice,
@@ -34,6 +35,15 @@ interface Cell {
 const books = computed(() => exchanges.map(x => cxobStore.getByTicker(`${ticker}.${x}`)));
 const recipe = computed(() => chosenRecipe(ticker));
 
+// Your own orders show the amount left / the amount placed.
+function ownAmount(order: PrunApi.CXBrokerOrder) {
+  if (order.trader.id !== companyStore.value?.id) {
+    return undefined;
+  }
+  const mine = cxosStore.getById(order.id);
+  return mine ? `${fixed0(mine.amount)}/${fixed0(mine.initialAmount)}` : undefined;
+}
+
 // Rank of each value among the others, the highest first; equal values share a rank.
 function ranks(values: (number | undefined)[]) {
   const distinct = [...new Set(values.filter((x): x is number => x !== undefined))].sort(
@@ -54,7 +64,7 @@ const columns = computed(() => {
       id: order.id,
       ask,
       price: order.limit.amount,
-      amount: order.amount === null ? '∞' : fixed0(order.amount),
+      amount: ownAmount(order) ?? (order.amount === null ? '∞' : fixed0(order.amount)),
       profit: r ? profitOf(r, withPrice(price, ticker, order.limit.amount)) : undefined,
       own: order.trader.id === ownId,
     });
@@ -188,7 +198,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .columns,
 .cell {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 76px 70px;
+  grid-template-columns: minmax(44px, 1fr) 96px 70px;
   gap: 0 6px;
 }
 
