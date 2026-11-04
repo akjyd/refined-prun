@@ -17,7 +17,7 @@ async function onFooterReady(footer: HTMLElement) {
         class={[$style.label, C.HeadItem.label]}
         data-tooltip="Refined PrUn version."
         data-tooltip-position="top">
-        v. {config.version}
+        v. {config.version} · {__BUILD_TIME__}
       </div>
     </div>
   )).before(userCount);

@@ -9,3 +9,6 @@ interface PrunTile {
   command: string;
   parameter: string | undefined;
 }
+
+// Build time (MM-DD HH:mm, China time), set by vite.config.mts.
+declare const __BUILD_TIME__: string;

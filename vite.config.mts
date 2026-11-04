@@ -106,6 +106,8 @@ export default defineConfig({
   define: {
     // This define is needed for vue npm packages
     'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
+    // Build time in China time, shown next to the version label.
+    __BUILD_TIME__: JSON.stringify(buildTime()),
   },
 });
 
@@ -149,4 +151,8 @@ function sanitizeOutputSegment(segment: string): string {
     .replaceAll('=', '_');
 
   return sanitized.replace(/^_+/, '') || 'virtual';
+}
+
+function buildTime() {
+  return new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Shanghai' }).slice(5, 16);
 }
