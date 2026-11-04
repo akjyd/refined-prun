@@ -102,6 +102,8 @@ export const initialUserData = deepFreeze({
     favorites: [] as string[],
     recent: [] as string[],
     tiles: {} as Record<string, string | undefined>,
+    // Exchange last shown in XIT ORDERS.
+    ordersExchange: undefined as string | undefined,
   },
 
   // Used in user-data-migrations.ts

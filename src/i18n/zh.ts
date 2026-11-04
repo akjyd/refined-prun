@@ -1294,6 +1294,11 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'cx4.price': '价格',
   'cx4.spread': '价差 {0}',
   'cx4.other': '其他',
+
+  // 新功能 —— XIT ORDERS 我的挂单
+  'orders.title': '我的挂单',
+  'orders.description': '你在一个市场有挂单的每种物资，显示它们的订单簿。',
+  'orders.none': '你在这个市场没有挂单。',
 };
 
 export default zh;

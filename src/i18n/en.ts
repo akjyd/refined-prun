@@ -1367,4 +1367,9 @@ export default {
   'cx4.price': 'Price',
   'cx4.spread': 'Spread {0}',
   'cx4.other': 'Other',
+
+  // 新功能 —— XIT ORDERS 我的挂单
+  'orders.title': 'MY ORDERS',
+  'orders.description': 'Order books of every material where you have orders on an exchange.',
+  'orders.none': 'You have no orders on this exchange.',
 };
