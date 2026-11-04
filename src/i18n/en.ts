@@ -1375,4 +1375,5 @@ export default {
   'orders.badDrop': 'The order cannot go there: it would cross the spread.',
   'orders.replaceFailed':
     'The old order was deleted, but placing {0} {1} again failed ({3}). The old price was {2}.',
+  'orders.refresh': 'REFRESH',
 };

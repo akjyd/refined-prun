@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import OrderCard from '@src/features/XIT/ORDERS/OrderCard.vue';
+import PrunButton from '@src/components/PrunButton.vue';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { compareMaterials } from '@src/core/sort-materials';
@@ -23,8 +24,28 @@ const byExchange = computed(() => {
   return result;
 });
 
+// A card stays after its last order is deleted or filled, so a card does not flicker while an
+// order is placed again, and you can delete several orders to merge them. REFRESH drops the
+// cards without orders.
+const kept = ref(new Map<string, Set<string>>());
+watchEffect(() => {
+  for (const [code, set] of byExchange.value) {
+    const old = kept.value.get(code);
+    if (!old || [...set].some(x => !old.has(x))) {
+      kept.value.set(code, new Set([...(old ?? []), ...set]));
+    }
+  }
+});
+
+const refreshKey = ref(0);
+
+function refresh() {
+  kept.value.set(exchange.value, new Set(byExchange.value.get(exchange.value)));
+  refreshKey.value++;
+}
+
 const tickers = computed(() =>
-  [...(byExchange.value.get(exchange.value) ?? [])].sort((a, b) =>
+  [...(kept.value.get(exchange.value) ?? [])].sort((a, b) =>
     compareMaterials(materialsStore.getByTicker(a), materialsStore.getByTicker(b)),
   ),
 );
@@ -48,6 +69,8 @@ onUnmounted(() => books.close());
         @click="exchange = code">
         {{ code }} <span :class="$style.count">{{ byExchange.get(code)?.size ?? 0 }}</span>
       </span>
+      <span :class="$style.spacer" />
+      <PrunButton dark inline @click="refresh">{{ t('orders.refresh') }}</PrunButton>
     </div>
     <p v-if="tickers.length === 0" :class="$style.muted">{{ t('orders.none') }}</p>
     <div :class="$style.cards">
@@ -55,7 +78,8 @@ onUnmounted(() => books.close());
         v-for="ticker in tickers"
         :key="`${ticker}.${exchange}`"
         :ticker="ticker"
-        :exchange="exchange" />
+        :exchange="exchange"
+        :refresh-key="refreshKey" />
     </div>
   </div>
 </template>
@@ -80,6 +104,10 @@ onUnmounted(() => books.close());
 .tabOn {
   background-color: #f7a600;
   color: #1e1e1e;
+}
+
+.spacer {
+  flex: 1;
 }
 
 .count {

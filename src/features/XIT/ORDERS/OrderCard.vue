@@ -20,7 +20,12 @@ import { dropPrice } from '@src/core/price-step';
 import { showErrorOverlay } from '@src/infrastructure/prun-ui/tile-overlay';
 
 // The order book of one material with your orders in it.
-const { ticker, exchange } = defineProps<{ ticker: string; exchange: string }>();
+const { ticker, exchange, refreshKey } = defineProps<{
+  ticker: string;
+  exchange: string;
+  // Changes when the player presses REFRESH.
+  refreshKey: number;
+}>();
 
 const $style = useCssModule();
 
@@ -36,9 +41,11 @@ interface Row {
   own: boolean;
   mark?: string;
   first: boolean;
+  // A deleted or filled order of yours, kept until REFRESH.
+  gone?: boolean;
 }
 
-const rows = computed(() => {
+const liveRows = computed(() => {
   const b = book.value;
   if (!b) {
     return [];
@@ -72,6 +79,29 @@ const rows = computed(() => {
     row.mark = marks.get(row.id);
   }
   return all;
+});
+
+// Your orders that left the book stay as faded rows until REFRESH, so you can see what you
+// deleted (to merge orders) and a placed-again order does not flicker.
+const gone = ref(new Map<string, Row>());
+watch(liveRows, (now, before) => {
+  const ids = new Set(now.map(x => x.id));
+  for (const row of before ?? []) {
+    if (row.own && !ids.has(row.id) && !gone.value.has(row.id)) {
+      gone.value.set(row.id, { ...row, gone: true, mark: undefined, first: false });
+    }
+  }
+});
+watch(
+  () => refreshKey,
+  () => gone.value.clear(),
+);
+
+const rows = computed(() => {
+  const all = [...liveRows.value, ...gone.value.values()];
+  all.sort((a, b) => (b.price !== a.price ? b.price - a.price : Number(b.ask) - Number(a.ask)));
+  const firstBid = all.find(x => !x.ask);
+  return all.map(x => ({ ...x, first: x === firstBid }));
 });
 
 // Drag one of your orders to another place in the book to place it again there.
@@ -111,12 +141,13 @@ const newPrice = computed(() => {
   if (!row || at === undefined) {
     return undefined;
   }
-  const list = rows.value;
+  const list = rows.value.filter(x => !x.gone);
+  const at2 = rows.value.slice(0, at).filter(x => !x.gone).length;
   const above = list
-    .slice(0, at)
+    .slice(0, at2)
     .filter(x => x.id !== row.id)
     .at(-1);
-  const below = list.slice(at).find(x => x.id !== row.id);
+  const below = list.slice(at2).find(x => x.id !== row.id);
   const price = dropPrice(row.ask, above?.price, below?.price);
   if (price === undefined || price === row.price) {
     return undefined;
@@ -191,11 +222,12 @@ watch(
       <div
         v-for="(r, index) in rows"
         :key="r.id"
-        :draggable="r.own"
+        :draggable="r.own && !r.gone"
         :data-price="newPrice !== undefined ? fixed02(newPrice) : ''"
         :class="[
           $style.row,
           r.own ? $style.own : undefined,
+          r.gone ? $style.gone : undefined,
           r.first ? $style.spread : undefined,
           dropAt === index ? $style.dropAbove : undefined,
           dropAt === rows.length && index === rows.length - 1 ? $style.dropBelow : undefined,
@@ -206,7 +238,10 @@ watch(
         @drop="onDrop">
         <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
         <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
-          <DeleteExchangeOrderButton v-if="r.own" :order-id="r.id" screen-command="CXOS" />
+          <DeleteExchangeOrderButton
+            v-if="r.own && !r.gone"
+            :order-id="r.id"
+            screen-command="CXOS" />
           {{ r.amount }}
         </span>
         <span :class="[$style.num, r.ask ? C.ColoredValue.negative : C.ColoredValue.positive]">
@@ -279,6 +314,11 @@ watch(
 
 .spread {
   border-top: 1px solid #5a5a5a;
+}
+
+.gone {
+  opacity: 0.4;
+  text-decoration: line-through;
 }
 
 .own {
