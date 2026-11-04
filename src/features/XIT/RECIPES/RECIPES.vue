@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import CopyButton from '@src/components/CopyButton.vue';
-import { Recipe } from '@src/core/daily-profit/daily-profit';
+import { buildingCount, layoutText, Recipe } from '@src/core/daily-profit/daily-profit';
 import {
   bestRecipe,
   exchangePrice,
@@ -82,6 +82,12 @@ function exportChoices() {
   return JSON.stringify(result, null, 1);
 }
 
+function layoutOf(recipe: Recipe) {
+  const area = profitData.data.buildings[recipe.building]?.area ?? 0;
+  const count = buildingCount(profitData.data, recipe.building, area);
+  return layoutText(profitData.data, recipe.building, count);
+}
+
 function recipeText(recipe: Recipe) {
   const side = (x: Record<string, number>) =>
     Object.entries(x)
@@ -122,7 +128,7 @@ function recipeText(recipe: Recipe) {
           :class="[$style.recipe, r.selected ? $style.picked : undefined]"
           @click="pick(m.ticker, r.recipe)">
           <span :class="[$style.lamp, r.selected ? $style.lampOn : undefined]" />
-          <span :class="$style.building">{{ r.recipe.building }}</span>
+          <span :class="$style.building">{{ layoutOf(r.recipe) }}</span>
           <span :class="$style.items">
             <span v-for="(n, k) in r.recipe.inputs" :key="k" :class="$style.item">
               {{ fixed01(n) }}
@@ -218,7 +224,7 @@ function recipeText(recipe: Recipe) {
 
 .recipe {
   display: grid;
-  grid-template-columns: 12px 40px minmax(0, 1fr) 50px 70px;
+  grid-template-columns: 12px 110px minmax(0, 1fr) 50px 70px;
   gap: 0 10px;
   align-items: center;
   padding: 3px 6px;

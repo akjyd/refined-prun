@@ -7,6 +7,7 @@ import {
   ResourceSite,
 } from '@src/core/extraction/extraction';
 import { exchangePrice } from '@src/core/daily-profit/recipe-choice';
+import { layoutText } from '@src/core/daily-profit/daily-profit';
 import { formatProfit, profitClass } from '@src/core/daily-profit/profit-format';
 import { useProfitData } from '@src/infrastructure/prunplanner/profit-data';
 import { getLiveCogc, requestLiveCogc } from '@src/infrastructure/fio/planet-cogc';
@@ -128,12 +129,14 @@ const resources = computed(() => {
         profit: extractionProfit(profitData.data, ticker, site, planet, exchangePrice(code)).profit,
         jumps: jumpsTo(id, code),
       }));
-      const output = extractionProfit(profitData.data, ticker, site, planet, universe).output;
+      const base = extractionProfit(profitData.data, ticker, site, planet, universe);
+      const output = base.output;
       return [
         {
           id,
           name: planet.name !== '' ? planet.name : id,
           cogc: planet.cogc,
+          layout: layoutText(profitData.data, base.building, base.count),
           output,
           tooMuch: volume !== undefined && output > volume,
           cells,
@@ -191,6 +194,7 @@ function cogcName(cogc: string) {
           <span>
             <span :class="$style.name">{{ r.top.row.name }}</span>
             <span :class="$style.muted"> {{ cogcName(r.top.row.cogc) }}</span>
+            <span :class="$style.layout">{{ r.top.row.layout }}</span>
           </span>
           <span :class="$style.num">
             <span :class="r.top.row.tooMuch ? C.ColoredValue.negative : $style.name">
@@ -216,6 +220,7 @@ function cogcName(cogc: string) {
           <span>
             <span :class="$style.name">{{ p.name }}</span>
             <span :class="$style.muted"> {{ cogcName(p.cogc) }}</span>
+            <span :class="$style.layout">{{ p.layout }}</span>
           </span>
           <span :class="$style.num">
             <span :class="p.tooMuch ? C.ColoredValue.negative : $style.name">
@@ -256,7 +261,7 @@ function cogcName(cogc: string) {
 
 .top {
   display: grid;
-  grid-template-columns: 170px 190px 120px 160px;
+  grid-template-columns: 170px 200px 120px 160px;
   gap: 0 8px;
   align-items: center;
   padding: 4px;
@@ -302,6 +307,12 @@ function cogcName(cogc: string) {
 
 .muted {
   color: #8c8c8c;
+}
+
+.layout {
+  display: block;
+  color: #8c8c8c;
+  font-size: 12px;
 }
 
 .num {

@@ -67,6 +67,7 @@ function convert(recipes: PlannerRecipe[], buildings: PlannerBuilding[]): Profit
     needs: embeddedProfitData.needs,
     optimal: embeddedProfitData.optimal,
     extractable: embeddedProfitData.extractable,
+    storage: embeddedProfitData.storage,
   };
   for (const b of production) {
     result.buildings[b.building_ticker] = {

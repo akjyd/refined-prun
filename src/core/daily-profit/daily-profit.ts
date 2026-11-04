@@ -34,6 +34,8 @@ export interface ProfitData {
   optimal: Record<string, [number, number]>;
   // Materials found on planets. They count as raw materials, not as recipe products.
   extractable: Set<string>;
+  // Storage buildings of the optimal base: STO, STA, ...
+  storage: Record<string, Record<string, number>>;
 }
 
 export type PriceFn = (ticker: string) => number | undefined;
@@ -77,6 +79,7 @@ interface Snapshot {
   needs: Record<string, number>[];
   optimal: Record<string, [number, number]>;
   extractable: string[];
+  storage: Record<string, Record<string, number>>;
 }
 
 function fromSnapshot(): ProfitData {
@@ -101,6 +104,7 @@ function fromSnapshot(): ProfitData {
     needs: data.needs,
     optimal: data.optimal,
     extractable: new Set(data.extractable),
+    storage: data.storage,
   };
 }
 
@@ -167,4 +171,17 @@ export function isMainProduct(recipe: Recipe, ticker: string, price: PriceFn) {
   const value = (t: string) => (price(t) ?? 0) * (recipe.outputs[t] ?? 0);
   const own = value(ticker);
   return Object.keys(recipe.outputs).every(t => value(t) <= own);
+}
+
+// "35 RIG · 1 STO": production buildings and storage of the optimal base. Housing is left out.
+export function layoutText(data: ProfitData, building: string, count: number) {
+  const parts = [`${count} ${building}`];
+  for (const [ticker, n] of Object.entries(data.storage[building] ?? {})) {
+    parts.push(`${n} ${ticker}`);
+  }
+  return parts.join(' · ');
+}
+
+export function buildingCount(data: ProfitData, building: string, area: number) {
+  return data.optimal[building]?.[0] ?? Math.floor(475 / area);
 }

@@ -68,6 +68,7 @@ export function cogcFactor(cogc: string) {
 
 export interface ExtractionResult {
   building: string;
+  count: number;
   // Units per day of the whole base.
   output: number;
   // Undefined when a price is missing.
@@ -111,7 +112,7 @@ export function extractionProfit(
   );
   const revenue = runs * amount * value(ticker);
   const profit = count * (revenue - workforce - buildCost / DAYS_PER_REPAIR);
-  return { building, output, profit: missing ? undefined : profit };
+  return { building, count, output, profit: missing ? undefined : profit };
 }
 
 // Jumps from every system to the start systems, by breadth-first search over the star map.
