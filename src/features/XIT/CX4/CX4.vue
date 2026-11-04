@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import OrderBook from '@src/features/XIT/CX4/OrderBook.vue';
-import { materialCategoriesStore } from '@src/infrastructure/prun-api/data/material-categories';
+import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
+import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
+import { compareMaterials } from '@src/core/sort-materials';
+import { chosenRecipe } from '@src/core/daily-profit/recipe-choice';
+import { useProfitData } from '@src/infrastructure/prunplanner/profit-data';
 import {
   closeHiddenBooks,
   CX4_EXCHANGES,
@@ -10,7 +14,6 @@ import {
 } from '@src/features/XIT/CX4/cx4-tiles';
 import { userData } from '@src/store/user-data';
 import { t } from '@src/i18n';
-import en from '@src/i18n/en';
 
 const $style = useCssModule();
 
@@ -19,9 +22,22 @@ type Key = Parameters<typeof t>[0];
 const ALL = 'all';
 const FAVORITES = 'favorites';
 const RECENT = 'recent';
+const OTHER = 'OTHER';
+const INDUSTRIES = [
+  'AGRICULTURE',
+  'FOOD_INDUSTRIES',
+  'CHEMISTRY',
+  'METALLURGY',
+  'CONSTRUCTION',
+  'MANUFACTURING',
+  'ELECTRONICS',
+  'FUEL_REFINING',
+  'RESOURCE_EXTRACTION',
+];
 
 const tab = ref(RECENT);
 const current = ref<string>(userData.cx4.recent[0] ?? '');
+const profitData = useProfitData();
 
 onMounted(() => {
   if (current.value !== '') {
@@ -30,42 +46,68 @@ onMounted(() => {
 });
 onUnmounted(closeHiddenBooks);
 
-// "consumables (basic)" -> "consumablesbasic"
-function categoryKey(name: string) {
-  return name.toLowerCase().replace(/[^a-z]/g, '');
+// The industry (COGC) of the building that makes the material; mined materials are extraction.
+function industryOf(ticker: string) {
+  if (profitData.data.extractable.has(ticker)) {
+    return 'RESOURCE_EXTRACTION';
+  }
+  const recipe = chosenRecipe(ticker);
+  const expertise = recipe ? profitData.data.buildings[recipe.building]?.expertise : undefined;
+  return expertise !== undefined && expertise !== '' ? expertise : OTHER;
 }
 
-function categoryName(name: string) {
-  const key = `cx4.cat.${categoryKey(name)}`;
-  return key in en ? t(key as Key) : name;
+// Materials in the game's icon order (category, then the order inside the category).
+function sortTickers(tickers: string[]) {
+  return [...tickers].sort((a, b) =>
+    compareMaterials(materialsStore.getByTicker(a), materialsStore.getByTicker(b)),
+  );
 }
 
-const categories = computed(() =>
-  [...(materialCategoriesStore.all.value ?? [])]
-    .map(x => ({ ...x, label: categoryName(x.name) }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'zh')),
-);
+const allTickers = computed(() => sortTickers((materialsStore.all.value ?? []).map(x => x.ticker)));
 
 const tabs = computed(() => [
   { id: ALL, name: t('cx4.all') },
   { id: FAVORITES, name: t('cx4.favorites') },
   { id: RECENT, name: t('cx4.recent') },
-  ...categories.value.map(x => ({ id: x.id, name: x.label })),
+  ...[...INDUSTRIES, OTHER].map(x => ({
+    id: x,
+    name: x === OTHER ? t('cx4.other') : t(`extract.cogc.${x}` as Key),
+  })),
 ]);
 
 const shown = computed(() => {
   switch (tab.value) {
     case ALL:
-      return (materialsStore.all.value ?? []).map(x => x.ticker).sort();
+      return allTickers.value;
     case FAVORITES:
-      return userData.cx4.favorites;
+      return sortTickers(userData.cx4.favorites);
     case RECENT:
       return userData.cx4.recent;
-    default: {
-      const category = categories.value.find(x => x.id === tab.value);
-      return (category?.materials ?? []).map(x => x.ticker).sort();
+    default:
+      return allTickers.value.filter(x => industryOf(x) === tab.value);
+  }
+});
+
+// The exchange with the lowest offer and the one with the highest request.
+const best = computed(() => {
+  let ask: string | undefined;
+  let bid: string | undefined;
+  let lowAsk = Infinity;
+  let highBid = -Infinity;
+  for (const code of CX4_EXCHANGES) {
+    const book = cxobStore.getByTicker(`${current.value}.${code}`);
+    const a = book?.ask?.price.amount;
+    const b = book?.bid?.price.amount;
+    if (a !== undefined && a < lowAsk) {
+      lowAsk = a;
+      ask = code;
+    }
+    if (b !== undefined && b > highBid) {
+      highBid = b;
+      bid = code;
     }
   }
+  return { ask, bid };
 });
 
 async function pick(ticker: string) {
@@ -102,13 +144,19 @@ function onRightClick(e: MouseEvent, ticker: string) {
           ]"
           @click="pick(ticker)"
           @contextmenu="onRightClick($event, ticker)">
-          {{ ticker }}
+          <MaterialIcon size="small" :ticker="ticker" />
         </span>
       </div>
       <p :class="$style.muted">{{ t('cx4.note') }}</p>
     </div>
     <div v-if="current !== ''" :class="$style.books">
-      <OrderBook v-for="code in CX4_EXCHANGES" :key="code" :ticker="current" :exchange="code" />
+      <OrderBook
+        v-for="code in CX4_EXCHANGES"
+        :key="code"
+        :ticker="current"
+        :exchange="code"
+        :best-ask="best.ask === code"
+        :best-bid="best.bid === code" />
     </div>
   </div>
 </template>
@@ -116,7 +164,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
 <style module>
 .root {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: 240px minmax(0, 1fr);
   gap: 10px;
   padding: 6px 8px;
   font-size: 13px;
@@ -147,20 +195,22 @@ function onRightClick(e: MouseEvent, ticker: string) {
 }
 
 .item {
-  width: 44px;
-  padding: 4px 0;
-  text-align: center;
+  display: inline-flex;
+  padding: 2px;
   cursor: pointer;
-  background-color: #252525;
+}
+
+/* The icon would open MAT on click; the click picks the material instead. */
+.item > * {
+  pointer-events: none;
 }
 
 .itemOn {
-  background-color: #3a3a3a;
-  color: #f7a600;
+  outline: 2px solid #f7a600;
 }
 
 .favorite {
-  box-shadow: inset 0 -2px 0 #f7a600;
+  box-shadow: inset 0 -3px 0 #f7a600;
 }
 
 .books {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import {
@@ -7,15 +8,23 @@ import {
   profitOf,
   withPrice,
 } from '@src/core/daily-profit/recipe-choice';
-import { formatProfit, profitClass } from '@src/core/daily-profit/profit-format';
+import { formatProfit } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed2 } from '@src/utils/format';
 import { t } from '@src/i18n';
 
-const { ticker, exchange } = defineProps<{ ticker: string; exchange: string }>();
+const { ticker, exchange, bestAsk, bestBid } = defineProps<{
+  ticker: string;
+  exchange: string;
+  // True when this exchange has the lowest offer / the highest request of the four.
+  bestAsk: boolean;
+  bestBid: boolean;
+}>();
 
 const $style = useCssModule();
 
 const ROWS = 10;
+const GOOD = 150_000;
+const BAD = 100_000;
 
 const book = computed(() => cxobStore.getByTicker(`${ticker}.${exchange}`));
 const recipe = computed(() => chosenRecipe(ticker));
@@ -26,6 +35,8 @@ interface Row {
   amount: string;
   profit?: number;
   own: boolean;
+  // A line above the row where the daily profit drops below 15w or 10w.
+  line?: string;
 }
 
 function toRow(order: PrunApi.CXBrokerOrder): Row {
@@ -40,32 +51,60 @@ function toRow(order: PrunApi.CXBrokerOrder): Row {
   };
 }
 
-// Cheapest offers next to the spread, the highest on top.
+// The rows go from the highest price to the lowest, so the profit falls row by row.
+function markLines(rows: Row[]) {
+  for (let i = 1; i < rows.length; i++) {
+    const above = rows[i - 1].profit;
+    const here = rows[i].profit;
+    if (above === undefined || here === undefined) {
+      continue;
+    }
+    if (above >= BAD && here < BAD) {
+      rows[i].line = $style.lineBad;
+    } else if (above > GOOD && here <= GOOD) {
+      rows[i].line = $style.lineGood;
+    }
+  }
+  return rows;
+}
+
+// The orders next to the spread, plus your own orders anywhere in the book.
+function pick(orders: PrunApi.CXBrokerOrder[], nearFirst: (a: number, b: number) => number) {
+  const sorted = [...orders].sort((a, b) => nearFirst(a.limit.amount, b.limit.amount));
+  const ownId = companyStore.value?.id;
+  return sorted.filter((x, i) => i < ROWS || x.trader.id === ownId);
+}
+
 const offers = computed(() =>
-  [...(book.value?.sellingOrders ?? [])]
-    .sort((a, b) => a.limit.amount - b.limit.amount)
-    .slice(0, ROWS)
-    .reverse()
-    .map(toRow),
+  markLines(
+    pick(book.value?.sellingOrders ?? [], (a, b) => a - b)
+      .reverse()
+      .map(toRow),
+  ),
 );
 
 const requests = computed(() =>
-  [...(book.value?.buyingOrders ?? [])]
-    .sort((a, b) => b.limit.amount - a.limit.amount)
-    .slice(0, ROWS)
-    .map(toRow),
+  markLines(pick(book.value?.buyingOrders ?? [], (a, b) => b - a).map(toRow)),
 );
 
-const spread = computed(() => {
-  const ask = book.value?.ask?.price.amount;
-  const bid = book.value?.bid?.price.amount;
-  return ask !== undefined && bid !== undefined ? fixed2(ask - bid) : '--';
-});
+const ask = computed(() => book.value?.ask?.price.amount);
+const bid = computed(() => book.value?.bid?.price.amount);
 </script>
 
 <template>
   <div :class="$style.book">
-    <div :class="$style.title">{{ ticker }}.{{ exchange }}</div>
+    <div :class="$style.title">
+      <span>{{ exchange }}</span>
+      <span :class="$style.quote">
+        <span :class="bestAsk ? $style.best : undefined">
+          {{ bestAsk ? '▼' : '' }}{{ ask !== undefined ? fixed2(ask) : '--' }}
+        </span>
+        <span :class="$style.muted">/</span>
+        <span :class="bestBid ? $style.best : undefined">
+          {{ bestBid ? '▲' : '' }}{{ bid !== undefined ? fixed2(bid) : '--' }}
+        </span>
+      </span>
+    </div>
     <div v-if="!book" :class="$style.muted">{{ t('cx4.loading') }}</div>
     <template v-else>
       <div :class="[$style.row, $style.head]">
@@ -73,14 +112,24 @@ const spread = computed(() => {
         <span :class="$style.num">{{ t('cx4.amount') }}</span>
         <span :class="$style.num">{{ t('cx4.price') }}</span>
       </div>
-      <div v-for="r in offers" :key="r.id" :class="[$style.row, r.own ? $style.own : undefined]">
-        <span :class="profitClass(r.profit)">{{ formatProfit(r.profit) }}</span>
+      <div
+        v-for="r in offers"
+        :key="r.id"
+        :class="[$style.row, r.own ? $style.own : undefined, r.line]">
+        <DeleteExchangeOrderButton v-if="r.own" :order-id="r.id" screen-command="CXOS" />
+        <span>{{ formatProfit(r.profit) }}</span>
         <span :class="$style.num">{{ r.amount }}</span>
         <span :class="[$style.num, C.ColoredValue.negative]">{{ fixed2(r.price) }}</span>
       </div>
-      <div :class="$style.spread">{{ t('cx4.spread', spread) }}</div>
-      <div v-for="r in requests" :key="r.id" :class="[$style.row, r.own ? $style.own : undefined]">
-        <span :class="profitClass(r.profit)">{{ formatProfit(r.profit) }}</span>
+      <div :class="$style.spread">
+        {{ t('cx4.spread', ask !== undefined && bid !== undefined ? fixed2(ask - bid) : '--') }}
+      </div>
+      <div
+        v-for="r in requests"
+        :key="r.id"
+        :class="[$style.row, r.own ? $style.own : undefined, r.line]">
+        <DeleteExchangeOrderButton v-if="r.own" :order-id="r.id" screen-command="CXOS" />
+        <span>{{ formatProfit(r.profit) }}</span>
         <span :class="$style.num">{{ r.amount }}</span>
         <span :class="[$style.num, C.ColoredValue.positive]">{{ fixed2(r.price) }}</span>
       </div>
@@ -96,13 +145,28 @@ const spread = computed(() => {
 }
 
 .title {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
   padding: 4px 8px;
   color: #eee;
   font-weight: bold;
   background-color: #2a2a2a;
 }
 
+.quote {
+  display: flex;
+  gap: 4px;
+  font-weight: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.best {
+  color: #f7a600;
+}
+
 .row {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 56px 76px;
   gap: 0 6px;
@@ -122,7 +186,15 @@ const spread = computed(() => {
 }
 
 .own {
-  background-color: rgba(247, 166, 0, 0.12);
+  background-color: rgba(247, 166, 0, 0.18);
+}
+
+.lineGood {
+  border-top: 2px solid #5cb85c;
+}
+
+.lineBad {
+  border-top: 2px solid #d9534f;
 }
 
 .spread {
@@ -133,7 +205,6 @@ const spread = computed(() => {
 }
 
 .muted {
-  padding: 6px 8px;
   color: #8c8c8c;
 }
 </style>

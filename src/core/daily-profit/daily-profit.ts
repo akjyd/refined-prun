@@ -21,6 +21,8 @@ export interface Building {
   workers: number[];
   area: number;
   costs: Record<string, number>;
+  // COGC expertise: 'CHEMISTRY', 'METALLURGY', ...
+  expertise: string;
 }
 
 export interface ProfitData {
@@ -86,7 +88,12 @@ function fromSnapshot(): ProfitData {
   });
   const buildings: Record<string, Building> = {};
   for (const [ticker, b] of Object.entries(data.buildings)) {
-    buildings[ticker] = { workers: b.slice(0, 5) as number[], area: b[5], costs: amounts(b[7]) };
+    buildings[ticker] = {
+      workers: b.slice(0, 5) as number[],
+      area: b[5],
+      costs: amounts(b[7]),
+      expertise: b[6],
+    };
   }
   return {
     recipes,

@@ -30,6 +30,7 @@ interface PlannerBuilding {
   engineers: number;
   scientists: number;
   area_cost: number;
+  expertise: string | null;
   costs: PlannerMaterial[];
   building_type: string;
 }
@@ -72,6 +73,7 @@ function convert(recipes: PlannerRecipe[], buildings: PlannerBuilding[]): Profit
       workers: [b.pioneers, b.settlers, b.technicians, b.engineers, b.scientists],
       area: b.area_cost,
       costs: toAmounts(b.costs),
+      expertise: b.expertise ?? '',
     };
   }
   for (const r of recipes) {
