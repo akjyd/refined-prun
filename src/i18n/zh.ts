@@ -835,6 +835,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
     'CXOB：挂单公司名换成「按这一行的价格卖出，一个基地每天的利润」（配方在 XIT RECIPES 里选）。',
   'feature.cxob-delete-own-exchange-orders': 'CXOB / FXOB：在自己的订单旁加删除按钮。',
   'feature.cxob-depth-bars': 'CXOB：加市场深度条。',
+  'feature.cxob-drag-reprice': 'CXOB：把自己的挂单拖到订单簿的另一个位置，按那里的价格重新挂单。',
   'feature.cxob-hide-section-headers': 'CXOB：隐藏「卖单」「买单」标题。',
   'feature.cxob-supply-demand-values': 'CXOB：显示供需数值。',
   'feature.cxos-hide-delete-filled': 'CXOS：隐藏筛选栏时也隐藏「删除已成交」按钮。',
@@ -1294,6 +1295,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'cx4.price': '价格',
   'cx4.spread': '价差 {0}',
   'cx4.other': '其他',
+  'cx4.stock': '库存',
 
   // 新功能 —— XIT ORDERS 我的挂单
   'orders.title': '我的挂单',

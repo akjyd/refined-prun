@@ -25,3 +25,31 @@ export function dropPrice(ask: boolean, above?: number, below?: number) {
   }
   return above !== undefined ? round(above - priceStep(above - 0.001)) : undefined;
 }
+
+export interface BookOrder {
+  id: string;
+  ask: boolean;
+  price: number;
+}
+
+// The new price of the order `dragged` dropped above index `at` of `book` (highest price
+// first). Undefined when nothing changes or the order would cross the spread.
+export function dropTargetPrice(book: BookOrder[], dragged: BookOrder, at: number) {
+  const others = book.filter(x => x.id !== dragged.id);
+  const before = book.slice(0, at).filter(x => x.id !== dragged.id).length;
+  const above = others[before - 1];
+  const below = others[before];
+  const price = dropPrice(dragged.ask, above?.price, below?.price);
+  if (price === undefined || price === dragged.price) {
+    return undefined;
+  }
+  const bestBid = others.find(x => !x.ask)?.price;
+  const bestAsk = others.filter(x => x.ask).at(-1)?.price;
+  if (dragged.ask && bestBid !== undefined && price <= bestBid) {
+    return undefined;
+  }
+  if (!dragged.ask && bestAsk !== undefined && price >= bestAsk) {
+    return undefined;
+  }
+  return price;
+}

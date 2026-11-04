@@ -4,6 +4,9 @@ import PrunLink from '@src/components/PrunLink.vue';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
+import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
+import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
+import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { orderProfit } from '@src/core/daily-profit/order-profit';
 import PlanetPicker from '@src/components/PlanetPicker.vue';
@@ -11,9 +14,7 @@ import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format'
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
 import link from '@src/infrastructure/prun-ui/css/link.module.css';
-import { repriceOrder } from '@src/features/XIT/ORDERS/reprice';
-import { dropPrice } from '@src/core/price-step';
-import { showErrorOverlay } from '@src/infrastructure/prun-ui/tile-overlay';
+import { useOrderDrag } from '@src/hooks/use-order-drag';
 
 // The order book of one material with your orders in it.
 const { ticker, exchange, refreshKey } = defineProps<{
@@ -98,86 +99,23 @@ const rows = computed(() => {
   return all.map(x => ({ ...x, first: x === firstBid }));
 });
 
-// Drag one of your orders to another place in the book to place it again there.
-const dragged = ref<Row>();
-// Index of the row the drop line is above; rows.length means below the last row.
-const dropAt = ref<number>();
-const busy = ref(false);
-
-function onDragStart(e: DragEvent, row: Row) {
-  if (!row.own || busy.value) {
-    e.preventDefault();
-    return;
-  }
-  dragged.value = row;
-  e.dataTransfer?.setData('text/plain', row.id);
-}
-
-function onDragOver(e: DragEvent, index: number) {
-  if (!dragged.value) {
-    return;
-  }
-  e.preventDefault();
-  const el = e.currentTarget as HTMLElement;
-  const below = e.offsetY > el.clientHeight / 2;
-  dropAt.value = below ? index + 1 : index;
-}
-
-function onDragEnd() {
-  dragged.value = undefined;
-  dropAt.value = undefined;
-}
-
-// The new price at the drop line, or undefined when the order would cross the spread.
-const newPrice = computed(() => {
-  const row = dragged.value;
-  const at = dropAt.value;
-  if (!row || at === undefined) {
-    return undefined;
-  }
-  const list = rows.value.filter(x => !x.gone);
-  const at2 = rows.value.slice(0, at).filter(x => !x.gone).length;
-  const above = list
-    .slice(0, at2)
-    .filter(x => x.id !== row.id)
-    .at(-1);
-  const below = list.slice(at2).find(x => x.id !== row.id);
-  const price = dropPrice(row.ask, above?.price, below?.price);
-  if (price === undefined || price === row.price) {
-    return undefined;
-  }
-  const bestBid = list.find(x => !x.ask && x.id !== row.id)?.price;
-  const bestAsk = list.filter(x => x.ask && x.id !== row.id).at(-1)?.price;
-  if (row.ask && bestBid !== undefined && price <= bestBid) {
-    return undefined;
-  }
-  if (!row.ask && bestAsk !== undefined && price >= bestAsk) {
-    return undefined;
-  }
-  return price;
+// Units of the material in your warehouse at this exchange station.
+const stock = computed(() => {
+  const warehouse = warehousesStore.getByEntityNaturalId(
+    exchangesStore.getNaturalIdFromCode(exchange),
+  );
+  const store = storagesStore.getById(warehouse?.storeId);
+  return store
+    ? sumBy(
+        store.items.filter(x => x.quantity?.material.ticker === ticker),
+        x => x.quantity?.amount ?? 0,
+      )
+    : undefined;
 });
 
-async function onDrop(e: DragEvent) {
-  e.preventDefault();
-  const row = dragged.value;
-  const price = newPrice.value;
-  onDragEnd();
-  const order = row ? cxosStore.getById(row.id) : undefined;
-  const target = e.target as Element;
-  if (!row || !order) {
-    return;
-  }
-  if (price === undefined) {
-    showErrorOverlay(target, t('orders.badDrop'));
-    return;
-  }
-  busy.value = true;
-  try {
-    await repriceOrder(target, order, price);
-  } finally {
-    busy.value = false;
-  }
-}
+// Drag one of your orders to another place in the book to place it again there.
+const drag = useOrderDrag();
+const live = computed(() => rows.value.filter(x => !x.gone));
 
 // Scroll the card to the spread (between offers and requests) once the book arrives.
 const body = ref<HTMLElement>();
@@ -205,6 +143,9 @@ watch(
       <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="ticker" /></span>
       <PlanetPicker :ticker="ticker" :exchange="exchange" />
       <span :class="$style.spacer" />
+      <span :class="$style.muted"
+        >{{ t('cx4.stock') }} {{ stock !== undefined ? fixed0(stock) : '--' }}</span
+      >
       <PrunLink inline :command="`CXPO ${ticker}.${exchange}`" />
     </div>
     <div :class="$style.columns">
@@ -215,22 +156,22 @@ watch(
     <div ref="body" :class="$style.body">
       <p v-if="!book" :class="$style.muted">{{ t('cx4.loading') }}</p>
       <div
-        v-for="(r, index) in rows"
+        v-for="r in rows"
         :key="r.id"
         :draggable="r.own && !r.gone"
-        :data-price="newPrice !== undefined ? fixed02(newPrice) : ''"
+        :data-price="drag.newPrice.value !== undefined ? fixed02(drag.newPrice.value) : ''"
         :class="[
           $style.row,
           r.own ? $style.own : undefined,
           r.gone ? $style.gone : undefined,
           r.first ? $style.spread : undefined,
-          dropAt === index ? $style.dropAbove : undefined,
-          dropAt === rows.length && index === rows.length - 1 ? $style.dropBelow : undefined,
+          !r.gone && drag.lineAbove(r.id) ? $style.dropAbove : undefined,
+          !r.gone && drag.lineBelow(r.id) ? $style.dropBelow : undefined,
         ]"
-        @dragstart="onDragStart($event, r)"
-        @dragover="onDragOver($event, index)"
-        @dragend="onDragEnd"
-        @drop="onDrop">
+        @dragstart="drag.start($event, r)"
+        @dragover="!r.gone && drag.over($event, live, live.indexOf(r))"
+        @dragend="drag.end"
+        @drop="drag.drop">
         <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
         <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
           <DeleteExchangeOrderButton
@@ -359,6 +300,10 @@ watch(
 
 .num {
   text-align: right;
+}
+
+.stock {
+  color: #8c8c8c;
 }
 
 .muted {

@@ -873,6 +873,8 @@ export default {
     'CXOB: Replaces the trader name with the daily profit of one base selling at the order price.',
   'feature.cxob-delete-own-exchange-orders': 'CXOB/FXOB: Adds a delete button to own orders.',
   'feature.cxob-depth-bars': 'CXOB: Adds market depth bars.',
+  'feature.cxob-drag-reprice':
+    'CXOB: Drag one of your orders to another place in the book to place it again there.',
   'feature.cxob-hide-section-headers': 'CXOB: Hides "Offers" and "Requests" headers.',
   'feature.cxob-supply-demand-values': 'CXOB: Adds supply and demand value labels.',
   'feature.cxos-hide-delete-filled':
@@ -1367,6 +1369,7 @@ export default {
   'cx4.price': 'Price',
   'cx4.spread': 'Spread {0}',
   'cx4.other': 'Other',
+  'cx4.stock': 'Stock',
 
   // 新功能 —— XIT ORDERS 我的挂单
   'orders.title': 'MY ORDERS',

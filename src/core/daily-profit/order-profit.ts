@@ -12,7 +12,7 @@ import { userData } from '@src/store/user-data';
 
 // The daily profit at an order price, the same way in CXOB, XIT CX4 and XIT ORDERS.
 // A made material uses the recipe picked in XIT RECIPES. A raw material uses an extraction
-// base on the planet picked for this order book (default: the first watched planet).
+// base on the planet picked for this order book; until a planet is picked it shows "--".
 
 interface ExtractionData {
   resources: Record<string, ResourceSite[]>;
@@ -66,11 +66,17 @@ export function planetOptions(ticker: string) {
 export function chosenPlanet(ticker: string, exchange: string) {
   const picked = userData.extractPlanets[`${ticker}.${exchange}`];
   const options = planetOptions(ticker);
-  return picked !== undefined && options.includes(picked) ? picked : options[0];
+  return picked !== undefined && options.includes(picked) ? picked : undefined;
 }
 
+// An empty planet clears the choice.
 export function pickPlanet(ticker: string, exchange: string, planet: string) {
-  userData.extractPlanets[`${ticker}.${exchange}`] = planet;
+  const key = `${ticker}.${exchange}`;
+  if (planet === '') {
+    delete userData.extractPlanets[key];
+  } else {
+    userData.extractPlanets[key] = planet;
+  }
 }
 
 // Returns the daily profit for an order price, or undefined when it cannot be computed.

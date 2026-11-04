@@ -4,8 +4,12 @@ import PrunLink from '@src/components/PrunLink.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
+import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
+import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
+import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { orderProfit } from '@src/core/daily-profit/order-profit';
 import PlanetPicker from '@src/components/PlanetPicker.vue';
+import { useOrderDrag } from '@src/hooks/use-order-drag';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
@@ -29,6 +33,23 @@ interface Cell {
 }
 
 const books = computed(() => exchanges.map(x => cxobStore.getByTicker(`${ticker}.${x}`)));
+
+// Units of the material in your warehouse at each exchange station.
+const stock = computed(() =>
+  exchanges.map(code => {
+    const warehouse = warehousesStore.getByEntityNaturalId(
+      exchangesStore.getNaturalIdFromCode(code),
+    );
+    const store = storagesStore.getById(warehouse?.storeId);
+    if (!store) {
+      return undefined;
+    }
+    return sumBy(
+      store.items.filter(x => x.quantity?.material.ticker === ticker),
+      x => x.quantity?.amount ?? 0,
+    );
+  }),
+);
 
 // Your own orders show the amount left / the amount placed.
 function ownAmount(order: PrunApi.CXBrokerOrder) {
@@ -109,17 +130,28 @@ function maxRank(rank: number[]) {
   return Math.max(0, ...rank);
 }
 
+// Drag your orders inside their own exchange column, as in CXOB and XIT ORDERS.
+const drag = useOrderDrag();
+const columnBooks = computed(() => columns.value.map(x => [...x.asks, ...x.bids]));
+
+function bookOf(cell: Cell) {
+  return columnBooks.value.find(x => x.includes(cell)) ?? [];
+}
+
 const loaded = computed(() => books.value.some(x => x !== undefined));
 </script>
 
 <template>
   <div :class="$style.ladder">
     <div :class="[$style.row, $style.head]">
-      <span v-for="code in exchanges" :key="code" :class="$style.headCell">
+      <span v-for="(code, i) in exchanges" :key="code" :class="$style.headCell">
         <span :class="$style.title">
           <span :class="$style.code"
             >{{ code }} <PlanetPicker :ticker="ticker" :exchange="code"
           /></span>
+          <span :class="$style.stock">
+            {{ t('cx4.stock') }} {{ stock[i] !== undefined ? fixed0(stock[i]) : '--' }}
+          </span>
           <PrunLink inline :command="`CXPO ${ticker}.${code}`" />
         </span>
         <span :class="$style.columns">
@@ -136,7 +168,22 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
         <span
           v-for="(cell, i) in row"
           :key="i"
-          :class="cell ? [$style.cell, cell.own ? $style.own : undefined] : $style.empty">
+          :draggable="cell?.own === true"
+          :data-price="drag.newPrice.value !== undefined ? fixed02(drag.newPrice.value) : ''"
+          :class="
+            cell
+              ? [
+                  $style.cell,
+                  cell.own ? $style.own : undefined,
+                  drag.lineAbove(cell.id) ? $style.dropAbove : undefined,
+                  drag.lineBelow(cell.id) ? $style.dropBelow : undefined,
+                ]
+              : $style.empty
+          "
+          @dragstart="cell && drag.start($event, cell)"
+          @dragover="cell && drag.over($event, bookOf(cell), bookOf(cell).indexOf(cell))"
+          @dragend="drag.end"
+          @drop="drag.drop">
           <template v-if="cell">
             <span :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
             <span :class="[$style.num, $style.amount, cell.own ? link.link : undefined]">
@@ -186,6 +233,10 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
   gap: 6px;
 }
 
+.stock {
+  color: #8c8c8c;
+}
+
 .code {
   color: #eee;
   font-weight: bold;
@@ -220,6 +271,38 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 /* Your own orders are bold, as in CXOB; the del button sits before the amount. */
 .own {
   font-weight: bold;
+  cursor: grab;
+}
+
+/* The drop line, with the new price on it. */
+.dropAbove,
+.dropBelow {
+  position: relative;
+}
+
+.dropAbove::before,
+.dropBelow::after {
+  content: attr(data-price);
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 0;
+  border-top: 2px solid #f7a600;
+  color: #f7a600;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+.dropAbove::before {
+  top: -1px;
+}
+
+.dropBelow::after {
+  bottom: -1px;
 }
 
 .amount {

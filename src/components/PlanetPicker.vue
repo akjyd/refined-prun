@@ -25,10 +25,11 @@ function onChange(e: Event) {
   <select
     v-if="options.length > 0"
     :class="$style.select"
-    :value="value"
+    :value="value ?? ''"
     @click.stop
     @mousedown.stop
     @change="onChange">
+    <option value="">--</option>
     <option v-for="id in options" :key="id" :value="id">{{ planetName(id) }}</option>
   </select>
 </template>
