@@ -170,6 +170,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
 }
 
 .item {
+  position: relative;
   display: inline-flex;
   padding: 2px;
   cursor: pointer;
@@ -183,6 +184,18 @@ function onRightClick(e: MouseEvent, ticker: string) {
 /* Text only: no category picture. */
 .item *::before {
   content: none !important;
+}
+
+/* A small star in the corner marks a favorite. */
+.favorite::after {
+  content: '★';
+  position: absolute;
+  top: -5px;
+  right: -3px;
+  color: #f7a600;
+  font-size: 10px;
+  line-height: 1;
+  text-shadow: 0 0 2px #000;
 }
 
 .itemOn {
