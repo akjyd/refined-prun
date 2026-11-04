@@ -11,6 +11,7 @@ import {
 import { formatProfit } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
+import link from '@src/infrastructure/prun-ui/css/link.module.css';
 
 // All orders of the four exchanges in one price table: one order per row, the highest price on
 // top, each order in the column of its exchange. The height of a row shows its price, so the
@@ -123,9 +124,11 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
             : $style.empty
         ">
         <template v-if="i === r.column">
-          <DeleteExchangeOrderButton v-if="r.own" :order-id="r.id" screen-command="CXOS" />
           <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
-          <span :class="$style.num">{{ r.amount }}</span>
+          <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
+            <DeleteExchangeOrderButton v-if="r.own" :order-id="r.id" screen-command="CXOS" />
+            {{ r.amount }}
+          </span>
           <span :class="[$style.num, $style.price]">{{ fixed02(r.price) }}</span>
         </template>
       </span>
@@ -141,7 +144,7 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
 
 .row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(210px, 1fr));
   gap: 0 4px;
 }
 
@@ -168,7 +171,7 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
 .columns,
 .cell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 52px 70px;
+  grid-template-columns: minmax(44px, 1fr) 76px 70px;
   gap: 0 6px;
 }
 
@@ -213,11 +216,14 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
   box-shadow: inset 0 1px 0 #5cb85c;
 }
 
-/* Room for the del button on your own orders. */
+/* Your own orders are bold, as in CXOB; the del button sits before the amount. */
 .own {
-  padding-left: 40px;
-  outline: 1px solid #f7a600;
-  outline-offset: -1px;
+  font-weight: bold;
+}
+
+.amount {
+  position: relative;
+  padding-left: 22px;
 }
 
 .num {

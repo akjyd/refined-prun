@@ -153,6 +153,7 @@ function recipeText(recipe: Recipe) {
 
 <style module>
 .root {
+  min-width: 640px;
   padding: 6px 8px;
   font-size: 13px;
 }
@@ -165,7 +166,7 @@ function recipeText(recipe: Recipe) {
 
 .row {
   display: grid;
-  grid-template-columns: 30px 120px minmax(0, 1fr) 70px 70px;
+  grid-template-columns: 30px 120px minmax(200px, 1fr) 70px 70px;
   gap: 0 10px;
   align-items: center;
   padding: 4px 4px;

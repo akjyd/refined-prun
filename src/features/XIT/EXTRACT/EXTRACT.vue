@@ -245,13 +245,14 @@ function cogcName(cogc: string) {
 
 <style module>
 .root {
+  min-width: 900px;
   padding: 6px 8px;
   font-size: 13px;
 }
 
 .row {
   display: grid;
-  grid-template-columns: 190px 120px repeat(4, minmax(0, 1fr));
+  grid-template-columns: 190px 120px repeat(4, minmax(130px, 1fr));
   margin-left: 24px;
   gap: 0 8px;
   align-items: center;

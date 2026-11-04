@@ -136,6 +136,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
 .root {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
+  min-width: 1100px;
   gap: 10px;
   padding: 6px 8px;
   font-size: 13px;
