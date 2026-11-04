@@ -7,7 +7,7 @@ import {
   profitOf,
   withPrice,
 } from '@src/core/daily-profit/recipe-choice';
-import { formatProfit, profitClass } from '@src/core/daily-profit/profit-format';
+import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import $style from './cxob-daily-profit.module.css';
 import { t } from '@src/i18n';
 
@@ -29,6 +29,24 @@ function onTileReady(tile: PrunTile) {
     const ticker = orderBook.value?.material.ticker;
     return ticker !== undefined ? chosenRecipe(ticker) : undefined;
   });
+  const profits = computed(() => {
+    const book = orderBook.value;
+    const r = recipe.value;
+    const result = new Map<string, number | undefined>();
+    if (!book || !r) {
+      return result;
+    }
+    const base = exchangePrice(book.exchange.code);
+    for (const [id, price] of prices.value) {
+      result.set(id, profitOf(r, withPrice(base, book.material.ticker, price)));
+    }
+    return result;
+  });
+  const marks = computed(() =>
+    profitMarks(
+      [...prices.value].map(([id, price]) => ({ id, price, profit: profits.value.get(id) })),
+    ),
+  );
 
   subscribe($$(tile.anchor, 'tr'), tr => {
     const id = refPrunId(tr);
@@ -41,7 +59,6 @@ function onTileReady(tile: PrunTile) {
     label.style.fontSize = getComputedStyle(nameCell).fontSize;
     nameCell.appendChild(label);
     watchEffectWhileNodeAlive(tr, () => {
-      const book = orderBook.value;
       const price = prices.value.get(id.value ?? '');
       // Only order rows and the column title change; other rows keep their text.
       nameCell.classList.toggle($style.cell, isHead || price !== undefined);
@@ -49,14 +66,9 @@ function onTileReady(tile: PrunTile) {
         label.textContent = t('cxob.profitHead');
         return;
       }
-      const r = recipe.value;
-      let profit: number | undefined;
-      if (book && price !== undefined && r) {
-        const base = exchangePrice(book.exchange.code);
-        profit = profitOf(r, withPrice(base, book.material.ticker, price));
-      }
+      const profit = profits.value.get(id.value ?? '');
       label.textContent = price !== undefined ? formatProfit(profit) : '';
-      label.className = [$style.profit, profitClass(profit)].filter(Boolean).join(' ');
+      label.className = [$style.profit, marks.value.get(id.value ?? '')].filter(Boolean).join(' ');
     });
   });
 }

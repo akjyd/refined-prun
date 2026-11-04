@@ -12,6 +12,7 @@ import {
   toggleFavorite,
 } from '@src/features/XIT/CX4/cx4-tiles';
 import { userData } from '@src/store/user-data';
+import { getMaterialNameByTicker } from '@src/util';
 import { t } from '@src/i18n';
 
 const $style = useCssModule();
@@ -101,6 +102,13 @@ function onRightClick(e: MouseEvent, ticker: string) {
 <template>
   <div :class="$style.root">
     <div :class="$style.picker">
+      <div v-if="current !== ''" :class="$style.current">
+        <MaterialIcon size="large" :ticker="current" />
+        <span>
+          <span :class="$style.currentTicker">{{ current }}</span>
+          <span :class="$style.muted">{{ getMaterialNameByTicker(current) }}</span>
+        </span>
+      </div>
       <div :class="$style.tabs">
         <span
           v-for="x in tabs"
@@ -114,17 +122,12 @@ function onRightClick(e: MouseEvent, ticker: string) {
         <span
           v-for="ticker in shown"
           :key="ticker"
-          :class="[
-            $style.item,
-            ticker === current ? $style.itemOn : undefined,
-            userData.cx4.favorites.includes(ticker) ? $style.favorite : undefined,
-          ]"
+          :class="[$style.item, ticker === current ? $style.itemOn : undefined]"
           @click="pick(ticker)"
           @contextmenu="onRightClick($event, ticker)">
           <MaterialIcon size="inline-table" :ticker="ticker" />
         </span>
       </div>
-      <p :class="$style.muted">{{ t('cx4.note') }}</p>
     </div>
     <div v-if="current !== ''" :class="$style.books">
       <PriceLadder :ticker="current" :exchanges="CX4_EXCHANGES" />
@@ -186,8 +189,23 @@ function onRightClick(e: MouseEvent, ticker: string) {
   outline: 2px solid #f7a600;
 }
 
-.favorite {
-  box-shadow: inset 0 -3px 0 #f7a600;
+.current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 6px;
+  background-color: #252525;
+}
+
+.current > span {
+  display: grid;
+}
+
+.currentTicker {
+  color: #eee;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 .books {

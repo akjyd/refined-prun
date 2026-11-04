@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
+import PrunLink from '@src/components/PrunLink.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import {
@@ -8,104 +9,113 @@ import {
   profitOf,
   withPrice,
 } from '@src/core/daily-profit/recipe-choice';
-import { formatProfit } from '@src/core/daily-profit/profit-format';
+import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
 import link from '@src/infrastructure/prun-ui/css/link.module.css';
 
-// All orders of the four exchanges in one price table: one order per row, the highest price on
-// top, each order in the column of its exchange. The height of a row shows its price, so the
-// exchanges compare at a glance.
+// The order books of the four exchanges side by side. Only the best offers and the best
+// requests are placed by price: the exchange with the higher best offer has it one row higher,
+// and the same for the best requests. The other orders follow without gaps.
 const { ticker, exchanges } = defineProps<{ ticker: string; exchanges: string[] }>();
 
 const $style = useCssModule();
 
-const GOOD = 150_000;
-const BAD = 100_000;
-
-interface Row {
+interface Cell {
   id: string;
-  column: number;
   ask: boolean;
   price: number;
   amount: string;
   profit?: number;
   own: boolean;
-  // The cheapest order of its exchange above 15w, or the dearest one below 10w.
   mark?: string;
-  // The lowest offer or the highest request of its exchange (the spread edge).
-  edge?: string;
 }
 
 const books = computed(() => exchanges.map(x => cxobStore.getByTicker(`${ticker}.${x}`)));
 const recipe = computed(() => chosenRecipe(ticker));
 
-const rows = computed(() => {
-  const r = recipe.value;
-  const ownId = companyStore.value?.id;
-  const result: Row[] = [];
-  for (const [column, book] of books.value.entries()) {
-    if (!book) {
-      continue;
-    }
-    const price = exchangePrice(exchanges[column]);
-    const orders: Row[] = [];
-    const add = (order: PrunApi.CXBrokerOrder, ask: boolean) => {
-      const row: Row = {
-        id: order.id,
-        column,
-        ask,
-        price: order.limit.amount,
-        amount: order.amount === null ? '∞' : fixed0(order.amount),
-        profit: r ? profitOf(r, withPrice(price, ticker, order.limit.amount)) : undefined,
-        own: order.trader.id === ownId,
-      };
-      orders.push(row);
-      result.push(row);
-    };
-    for (const order of book.sellingOrders) {
-      add(order, true);
-    }
-    for (const order of book.buyingOrders) {
-      add(order, false);
-    }
-    markColumn(orders);
-  }
-  // Higher price first; at the same price, offers above requests.
-  result.sort((a, b) => (b.price !== a.price ? b.price - a.price : Number(b.ask) - Number(a.ask)));
-  return result;
-});
-
-// The profit at an order of one exchange falls with its price, so on the way down the first
-// order at or below 15w and the first below 10w are where the profit crosses the limits.
-function markColumn(column: Row[]) {
-  column.sort((a, b) => b.price - a.price);
-  const good = column.findLast(x => x.profit !== undefined && x.profit > GOOD);
-  const bad = column.find(x => x.profit !== undefined && x.profit < BAD);
-  if (good) {
-    good.mark = C.ColoredValue.positive;
-  }
-  if (bad) {
-    bad.mark = C.ColoredValue.negative;
-  }
-  const lowestAsk = column.findLast(x => x.ask);
-  const highestBid = column.find(x => !x.ask);
-  if (lowestAsk) {
-    lowestAsk.edge = $style.askEdge;
-  }
-  if (highestBid) {
-    highestBid.edge = $style.bidEdge;
-  }
+// Rank of each value among the others, the highest first; equal values share a rank.
+function ranks(values: (number | undefined)[]) {
+  const distinct = [...new Set(values.filter((x): x is number => x !== undefined))].sort(
+    (a, b) => b - a,
+  );
+  return values.map(x => (x === undefined ? 0 : distinct.indexOf(x)));
 }
 
-const loaded = computed(() => books.value.filter(x => x !== undefined).length);
+const columns = computed(() => {
+  const r = recipe.value;
+  const ownId = companyStore.value?.id;
+  return books.value.map((book, i) => {
+    if (!book) {
+      return { asks: [] as Cell[], bids: [] as Cell[] };
+    }
+    const price = exchangePrice(exchanges[i]);
+    const toCell = (order: PrunApi.CXBrokerOrder, ask: boolean): Cell => ({
+      id: order.id,
+      ask,
+      price: order.limit.amount,
+      amount: order.amount === null ? '∞' : fixed0(order.amount),
+      profit: r ? profitOf(r, withPrice(price, ticker, order.limit.amount)) : undefined,
+      own: order.trader.id === ownId,
+    });
+    const asks = book.sellingOrders.map(x => toCell(x, true)).sort((a, b) => b.price - a.price);
+    const bids = book.buyingOrders.map(x => toCell(x, false)).sort((a, b) => b.price - a.price);
+    const marks = profitMarks([...asks, ...bids]);
+    for (const cell of [...asks, ...bids]) {
+      cell.mark = marks.get(cell.id);
+    }
+    return { asks, bids };
+  });
+});
+
+// One row per line of the table; undefined is an empty place.
+const askRows = computed(() => {
+  const cols = columns.value;
+  const rank = ranks(cols.map(x => x.asks.at(-1)?.price));
+  // The best offer of rank k sits k rows above the lowest offer row.
+  const depth = Math.max(0, ...cols.map((x, i) => x.asks.length + (maxRank(rank) - rank[i])));
+  const rows: (Cell | undefined)[][] = Array.from({ length: depth }, () =>
+    cols.map(() => undefined),
+  );
+  for (const [i, col] of cols.entries()) {
+    const bottom = depth - 1 - (maxRank(rank) - rank[i]);
+    for (const [j, cell] of col.asks.entries()) {
+      rows[bottom - (col.asks.length - 1 - j)][i] = cell;
+    }
+  }
+  return rows;
+});
+
+const bidRows = computed(() => {
+  const cols = columns.value;
+  const rank = ranks(cols.map(x => x.bids[0]?.price));
+  const depth = Math.max(0, ...cols.map((x, i) => x.bids.length + rank[i]));
+  const rows: (Cell | undefined)[][] = Array.from({ length: depth }, () =>
+    cols.map(() => undefined),
+  );
+  for (const [i, col] of cols.entries()) {
+    for (const [j, cell] of col.bids.entries()) {
+      rows[rank[i] + j][i] = cell;
+    }
+  }
+  return rows;
+});
+
+function maxRank(rank: number[]) {
+  return Math.max(0, ...rank);
+}
+
+const loaded = computed(() => books.value.some(x => x !== undefined));
 </script>
 
 <template>
   <div :class="$style.ladder">
     <div :class="[$style.row, $style.head]">
       <span v-for="code in exchanges" :key="code" :class="$style.headCell">
-        <span :class="$style.code">{{ code }}</span>
+        <span :class="$style.title">
+          <span :class="$style.code">{{ code }}</span>
+          <PrunLink inline :command="`CXPO ${ticker}.${code}`" />
+        </span>
         <span :class="$style.columns">
           <span>{{ t('cxob.profitHead') }}</span>
           <span :class="$style.num">{{ t('cx4.amount') }}</span>
@@ -113,26 +123,31 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
         </span>
       </span>
     </div>
-    <p v-if="loaded === 0" :class="$style.muted">{{ t('cx4.loading') }}</p>
-    <div v-for="r in rows" :key="r.id" :class="$style.row">
-      <span
-        v-for="(code, i) in exchanges"
-        :key="code"
-        :class="
-          i === r.column
-            ? [$style.cell, r.ask ? $style.ask : $style.bid, r.edge, r.own ? $style.own : undefined]
-            : $style.empty
-        ">
-        <template v-if="i === r.column">
-          <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
-          <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
-            <DeleteExchangeOrderButton v-if="r.own" :order-id="r.id" screen-command="CXOS" />
-            {{ r.amount }}
-          </span>
-          <span :class="[$style.num, $style.price]">{{ fixed02(r.price) }}</span>
-        </template>
-      </span>
-    </div>
+    <p v-if="!loaded" :class="$style.muted">{{ t('cx4.loading') }}</p>
+    <template v-for="(rows, part) in [askRows, bidRows]" :key="part">
+      <div v-if="part === 1" :class="$style.spread" />
+      <div v-for="(row, k) in rows" :key="k" :class="$style.row">
+        <span
+          v-for="(cell, i) in row"
+          :key="i"
+          :class="cell ? [$style.cell, cell.own ? $style.own : undefined] : $style.empty">
+          <template v-if="cell">
+            <span :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
+            <span :class="[$style.num, $style.amount, cell.own ? link.link : undefined]">
+              <DeleteExchangeOrderButton
+                v-if="cell.own"
+                :order-id="cell.id"
+                screen-command="CXOS" />
+              {{ cell.amount }}
+            </span>
+            <span
+              :class="[$style.num, cell.ask ? C.ColoredValue.negative : C.ColoredValue.positive]">
+              {{ fixed02(cell.price) }}
+            </span>
+          </template>
+        </span>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -149,11 +164,7 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
 }
 
 .head {
-  position: sticky;
-  top: 0;
-  z-index: 1;
   padding-bottom: 2px;
-  background-color: #1e1e1e;
 }
 
 .headCell {
@@ -161,6 +172,12 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
   gap: 2px;
   padding: 4px 8px;
   background-color: #2a2a2a;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
 }
 
 .code {
@@ -181,39 +198,18 @@ const loaded = computed(() => books.value.filter(x => x !== undefined).length);
 }
 
 .cell {
-  position: relative;
   padding: 2px 8px;
   line-height: 16px;
+  border-top: 1px solid #262626;
 }
 
 .empty {
-  min-height: 20px;
+  min-height: 21px;
 }
 
-/* Offers on a dark red ground, requests on a dark green ground. */
-.ask {
-  background-color: rgba(217, 83, 79, 0.1);
-}
-
-.ask .price {
-  color: #d9534f;
-}
-
-.bid {
-  background-color: rgba(92, 184, 92, 0.1);
-}
-
-.bid .price {
-  color: #5cb85c;
-}
-
-/* The spread of the exchange: below its lowest offer, above its highest request. */
-.askEdge {
-  box-shadow: inset 0 -1px 0 #d9534f;
-}
-
-.bidEdge {
-  box-shadow: inset 0 1px 0 #5cb85c;
+.spread {
+  height: 6px;
+  border-top: 1px solid #3a3a3a;
 }
 
 /* Your own orders are bold, as in CXOB; the del button sits before the amount. */
