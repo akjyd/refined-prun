@@ -1361,7 +1361,7 @@ export default {
   'cx4.favorites': 'Favorites',
   'cx4.recent': 'Recent',
   'cx4.note':
-    'Click a material to show its order books on the four exchanges. Right-click a material to add it to or remove it from favorites. Orange ▼ marks the lowest offer and ▲ the highest request of the four. A green line marks where the daily profit falls below 15w, a red line below 10w.',
+    'Click a material to show its order books on the four exchanges. Right-click a material to add it to or remove it from favorites. Orders of the four exchanges share one price table: the higher the row, the higher the price. A green line marks where the daily profit falls below 15w, a red line below 10w.',
   'cx4.loading': 'Waiting for order book data...',
   'cx4.amount': 'Amount',
   'cx4.price': 'Price',

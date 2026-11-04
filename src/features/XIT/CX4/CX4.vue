@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import OrderBook from '@src/features/XIT/CX4/OrderBook.vue';
+import PriceLadder from '@src/features/XIT/CX4/PriceLadder.vue';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
-import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { compareMaterials } from '@src/core/sort-materials';
 import { chosenRecipe } from '@src/core/daily-profit/recipe-choice';
 import { useProfitData } from '@src/infrastructure/prunplanner/profit-data';
@@ -88,28 +87,6 @@ const shown = computed(() => {
   }
 });
 
-// The exchange with the lowest offer and the one with the highest request.
-const best = computed(() => {
-  let ask: string | undefined;
-  let bid: string | undefined;
-  let lowAsk = Infinity;
-  let highBid = -Infinity;
-  for (const code of CX4_EXCHANGES) {
-    const book = cxobStore.getByTicker(`${current.value}.${code}`);
-    const a = book?.ask?.price.amount;
-    const b = book?.bid?.price.amount;
-    if (a !== undefined && a < lowAsk) {
-      lowAsk = a;
-      ask = code;
-    }
-    if (b !== undefined && b > highBid) {
-      highBid = b;
-      bid = code;
-    }
-  }
-  return { ask, bid };
-});
-
 async function pick(ticker: string) {
   current.value = ticker;
   await showMaterial(ticker);
@@ -144,19 +121,13 @@ function onRightClick(e: MouseEvent, ticker: string) {
           ]"
           @click="pick(ticker)"
           @contextmenu="onRightClick($event, ticker)">
-          <MaterialIcon size="small" :ticker="ticker" />
+          <MaterialIcon size="inline-table" :ticker="ticker" />
         </span>
       </div>
       <p :class="$style.muted">{{ t('cx4.note') }}</p>
     </div>
     <div v-if="current !== ''" :class="$style.books">
-      <OrderBook
-        v-for="code in CX4_EXCHANGES"
-        :key="code"
-        :ticker="current"
-        :exchange="code"
-        :best-ask="best.ask === code"
-        :best-bid="best.bid === code" />
+      <PriceLadder :ticker="current" :exchanges="CX4_EXCHANGES" />
     </div>
   </div>
 </template>
@@ -205,6 +176,11 @@ function onRightClick(e: MouseEvent, ticker: string) {
   pointer-events: none;
 }
 
+/* Text only: no category picture. */
+.item *::before {
+  content: none !important;
+}
+
 .itemOn {
   outline: 2px solid #f7a600;
 }
@@ -214,10 +190,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
 }
 
 .books {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
-  align-content: start;
+  min-width: 0;
 }
 
 .muted {
