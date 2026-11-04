@@ -155,4 +155,5 @@ ZH = {
  'hide-system-chat-messages': '隐藏聊天里的系统消息。',
  'close-all-windows': '在左下角底栏加「一键关闭」按钮，关闭所有浮动窗口（包括最小化的）。',
  'shp-repair-act': 'SHP：在「维修」按钮旁加按钮，生成购买并装载维修物资的动作包。',
+ 'cxob-daily-profit': 'CXOB：挂单公司名换成「按这一行的价格卖出，一个基地每天的利润」（配方在 XIT RECIPES 里选）。',
 }

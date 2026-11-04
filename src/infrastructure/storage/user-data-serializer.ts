@@ -2,7 +2,12 @@ import { downloadJson, uploadJson } from '@src/utils/json-file';
 import { migrateUserData } from '@src/store/user-data-migrations';
 import { applyInitialUserData, applyUserData, userData } from '@src/store/user-data';
 import { deepToRaw } from '@src/utils/deep-to-raw';
-import { backupUserData, getUserDataBackups } from '@src/infrastructure/storage/user-data-backup';
+import {
+  backupUserData,
+  getUserDataBackups,
+  loadLatestUserData,
+  saveLatestUserData,
+} from '@src/infrastructure/storage/user-data-backup';
 import { userDataStore } from '@src/infrastructure/prun-api/data/user-data';
 import dayjs from 'dayjs';
 
@@ -12,10 +17,15 @@ export function loadUserData() {
   let loaded = false;
   let userDataToLoad = config.userData;
   if (!userDataToLoad) {
-    const backups = getUserDataBackups();
-    if (backups.length > 0) {
-      userDataToLoad = backups[0].data;
-    }
+    // The extension storage is empty, for example after a reinstall.
+    // Use the newest copy kept in the game page storage.
+    const latest = loadLatestUserData();
+    const backup = getUserDataBackups()[0];
+    const newest =
+      latest !== undefined && (backup === undefined || latest.timestamp >= backup.timestamp)
+        ? latest
+        : backup;
+    userDataToLoad = newest?.data;
   }
   if (userDataToLoad) {
     try {
@@ -62,7 +72,12 @@ function watchUserData() {
 
 export async function saveUserData() {
   const data = deepToRaw(userData);
-  backupUserData(data);
+  saveLatestUserData(data);
+  try {
+    backupUserData(data);
+  } catch (e) {
+    console.error('Error backing up user data', e);
+  }
   await new Promise<void>(resolve => {
     const listener = (e: MessageEvent) => {
       if (e.source !== window) {

@@ -869,6 +869,8 @@ export default {
   'feature.cxm-reorder': 'CXM: Adds drag-and-drop to reorder exchanges.',
   'feature.cxo-delete-order-button': 'CXO/FXO: Adds a delete button.',
   'feature.cxob-center-on-open': 'CXOB: Centers the order book on open.',
+  'feature.cxob-daily-profit':
+    'CXOB: Replaces the trader name with the daily profit of one base selling at the order price.',
   'feature.cxob-delete-own-exchange-orders': 'CXOB/FXOB: Adds a delete button to own orders.',
   'feature.cxob-depth-bars': 'CXOB: Adds market depth bars.',
   'feature.cxob-hide-section-headers': 'CXOB: Hides "Offers" and "Requests" headers.',
@@ -1313,4 +1315,17 @@ export default {
   'act.contribute.noRow': 'No {0} row in {1}.',
   'act.contribute.short': '{0}: could only set {1} of {2} (slider max {3}).',
   'type.GovBurn Maintain': 'GovBurn Maintain',
+
+  // 新功能 —— XIT RECIPES 和 CXOB 日利
+  'recipes.title': 'RECIPES',
+  'recipes.description':
+    'Picks the recipe used for daily profit when a material has more than one recipe.',
+  'recipes.material': 'Material',
+  'recipes.selected': 'Selected recipe',
+  'recipes.price': 'Avg price',
+  'recipes.profit': 'Daily profit',
+  'recipes.auto': 'auto',
+  'recipes.note':
+    'Click a recipe to select it. A material that was never picked uses the recipe with the highest daily profit. Prices are the 30-day VWAP averaged over all exchanges. Daily profit: one base with the PRUNplanner optimal layout runs the recipe all day, with COGC and 5 experts.',
+  'cxob.profitHead': 'Daily profit',
 };

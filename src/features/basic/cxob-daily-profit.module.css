@@ -1,0 +1,8 @@
+/* The trader name is a text node, so it is hidden with a zero font size. */
+.cell {
+  font-size: 0 !important;
+}
+
+.profit {
+  font-variant-numeric: tabular-nums;
+}

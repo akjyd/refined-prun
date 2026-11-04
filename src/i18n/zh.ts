@@ -831,6 +831,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.cxm-reorder': 'CXM：可以拖动调整交易所顺序。',
   'feature.cxo-delete-order-button': 'CXO / FXO：添加删除订单按钮。',
   'feature.cxob-center-on-open': 'CXOB：打开时订单簿自动滚到中间。',
+  'feature.cxob-daily-profit':
+    'CXOB：挂单公司名换成「按这一行的价格卖出，一个基地每天的利润」（配方在 XIT RECIPES 里选）。',
   'feature.cxob-delete-own-exchange-orders': 'CXOB / FXOB：在自己的订单旁加删除按钮。',
   'feature.cxob-depth-bars': 'CXOB：加市场深度条。',
   'feature.cxob-hide-section-headers': 'CXOB：隐藏「卖单」「买单」标题。',
@@ -1242,6 +1244,18 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'act.contribute.noRow': '{1} 里找不到 {0} 这一行。',
   'act.contribute.short': '{0}：只能设置 {1}（计划 {2}，滑块上限 {3}）。',
   'type.GovBurn Maintain': '仓库维护',
+
+  // 新功能 —— XIT RECIPES 和 CXOB 日利
+  'recipes.title': '配方选择',
+  'recipes.description': '一种物资有多个配方时，选择计算日利用的配方。',
+  'recipes.material': '物资',
+  'recipes.selected': '已选配方',
+  'recipes.price': '均价',
+  'recipes.profit': '日利',
+  'recipes.auto': '自动',
+  'recipes.note':
+    '点配方行选中它。没选过的物资自动用日利最高的配方。价格是全部交易所的 30 天成交均价。日利：一个按 PRUNplanner 最优布局建的基地全天跑这个配方（COGC 加成、5 名专家）。',
+  'cxob.profitHead': '日利',
 };
 
 export default zh;

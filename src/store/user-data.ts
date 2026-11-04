@@ -95,6 +95,8 @@ export const initialUserData = deepFreeze({
     // Last time XIT GOVBURN refreshed all building data.
     refreshedAt: 0,
   },
+  // Recipe key picked in XIT RECIPES, by material ticker.
+  recipeChoices: {} as Record<string, string | undefined>,
 
   // Used in user-data-migrations.ts
   migrations: undefined,
