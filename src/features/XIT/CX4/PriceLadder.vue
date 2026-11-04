@@ -4,12 +4,8 @@ import PrunLink from '@src/components/PrunLink.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
-import {
-  chosenRecipe,
-  exchangePrice,
-  profitOf,
-  withPrice,
-} from '@src/core/daily-profit/recipe-choice';
+import { orderProfit } from '@src/core/daily-profit/order-profit';
+import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
@@ -33,7 +29,6 @@ interface Cell {
 }
 
 const books = computed(() => exchanges.map(x => cxobStore.getByTicker(`${ticker}.${x}`)));
-const recipe = computed(() => chosenRecipe(ticker));
 
 // Your own orders show the amount left / the amount placed.
 function ownAmount(order: PrunApi.CXBrokerOrder) {
@@ -53,19 +48,18 @@ function ranks(values: (number | undefined)[]) {
 }
 
 const columns = computed(() => {
-  const r = recipe.value;
   const ownId = companyStore.value?.id;
   return books.value.map((book, i) => {
     if (!book) {
       return { asks: [] as Cell[], bids: [] as Cell[] };
     }
-    const price = exchangePrice(exchanges[i]);
+    const profitAt = orderProfit(ticker, exchanges[i]);
     const toCell = (order: PrunApi.CXBrokerOrder, ask: boolean): Cell => ({
       id: order.id,
       ask,
       price: order.limit.amount,
       amount: ownAmount(order) ?? (order.amount === null ? '∞' : fixed0(order.amount)),
-      profit: r ? profitOf(r, withPrice(price, ticker, order.limit.amount)) : undefined,
+      profit: profitAt(order.limit.amount),
       own: order.trader.id === ownId,
     });
     const asks = book.sellingOrders.map(x => toCell(x, true)).sort((a, b) => b.price - a.price);
@@ -123,7 +117,9 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
     <div :class="[$style.row, $style.head]">
       <span v-for="code in exchanges" :key="code" :class="$style.headCell">
         <span :class="$style.title">
-          <span :class="$style.code">{{ code }}</span>
+          <span :class="$style.code"
+            >{{ code }} <PlanetPicker :ticker="ticker" :exchange="code"
+          /></span>
           <PrunLink inline :command="`CXPO ${ticker}.${code}`" />
         </span>
         <span :class="$style.columns">

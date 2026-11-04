@@ -1,19 +1,14 @@
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { refPrunId } from '@src/infrastructure/prun-ui/attributes';
 import { watchEffectWhileNodeAlive } from '@src/utils/watch';
-import {
-  chosenRecipe,
-  exchangePrice,
-  profitOf,
-  withPrice,
-} from '@src/core/daily-profit/recipe-choice';
+import { orderProfit } from '@src/core/daily-profit/order-profit';
+import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import $style from './cxob-daily-profit.module.css';
 import { t } from '@src/i18n';
 
 // Replaces the trader name with the daily profit of one base that sells the material at the
-// order price. The recipe is the one picked in XIT RECIPES; other prices are the 30-day VWAP
-// of this exchange. Extracted materials have no recipe and show "--".
+// order price, the same way as XIT CX4 and XIT ORDERS (see order-profit.ts).
 function onTileReady(tile: PrunTile) {
   const orderBook = computed(() => cxobStore.getByTicker(tile.parameter));
   const prices = computed(() => {
@@ -25,20 +20,15 @@ function onTileReady(tile: PrunTile) {
       [...book.sellingOrders, ...book.buyingOrders].map(x => [x.id, x.limit.amount] as const),
     );
   });
-  const recipe = computed(() => {
-    const ticker = orderBook.value?.material.ticker;
-    return ticker !== undefined ? chosenRecipe(ticker) : undefined;
-  });
   const profits = computed(() => {
     const book = orderBook.value;
-    const r = recipe.value;
     const result = new Map<string, number | undefined>();
-    if (!book || !r) {
+    if (!book) {
       return result;
     }
-    const base = exchangePrice(book.exchange.code);
+    const profitAt = orderProfit(book.material.ticker, book.exchange.code);
     for (const [id, price] of prices.value) {
-      result.set(id, profitOf(r, withPrice(base, book.material.ticker, price)));
+      result.set(id, profitAt(price));
     }
     return result;
   });
@@ -58,6 +48,13 @@ function onTileReady(tile: PrunTile) {
     const label = document.createElement('span');
     label.style.fontSize = getComputedStyle(nameCell).fontSize;
     nameCell.appendChild(label);
+    if (isHead) {
+      // The planet behind the daily profit of a raw material.
+      const [ticker, exchange] = (tile.parameter ?? '').split('.');
+      if (ticker && exchange) {
+        createFragmentApp(PlanetPicker, { ticker, exchange }).appendTo(nameCell);
+      }
+    }
     watchEffectWhileNodeAlive(tr, () => {
       const price = prices.value.get(id.value ?? '');
       // Only order rows and the column title change; other rows keep their text.

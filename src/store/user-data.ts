@@ -97,6 +97,8 @@ export const initialUserData = deepFreeze({
   },
   // Recipe key picked in XIT RECIPES, by material ticker.
   recipeChoices: {} as Record<string, string | undefined>,
+  // Planet whose extraction gives the daily profit of a raw material in an order book, by 'AIR.NC1'.
+  extractPlanets: {} as Record<string, string | undefined>,
   // XIT CX4: favorite and recent materials, and the CXOB tile id used for each exchange.
   cx4: {
     favorites: [] as string[],

@@ -15,7 +15,7 @@ import { cxStore } from '@src/infrastructure/fio/cx';
 import { starsStore } from '@src/infrastructure/prun-api/data/stars';
 import { stationsStore } from '@src/infrastructure/prun-api/data/stations';
 import { getSystemLineFromAddress } from '@src/infrastructure/prun-api/data/addresses';
-import { hiddenResources, watchedPlanets } from '@src/features/XIT/EXTRACT/extract-planets';
+import { hiddenResources, watchedPlanets } from '@src/core/extraction/watched-planets';
 import { getMaterialNameByTicker } from '@src/util';
 import { fixed0 } from '@src/utils/format';
 import { t } from '@src/i18n';

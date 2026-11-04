@@ -5,12 +5,8 @@ import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
-import {
-  chosenRecipe,
-  exchangePrice,
-  profitOf,
-  withPrice,
-} from '@src/core/daily-profit/recipe-choice';
+import { orderProfit } from '@src/core/daily-profit/order-profit';
+import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
@@ -30,7 +26,6 @@ const { ticker, exchange, refreshKey } = defineProps<{
 const $style = useCssModule();
 
 const book = computed(() => cxobStore.getByTicker(`${ticker}.${exchange}`));
-const recipe = computed(() => chosenRecipe(ticker));
 
 interface Row {
   id: string;
@@ -50,8 +45,7 @@ const liveRows = computed(() => {
   if (!b) {
     return [];
   }
-  const r = recipe.value;
-  const price = exchangePrice(exchange);
+  const profitAt = orderProfit(ticker, exchange);
   const ownId = companyStore.value?.id;
   const toRow = (order: PrunApi.CXBrokerOrder, ask: boolean): Row => {
     const own = order.trader.id === ownId;
@@ -63,7 +57,7 @@ const liveRows = computed(() => {
       ask,
       price: order.limit.amount,
       amount: mine ? `${fixed0(mine.amount)}/${fixed0(mine.initialAmount)}` : amount,
-      profit: r ? profitOf(r, withPrice(price, ticker, order.limit.amount)) : undefined,
+      profit: profitAt(order.limit.amount),
       own,
       first: false,
     };
@@ -209,6 +203,7 @@ watch(
   <div :class="$style.card">
     <div :class="$style.title">
       <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="ticker" /></span>
+      <PlanetPicker :ticker="ticker" :exchange="exchange" />
       <span :class="$style.spacer" />
       <PrunLink inline :command="`CXPO ${ticker}.${exchange}`" />
     </div>
