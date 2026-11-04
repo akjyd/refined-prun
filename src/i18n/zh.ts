@@ -1280,6 +1280,15 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'extract.cogc.WORKFORCE_TECHNICIANS': '技术员',
   'extract.cogc.WORKFORCE_ENGINEERS': '工程师',
   'extract.cogc.WORKFORCE_SCIENTISTS': '科学家',
+
+  // 新功能 —— XIT CX4 四市场订单簿
+  'cx4.title': '四市场订单簿',
+  'cx4.description': '把四个 CXOB 窗口（AI1、CI1、IC1、NC1）一起切换到同一种物资。',
+  'cx4.all': '全部',
+  'cx4.favorites': '收藏',
+  'cx4.recent': '最近查看',
+  'cx4.note':
+    '点物资，四个 CXOB 窗口一起切换。第一次点会打开这四个窗口，你把它们摆好位置后，以后只在原处切换。右键物资加入或移出收藏。',
 };
 
 export default zh;

@@ -1353,4 +1353,13 @@ export default {
   'extract.cogc.WORKFORCE_TECHNICIANS': 'Technicians',
   'extract.cogc.WORKFORCE_ENGINEERS': 'Engineers',
   'extract.cogc.WORKFORCE_SCIENTISTS': 'Scientists',
+
+  // 新功能 —— XIT CX4 四市场订单簿
+  'cx4.title': 'CX4',
+  'cx4.description': 'Switches four CXOB windows (AI1, CI1, IC1, NC1) to one material at once.',
+  'cx4.all': 'All',
+  'cx4.favorites': 'Favorites',
+  'cx4.recent': 'Recent',
+  'cx4.note':
+    'Click a material to show it in the four CXOB windows. The first click opens them; move them where you want, later clicks change them in place. Right-click a material to add it to or remove it from favorites.',
 };

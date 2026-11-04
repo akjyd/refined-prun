@@ -97,6 +97,12 @@ export const initialUserData = deepFreeze({
   },
   // Recipe key picked in XIT RECIPES, by material ticker.
   recipeChoices: {} as Record<string, string | undefined>,
+  // XIT CX4: favorite and recent materials, and the CXOB tile id used for each exchange.
+  cx4: {
+    favorites: [] as string[],
+    recent: [] as string[],
+    tiles: {} as Record<string, string | undefined>,
+  },
 
   // Used in user-data-migrations.ts
   migrations: undefined,
