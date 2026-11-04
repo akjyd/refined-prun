@@ -4,8 +4,12 @@ import { isPresent } from 'ts-extras';
 
 const updateInterval = dayjs.duration(15, 'minutes').asMilliseconds();
 
+let nextFetch: ReturnType<typeof setTimeout> | undefined;
+
+// Also called by the refresh button; the next automatic fetch starts again from now.
 export async function fetchPrices() {
-  setTimeout(fetchPrices, updateInterval);
+  clearTimeout(nextFetch);
+  nextFetch = setTimeout(fetchPrices, updateInterval);
 
   const url = 'https://refined-prun.github.io/refined-prices/all.json';
   const response = await fetch(url);

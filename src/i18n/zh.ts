@@ -1256,6 +1256,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'recipes.note':
     '点配方行选中它。没选过的物资自动用日利最高的配方。价格是全部交易所的 30 天成交均价。日利：一个按 PRUNplanner 最优布局建的基地全天跑这个配方（COGC 加成、5 名专家）。',
   'cxob.profitHead': '日利',
+  'version.priceAge': '价格 {0} 分钟前',
 };
 
 export default zh;

@@ -1328,4 +1328,5 @@ export default {
   'recipes.note':
     'Click a recipe to select it. A material that was never picked uses the recipe with the highest daily profit. Prices are the 30-day VWAP averaged over all exchanges. Daily profit: one base with the PRUNplanner optimal layout runs the recipe all day, with COGC and 5 experts.',
   'cxob.profitHead': 'Daily profit',
+  'version.priceAge': 'prices {0} min ago',
 };

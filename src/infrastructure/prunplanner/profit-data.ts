@@ -65,6 +65,7 @@ function convert(recipes: PlannerRecipe[], buildings: PlannerBuilding[]): Profit
     buildings: {},
     needs: embeddedProfitData.needs,
     optimal: embeddedProfitData.optimal,
+    extractable: embeddedProfitData.extractable,
   };
   for (const b of production) {
     result.buildings[b.building_ticker] = {
@@ -114,6 +115,12 @@ async function fetchPlannerData() {
   } catch (e) {
     console.warn('PRUNplanner data not available, using the embedded snapshot.', e);
   }
+}
+
+// Requests the PRUNplanner data again (refresh button).
+export function refreshProfitData() {
+  requested = true;
+  void fetchPlannerData();
 }
 
 // Starts the API request once; the embedded data is used until it arrives.

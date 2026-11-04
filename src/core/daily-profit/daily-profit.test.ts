@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  isMainProduct,
   dailyProfit,
   embeddedProfitData,
   recipeKey,
@@ -32,5 +33,16 @@ describe('dailyProfit', () => {
   it('builds stable keys', () => {
     expect(recipeKey('SME', { O: 1, C: 1 }, { AL: 3 })).toBe('SME:1xC 1xO=>3xAL');
     expect(byOutput.get('AL')?.length).toBe(3);
+  });
+
+  it('treats extracted materials as raw', () => {
+    expect(byOutput.get('SIO')).toBeUndefined();
+    expect(byOutput.get('O')).toBeUndefined();
+  });
+
+  it('finds the main product', () => {
+    const aml = embeddedProfitData.recipes.find(x => x.key === 'AML:2xBER=>1xAL 1xBE 1xSIO')!;
+    expect(isMainProduct(aml, 'AL', price)).toBe(false);
+    expect(isMainProduct(aml, 'BE', price)).toBe(true);
   });
 });

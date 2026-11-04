@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MaterialIcon from '@src/components/MaterialIcon.vue';
+import CopyButton from '@src/components/CopyButton.vue';
 import { Recipe } from '@src/core/daily-profit/daily-profit';
 import {
   bestRecipe,
@@ -66,6 +67,21 @@ function pick(ticker: string, recipe: Recipe) {
   userData.recipeChoices[ticker] = recipe.key;
 }
 
+// Every material with its selected recipe, for sharing.
+function exportChoices() {
+  const result: Record<string, { recipe: string; auto: boolean; profit?: number }> = {};
+  for (const m of materials.value) {
+    if (m.selected) {
+      result[m.ticker] = {
+        recipe: m.selected.recipe.key,
+        auto: m.auto,
+        profit: m.selected.profit !== undefined ? Math.round(m.selected.profit) : undefined,
+      };
+    }
+  }
+  return JSON.stringify(result, null, 1);
+}
+
 function recipeText(recipe: Recipe) {
   const side = (x: Record<string, number>) =>
     Object.entries(x)
@@ -77,6 +93,7 @@ function recipeText(recipe: Recipe) {
 
 <template>
   <div :class="$style.root">
+    <div :class="$style.toolbar"><CopyButton :copy-fn="exportChoices" /></div>
     <div :class="[$style.row, $style.head]">
       <span />
       <span>{{ t('recipes.material') }}</span>
@@ -132,6 +149,12 @@ function recipeText(recipe: Recipe) {
 .root {
   padding: 6px 8px;
   font-size: 13px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 4px;
 }
 
 .row {
