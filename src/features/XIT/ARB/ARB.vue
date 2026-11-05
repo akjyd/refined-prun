@@ -291,9 +291,7 @@ function toggleBlacklistMode() {
         :from="r.from"
         :to="r.to"
         :mode="mode"
-        :capacity="r.capacity"
-        :fio-a="fioBooks.books.get(`${r.ticker}.${r.from}`)"
-        :fio-b="fioBooks.books.get(`${r.ticker}.${r.to}`)" />
+        :capacity="r.capacity" />
     </template>
   </div>
 </template>

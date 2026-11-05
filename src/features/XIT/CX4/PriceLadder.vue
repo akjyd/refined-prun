@@ -18,7 +18,16 @@ import link from '@src/infrastructure/prun-ui/css/link.module.css';
 // The order books of the four exchanges side by side. Only the best offers and the best
 // requests are placed by price: the exchange with the higher best offer has it one row higher,
 // and the same for the best requests. The other orders follow without gaps.
-const { ticker, exchanges } = defineProps<{ ticker: string; exchanges: string[] }>();
+const { ticker, exchanges, takes, trim, ghost } = defineProps<{
+  ticker: string;
+  exchanges: string[];
+  // XIT ARB: units a trade takes from each order, by order id. Taken orders are gold.
+  takes?: Map<string, number>;
+  // XIT ARB: per side, keep the taken orders and this many more; hide the rest.
+  trim?: number;
+  // XIT ARB: the offer you will list, shown in the offers of its exchange.
+  ghost?: { exchange: string; price: number; amount: number };
+}>();
 
 const $style = useCssModule();
 
@@ -32,6 +41,8 @@ interface Cell {
   profit?: number;
   own: boolean;
   mark?: string;
+  taken?: boolean;
+  ghost?: boolean;
 }
 
 const books = computed(() => exchanges.map(x => cxobStore.getByTicker(`${ticker}.${x}`)));
@@ -82,17 +93,43 @@ const columns = computed(() => {
       return { asks: [] as Cell[], bids: [] as Cell[] };
     }
     const profitAt = orderProfit(ticker, exchanges[i]);
-    const toCell = (order: PrunApi.CXBrokerOrder, ask: boolean): Cell => ({
-      id: order.id,
-      ask,
-      price: order.limit.amount,
-      amount: ownAmount(order) ?? (order.amount === null ? '∞' : fixed0(order.amount)),
-      profit: profitAt(order.limit.amount),
-      own: order.trader.id === ownId,
-      change: ownChange(order),
-    });
-    const asks = book.sellingOrders.map(x => toCell(x, true)).sort((a, b) => b.price - a.price);
-    const bids = book.buyingOrders.map(x => toCell(x, false)).sort((a, b) => b.price - a.price);
+    const toCell = (order: PrunApi.CXBrokerOrder, ask: boolean): Cell => {
+      const take = takes?.get(order.id) ?? 0;
+      const amount = ownAmount(order) ?? (order.amount === null ? '∞' : fixed0(order.amount));
+      // A part-taken order shows taken/amount.
+      const partial = take > 0 && order.amount !== null && take < order.amount;
+      return {
+        id: order.id,
+        ask,
+        price: order.limit.amount,
+        amount: partial ? `${fixed0(take)}/${fixed0(order.amount!)}` : amount,
+        profit: profitAt(order.limit.amount),
+        own: order.trader.id === ownId,
+        change: ownChange(order),
+        taken: take > 0,
+      };
+    };
+    let asks = book.sellingOrders.map(x => toCell(x, true));
+    if (ghost && ghost.exchange === exchanges[i]) {
+      asks.push({
+        id: 'ghost',
+        ask: true,
+        price: ghost.price,
+        amount: fixed0(ghost.amount),
+        profit: profitAt(ghost.price),
+        own: false,
+        ghost: true,
+      });
+    }
+    asks.sort((a, b) => b.price - a.price);
+    let bids = book.buyingOrders.map(x => toCell(x, false)).sort((a, b) => b.price - a.price);
+    if (trim !== undefined) {
+      // Offers: the best are last. Requests: the best are first.
+      const keepAsks = asks.filter(x => x.taken === true || x.ghost === true).length + trim;
+      const keepBids = bids.filter(x => x.taken === true).length + trim;
+      asks = asks.slice(Math.max(0, asks.length - keepAsks));
+      bids = bids.slice(0, keepBids);
+    }
     const marks = profitMarks([...asks, ...bids]);
     for (const cell of [...asks, ...bids]) {
       cell.mark = marks.get(cell.id);
@@ -188,6 +225,8 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
               ? [
                   $style.cell,
                   cell.own ? $style.own : undefined,
+                  cell.taken ? $style.taken : undefined,
+                  cell.ghost ? $style.ghost : undefined,
                   cell.change !== undefined ? $style.changed : undefined,
                   drag.lineAbove(cell.id) ? $style.dropAbove : undefined,
                   drag.lineBelow(cell.id) ? $style.dropBelow : undefined,
@@ -280,6 +319,18 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .spread {
   height: 6px;
   border-top: 1px solid #3a3a3a;
+}
+
+/* XIT ARB: orders the trade takes, and the offer you will list. */
+.taken {
+  background-color: rgba(247, 166, 0, 0.2);
+  box-shadow: inset 3px 0 0 #f7a600;
+}
+
+.ghost {
+  outline: 1px dashed #f7a600;
+  outline-offset: -1px;
+  color: #f7a600;
 }
 
 /* Your own orders are bold, as in CXOB; the del button sits before the amount. */
