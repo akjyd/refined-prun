@@ -35,6 +35,8 @@ export interface ArbBatch {
   id: string;
   // Batches bought together for one flight share a trip id.
   tripId?: string;
+  // Cargo hold of the trip, as chosen in the cart (for example "500t / 500m³").
+  ship?: string;
   snapshot?: ArbSnapshot;
   ticker: string;
   from: string;

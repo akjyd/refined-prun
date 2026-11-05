@@ -11,6 +11,7 @@ interface Pending {
   mode: ArbBatch['mode'];
   plan: ArbPlan;
   tripId?: string;
+  ship?: string;
   snapshot?: ArbSnapshot;
   at: number;
 }
@@ -96,6 +97,7 @@ export function trackArbBatches(orders: PrunApi.CXOrder[]) {
         createdAt: created,
         plan: pending.plan,
         tripId: pending.tripId,
+        ship: pending.ship,
         snapshot: pending.snapshot,
         buyOrders: [order.id],
         trades: [],

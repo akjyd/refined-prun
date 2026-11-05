@@ -79,6 +79,7 @@ async function buyAll() {
         to: route.to,
         mode: line.item.mode,
         tripId,
+        ship: cartShip.value.label,
         snapshot: snapshotOf(result),
         plan: {
           units: result.units,

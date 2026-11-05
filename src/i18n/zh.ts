@@ -1472,6 +1472,22 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.buyFailed': '{0} 买入失败：{1}',
   'arb.buyDone': '已下 {0} 张买单。',
   'arb.daysLabel': '天数',
+  'arblog.trip': '船次',
+  'arblog.batchCount': '{0} 批',
+  'arblog.sellTrip': '卖出本车',
+  'arblog.snapshot': '买入时的计划',
+  'arblog.noSnapshot': '这一批没有存下当时的计划。',
+  'arblog.bookLoading': '正在读取实时订单簿...',
+  'arblog.noProfit': '无利润，不挂',
+  'arblog.noStock': '仓库里没有（本批剩 {0}）',
+  'arblog.someStock': '仓库只有 {0} / {1}',
+  'arblog.fillShort': '计划 {0}，可填 {1}',
+  'arblog.rest': '填单剩余',
+  'arblog.noFill': '没有符合计划的买单',
+  'arblog.placing': '下单中...',
+  'arblog.placeAll': '下 {0} 张单',
+  'arblog.placed': '{0}：{1} 个，价格 {2}',
+  'arblog.placeFailed': '{0}：失败：{1}',
 };
 
 export default zh;
