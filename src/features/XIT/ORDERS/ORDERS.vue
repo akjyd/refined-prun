@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import OrderCard from '@src/features/XIT/ORDERS/OrderCard.vue';
+import ChipGroup from '@src/components/ChipGroup.vue';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { compareMaterials } from '@src/core/sort-materials';
@@ -40,6 +41,15 @@ watchEffect(() => {
 // Cards and deleted orders stay until the window closes.
 const refreshKey = ref(0);
 
+// One tab per exchange, with the number of materials you have orders for.
+const exchangeTabs = computed(() =>
+  EXCHANGES.map(code => ({
+    value: code,
+    label: code,
+    count: byExchange.value.get(code)?.size ?? 0,
+  })),
+);
+
 const tickers = computed(() =>
   [...(kept.value.get(exchange.value) ?? [])].sort((a, b) =>
     compareMaterials(materialsStore.getByTicker(a), materialsStore.getByTicker(b)),
@@ -64,13 +74,7 @@ const stopVisit = watchEffect(() => {
 <template>
   <div :class="$style.root">
     <div :class="$style.tabs">
-      <span
-        v-for="code in EXCHANGES"
-        :key="code"
-        :class="[$style.tab, code === exchange ? $style.tabOn : undefined]"
-        @click="exchange = code">
-        {{ code }} <span :class="$style.count">{{ byExchange.get(code)?.size ?? 0 }}</span>
-      </span>
+      <ChipGroup v-model="exchange" :options="exchangeTabs" />
     </div>
     <p v-if="tickers.length === 0" :class="$style.muted">{{ t('orders.none') }}</p>
     <div :class="$style.cards">
@@ -95,25 +99,6 @@ const stopVisit = watchEffect(() => {
   margin-bottom: 8px;
 }
 
-.tab {
-  padding: 4px 10px;
-  background-color: #2a2a2a;
-  cursor: pointer;
-}
-
-.tabOn {
-  background-color: #f7a600;
-  color: #1e1e1e;
-}
-
-.spacer {
-  flex: 1;
-}
-
-.count {
-  opacity: 0.7;
-}
-
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -121,6 +106,6 @@ const stopVisit = watchEffect(() => {
 }
 
 .muted {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 </style>

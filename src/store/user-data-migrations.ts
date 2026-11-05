@@ -21,6 +21,12 @@ function isCheckpoint(entry: MigrationEntry): entry is Checkpoint {
 // The date is for reference only, and it does not affect migration order.
 const migrations: MigrationEntry[] = [
   [
+    '05.11.2026 Add arbitrage batches',
+    userData => {
+      userData.arbBatches ??= [];
+    },
+  ],
+  [
     '05.11.2026 Add default CoGC programs',
     userData => {
       userData.govburn.config.cogcPrograms ??= {};

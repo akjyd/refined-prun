@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChipGroup from '@src/components/ChipGroup.vue';
 import PriceLadder from '@src/features/XIT/CX4/PriceLadder.vue';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
@@ -75,6 +76,9 @@ const tabs = computed(() => [
   })),
 ]);
 
+// Lists (all, favorites, recent) and industries are two groups of chips.
+const tabChips = computed(() => tabs.value.map(x => ({ value: x.id, label: x.name })));
+
 const shown = computed(() => {
   switch (tab.value) {
     case ALL:
@@ -112,13 +116,8 @@ function onRightClick(e: MouseEvent, ticker: string) {
         </span>
       </div>
       <div :class="$style.tabs">
-        <span
-          v-for="x in tabs"
-          :key="x.id"
-          :class="[$style.tab, x.id === tab ? $style.tabOn : undefined]"
-          @click="tab = x.id">
-          {{ x.name }}
-        </span>
+        <ChipGroup v-model="tab" :options="tabChips.slice(0, 3)" />
+        <ChipGroup v-model="tab" :options="tabChips.slice(3)" />
       </div>
       <div :class="$style.items">
         <span
@@ -153,19 +152,8 @@ function onRightClick(e: MouseEvent, ticker: string) {
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--rpz-space-1) var(--rpz-space-3);
   margin-bottom: 8px;
-}
-
-.tab {
-  padding: 3px 7px;
-  background-color: #2a2a2a;
-  cursor: pointer;
-}
-
-.tabOn {
-  background-color: #f7a600;
-  color: #1e1e1e;
 }
 
 .items {
@@ -197,14 +185,14 @@ function onRightClick(e: MouseEvent, ticker: string) {
   position: absolute;
   top: -5px;
   right: -3px;
-  color: #f7a600;
+  color: var(--rpz-brand);
   font-size: 10px;
   line-height: 1;
   text-shadow: 0 0 2px #000;
 }
 
 .itemOn {
-  outline: 2px solid #f7a600;
+  outline: 2px solid var(--rpz-brand);
 }
 
 .current {
@@ -213,7 +201,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
   gap: 10px;
   margin-bottom: 10px;
   padding: 6px;
-  background-color: #252525;
+  background-color: var(--rpz-bg-raised);
 }
 
 .current > span {
@@ -221,7 +209,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
 }
 
 .currentTicker {
-  color: #eee;
+  color: var(--rpz-text);
   font-size: 15px;
   font-weight: bold;
 }
@@ -231,7 +219,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
 }
 
 .muted {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
   font-size: 12px;
 }
 </style>

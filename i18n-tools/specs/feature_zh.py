@@ -157,5 +157,7 @@ ZH = {
  'shp-repair-act': 'SHP：在「维修」按钮旁加按钮，生成购买并装载维修物资的动作包。',
  'cxob-plain-prices': 'CXOB：卖价和买价用普通颜色显示，方便看出变化和标记。',
  'cxob-drag-reprice': 'CXOB：把自己的挂单拖到订单簿的另一个位置，按那里的价格重新挂单。',
+ 'arb-batch-tracker': 'XIT ARB：从 XIT ARB 下的买单自动记成倒货批次，并跟踪它之后的卖出（XIT ARBLOG）。',
+ 'inv-arb-badge': 'INV/SHPI：在有倒货批次未卖完的物资上加「倒」标记和数量。',
  'cxob-daily-profit': 'CXOB：挂单公司名换成「按这一行的价格卖出，一个基地每天的利润」（配方在 XIT RECIPES 里选）。',
 }

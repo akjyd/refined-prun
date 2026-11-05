@@ -2,7 +2,8 @@
 // A row of chips in the style of the game's radio items: a bar on top that lights up when the
 // chip is on. With `multiple`, each chip turns on and off by itself.
 const { options, multiple = false } = defineProps<{
-  options: { value: T; label: string }[];
+  // `count` shows after the label, weak (tabs with a number of items).
+  options: { value: T; label: string; count?: number }[];
   multiple?: boolean;
 }>();
 
@@ -31,7 +32,7 @@ function pick(value: T) {
       :key="o.value"
       :class="[$style.chip, isOn(o.value) ? $style.on : undefined]"
       @click="pick(o.value)">
-      {{ o.label }}
+      {{ o.label }}<span v-if="o.count !== undefined" :class="$style.count">{{ o.count }}</span>
     </span>
   </span>
 </template>
@@ -39,15 +40,21 @@ function pick(value: T) {
 <style module>
 .chips {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 2px;
+}
+
+.count {
+  margin-left: var(--rpz-space-1);
+  color: var(--rpz-text-weak);
 }
 
 .chip {
   position: relative;
   min-width: 36px;
   padding: 6px 7px 3px;
-  background-color: #252525;
-  color: #8c8c8c;
+  background-color: var(--rpz-bg-raised);
+  color: var(--rpz-text-weak);
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
@@ -65,8 +72,8 @@ function pick(value: T) {
 }
 
 .chip:hover {
-  background-color: #2e2e2e;
-  color: #eee;
+  background-color: var(--rpz-bg-overlay);
+  color: var(--rpz-text);
 }
 
 .chip:active {
@@ -74,11 +81,11 @@ function pick(value: T) {
 }
 
 .on {
-  color: #eee;
+  color: var(--rpz-text);
 }
 
 .on::before {
-  background-color: #f7a600;
-  box-shadow: 0 0 4px #f7a600;
+  background-color: var(--rpz-brand);
+  box-shadow: 0 0 4px var(--rpz-brand);
 }
 </style>

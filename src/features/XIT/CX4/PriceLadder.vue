@@ -29,6 +29,9 @@ const { ticker, exchanges, takes, trim, ghost } = defineProps<{
   ghost?: { exchange: string; price: number; amount: number };
 }>();
 
+// Fires when the CXPO button of an exchange column is clicked.
+const emit = defineEmits<{ cxpo: [exchange: string] }>();
+
 const $style = useCssModule();
 
 interface Cell {
@@ -202,7 +205,9 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
           <span :class="$style.stock">
             {{ t('cx4.stock') }} {{ stock[i] !== undefined ? fixed0(stock[i]) : '--' }}
           </span>
-          <CxpoButton :cx-ticker="`${ticker}.${code}`" />
+          <span @click.capture="emit('cxpo', code)"
+            ><CxpoButton :cx-ticker="`${ticker}.${code}`"
+          /></span>
         </span>
         <span :class="$style.columns">
           <span>{{ t('cxob.profitHead') }}</span>
@@ -277,7 +282,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
   display: grid;
   gap: 2px;
   padding: 4px 8px;
-  background-color: #2a2a2a;
+  background-color: var(--rpz-bg-raised);
 }
 
 .title {
@@ -287,11 +292,11 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 .stock {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 
 .code {
-  color: #eee;
+  color: var(--rpz-text);
   font-weight: bold;
 }
 
@@ -303,13 +308,13 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 .columns {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
   font-size: 11px;
 }
 
 .cell {
   padding: 2px 8px;
-  border-top: 1px solid #262626;
+  border-top: 1px solid var(--rpz-stroke-weak);
 }
 
 .empty {
@@ -318,29 +323,29 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 .spread {
   height: 6px;
-  border-top: 1px solid #3a3a3a;
+  border-top: 1px solid var(--rpz-stroke-weak);
 }
 
 /* XIT ARB: orders the trade takes, and the offer you will list. */
 .taken {
-  background-color: rgba(247, 166, 0, 0.2);
-  box-shadow: inset 3px 0 0 #f7a600;
+  background-color: var(--rpz-brand-fill);
+  box-shadow: inset 3px 0 0 var(--rpz-brand);
 }
 
 .ghost {
-  outline: 1px dashed #f7a600;
+  outline: 1px dashed var(--rpz-brand);
   outline-offset: -1px;
-  color: #f7a600;
+  color: var(--rpz-brand);
 }
 
 /* Your own orders are bold, as in CXOB; the del button sits before the amount. */
 .changed {
-  background-color: rgba(247, 166, 0, 0.25);
+  background-color: rgba(247, 166, 0, 0.12);
 }
 
 .change {
   margin-right: 4px;
-  color: #f7a600;
+  color: var(--rpz-brand);
   font-size: 11px;
 }
 
@@ -363,8 +368,8 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
   right: 0;
   z-index: 1;
   height: 0;
-  border-top: 2px solid #f7a600;
-  color: #f7a600;
+  border-top: 2px solid var(--rpz-brand);
+  color: var(--rpz-brand);
   font-size: 11px;
   font-weight: bold;
   line-height: 0;
@@ -390,6 +395,6 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 .muted {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 </style>

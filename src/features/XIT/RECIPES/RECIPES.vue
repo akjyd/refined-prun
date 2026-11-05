@@ -176,11 +176,11 @@ function recipeText(recipe: Recipe) {
 }
 
 .head {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 
 .material {
-  border-top: 1px solid #2c2c2c;
+  border-top: 1px solid var(--rpz-stroke-weak);
 }
 
 .clickable {
@@ -188,7 +188,7 @@ function recipeText(recipe: Recipe) {
 }
 
 .name {
-  color: #eee;
+  color: var(--rpz-text);
 }
 
 .summary {
@@ -208,7 +208,7 @@ function recipeText(recipe: Recipe) {
 }
 
 .muted {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 
 .icon {
@@ -216,7 +216,7 @@ function recipeText(recipe: Recipe) {
 }
 
 .target {
-  outline: 1px solid #f7a600;
+  outline: 1px solid var(--rpz-brand);
 }
 
 .recipes {
@@ -235,22 +235,22 @@ function recipeText(recipe: Recipe) {
 }
 
 .picked {
-  background-color: #2a2a2a;
+  background-color: var(--rpz-bg-raised);
 }
 
 .lamp {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: #3a3a3a;
+  background-color: var(--rpz-stroke-weak);
 }
 
 .lampOn {
-  background-color: #f7a600;
+  background-color: var(--rpz-brand);
 }
 
 .building {
-  color: #eee;
+  color: var(--rpz-text);
   font-weight: bold;
 }
 

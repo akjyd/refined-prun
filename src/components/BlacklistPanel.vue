@@ -57,8 +57,8 @@ const groups = computed(() =>
   gap: 4px;
   padding: 6px;
   margin-bottom: 8px;
-  background-color: #232323;
-  border: 1px solid #2c2c2c;
+  background-color: var(--rpz-bg-raised);
+  border: 1px solid var(--rpz-stroke-weak);
 }
 
 .line {
@@ -67,7 +67,7 @@ const groups = computed(() =>
   gap: 0 10px;
   align-items: start;
   padding: 3px 0;
-  border-top: 1px solid #2a2a2a;
+  border-top: 1px solid var(--rpz-bg-raised);
 }
 
 .line:first-child {
@@ -75,7 +75,7 @@ const groups = computed(() =>
 }
 
 .reason {
-  color: #eee;
+  color: var(--rpz-text);
 }
 
 .items {

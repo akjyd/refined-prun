@@ -446,7 +446,7 @@ function cogcName(cogc: string) {
   gap: 0 8px;
   align-items: center;
   padding: 4px 4px;
-  border-top: 1px solid #2c2c2c;
+  border-top: 1px solid var(--rpz-stroke-weak);
 }
 
 .iconLink {
@@ -485,9 +485,9 @@ function cogcName(cogc: string) {
 .input {
   width: 260px;
   padding: 2px 6px;
-  border: 1px solid #3a3a3a;
-  background-color: #252525;
-  color: #eee;
+  border: 1px solid var(--rpz-stroke-weak);
+  background-color: var(--rpz-bg-raised);
+  color: var(--rpz-text);
   font: inherit;
 }
 
@@ -497,7 +497,7 @@ function cogcName(cogc: string) {
   gap: 0 8px;
   align-items: center;
   padding: 4px;
-  background-color: #252525;
+  background-color: var(--rpz-bg-raised);
 }
 
 .clickable {
@@ -505,7 +505,7 @@ function cogcName(cogc: string) {
 }
 
 .head {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
   background-color: transparent;
 }
 
@@ -525,12 +525,12 @@ function cogcName(cogc: string) {
 
 .arrow {
   width: 10px;
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 
 .resource {
   margin-top: 6px;
-  border-top: 1px solid #3a3a3a;
+  border-top: 1px solid var(--rpz-stroke-weak);
 }
 
 .title {
@@ -538,7 +538,7 @@ function cogcName(cogc: string) {
   align-items: center;
   gap: 8px;
   padding: 4px;
-  background-color: #252525;
+  background-color: var(--rpz-bg-raised);
 }
 
 .icon {
@@ -547,16 +547,16 @@ function cogcName(cogc: string) {
 }
 
 .name {
-  color: #eee;
+  color: var(--rpz-text);
 }
 
 .muted {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 
 .layout {
   display: block;
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
   font-size: 12px;
 }
 

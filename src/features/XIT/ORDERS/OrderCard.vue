@@ -196,8 +196,8 @@ watch(
 <style module>
 .card {
   min-width: 0;
-  background-color: #232323;
-  border: 1px solid #2c2c2c;
+  background-color: var(--rpz-bg-raised);
+  border: 1px solid var(--rpz-stroke-weak);
   font-variant-numeric: tabular-nums;
 }
 
@@ -206,7 +206,7 @@ watch(
   align-items: center;
   gap: 8px;
   padding: 4px 8px;
-  background-color: #2a2a2a;
+  background-color: var(--rpz-bg-raised);
 }
 
 .icon {
@@ -226,7 +226,7 @@ watch(
 }
 
 .columns {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
   font-size: 11px;
 }
 
@@ -249,20 +249,20 @@ watch(
 }
 
 .row {
-  border-top: 1px solid #2a2a2a;
+  border-top: 1px solid var(--rpz-bg-raised);
 }
 
 .spread {
-  border-top: 1px solid #5a5a5a;
+  border-top: 1px solid var(--rpz-stroke);
 }
 
 .changed {
-  background-color: rgba(247, 166, 0, 0.25);
+  background-color: rgba(247, 166, 0, 0.12);
 }
 
 .change {
   margin-right: 4px;
-  color: #f7a600;
+  color: var(--rpz-brand);
   font-size: 11px;
 }
 
@@ -290,8 +290,8 @@ watch(
   right: 0;
   z-index: 1;
   height: 0;
-  border-top: 2px solid #f7a600;
-  color: #f7a600;
+  border-top: 2px solid var(--rpz-brand);
+  color: var(--rpz-brand);
   font-size: 11px;
   font-weight: bold;
   line-height: 0;
@@ -317,11 +317,11 @@ watch(
 }
 
 .stock {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 
 .muted {
   padding: 6px 8px;
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
 }
 </style>

@@ -2,17 +2,41 @@
 import PriceLadder from '@src/features/XIT/CX4/PriceLadder.vue';
 import { arbitrage, ArbitrageMode, BookLevel } from '@src/core/arbitrage';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
+import { startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
 
 // The two live order books of a trade, as in XIT CX4. The orders the trade takes are gold; a
 // part-taken order shows taken/amount. For "listed", your offer shows in the offers of the end
 // exchange. Each side keeps two more orders.
-const { ticker, from, to, mode, capacity } = defineProps<{
+const { ticker, from, to, mode, capacity, safety } = defineProps<{
   ticker: string;
   from: string;
   to: string;
   mode: ArbitrageMode;
   capacity: number;
+  safety?: number;
 }>();
+
+// A buy placed from the CXPO of the start exchange becomes an arbitrage batch (XIT ARBLOG).
+function onCxpo(exchange: string) {
+  const r = result.value;
+  if (exchange !== from || !r) {
+    return;
+  }
+  startArbBatch({
+    ticker,
+    from,
+    to,
+    mode,
+    plan: {
+      units: r.units,
+      cost: r.cost,
+      sellPrice: r.sell,
+      profit: r.profit,
+      return: r.cost > 0 ? r.profit / r.cost : 0,
+      safety,
+    },
+  });
+}
 
 const $style = useCssModule();
 
@@ -54,14 +78,20 @@ const ghost = computed(() => {
 
 <template>
   <div :class="$style.depth">
-    <PriceLadder :ticker="ticker" :exchanges="[from, to]" :takes="takes" :trim="2" :ghost="ghost" />
+    <PriceLadder
+      :ticker="ticker"
+      :exchanges="[from, to]"
+      :takes="takes"
+      :trim="2"
+      :ghost="ghost"
+      @cxpo="onCxpo" />
   </div>
 </template>
 
 <style module>
 .depth {
   padding: 8px 8px 12px 64px;
-  background-color: #252525;
-  border-top: 1px solid #2c2c2c;
+  background-color: var(--rpz-bg-raised);
+  border-top: 1px solid var(--rpz-stroke-weak);
 }
 </style>

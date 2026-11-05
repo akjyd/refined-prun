@@ -15,6 +15,9 @@ import { arbReasons } from '@src/core/blacklist-reasons';
 import { userData } from '@src/store/user-data';
 import { percent1 } from '@src/utils/format';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
+import { dailyVolatility, flightDays, safetyMultiple } from '@src/core/volatility';
+import { dailyCloses, requestCloses } from '@src/infrastructure/fio/cxpc';
+import { fixed01 } from '@src/utils/format';
 import { t } from '@src/i18n';
 
 const $style = useCssModule();
@@ -99,7 +102,15 @@ const allRows = computed(() => {
   return rows;
 });
 
-type SortKey = 'ticker' | 'profit' | 'return';
+// Return / (daily volatility of the end exchange × √flight days); undefined until FIO sends the
+// daily prices.
+function safetyOf(row: Row) {
+  const closes = dailyCloses.get(`${row.ticker}.${row.to}`);
+  const volatility = closes ? dailyVolatility(closes) : undefined;
+  return safetyMultiple(row.return, volatility, flightDays(row.from, row.to));
+}
+
+type SortKey = 'ticker' | 'profit' | 'return' | 'safety';
 const sortKey = ref<SortKey>('profit');
 const sortDown = ref(true);
 
@@ -134,12 +145,21 @@ const rows = computed(() => {
     x => onRoute(x) && (editingBlacklist.value || !(x.ticker in userData.arbBlacklist)),
   );
   const sign = sortDown.value ? -1 : 1;
+  const value = (x: Row) => {
+    if (sortKey.value === 'safety') {
+      return safetyOf(x) ?? -Infinity;
+    }
+    return sortKey.value === 'ticker' ? 0 : x[sortKey.value];
+  };
   return list.sort((a, b) =>
     sortKey.value === 'ticker'
       ? sign * a.ticker.localeCompare(b.ticker)
-      : sign * (a[sortKey.value] - b[sortKey.value]),
+      : sign * (value(a) - value(b)),
   );
 });
+
+// Daily prices of the end exchanges in the list, for the safety multiple.
+watchEffect(() => requestCloses([...new Set(rows.value.map(x => `${x.ticker}.${x.to}`))]));
 
 // Blacklist: one button. In blacklist mode you pick a reason, then click rows to add them.
 const reasons = arbReasons();
@@ -260,6 +280,9 @@ function toggleBlacklistMode() {
       <span :class="[$style.num, $style.sort]" @click="sortBy('return')"
         >{{ t('arb.return') }}{{ arrow('return') }}</span
       >
+      <span :class="[$style.num, $style.sort]" @click="sortBy('safety')"
+        >{{ t('arb.safety') }}{{ arrow('safety') }}</span
+      >
     </div>
     <template v-for="r in rows" :key="r.key">
       <div
@@ -284,6 +307,9 @@ function toggleBlacklistMode() {
               : percent1(r.return)
           }}
         </span>
+        <span :class="[$style.num, (safetyOf(r) ?? Infinity) < 1 ? $style.warn : undefined]">{{
+          safetyOf(r) !== undefined ? fixed01(safetyOf(r)!) : '--'
+        }}</span>
       </div>
       <ArbDepth
         v-if="open === r.key"
@@ -291,7 +317,8 @@ function toggleBlacklistMode() {
         :from="r.from"
         :to="r.to"
         :mode="mode"
-        :capacity="r.capacity" />
+        :capacity="r.capacity"
+        :safety="safetyOf(r)" />
     </template>
   </div>
 </template>
@@ -319,11 +346,11 @@ function toggleBlacklistMode() {
 
 .sub {
   padding: 6px 8px;
-  background-color: #252525;
+  background-color: var(--rpz-bg-raised);
 }
 
 .blBar {
-  border-left: 2px solid #f7a600;
+  border-left: 2px solid var(--rpz-brand);
 }
 
 .spacer {
@@ -332,25 +359,25 @@ function toggleBlacklistMode() {
 
 .reload {
   padding: 0 4px;
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
   cursor: pointer;
 }
 
 .reload:hover {
-  color: #eee;
+  color: var(--rpz-text);
 }
 
 .row {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 110px 90px;
+  grid-template-columns: 56px minmax(0, 1fr) 110px 90px 80px;
   gap: 0 16px;
   align-items: center;
   padding: 4px 8px;
-  border-top: 1px solid #2c2c2c;
+  border-top: 1px solid var(--rpz-stroke-weak);
 }
 
 .head {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
   border-top: none;
 }
 
@@ -359,15 +386,15 @@ function toggleBlacklistMode() {
 }
 
 .data:hover {
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: var(--rpz-hover);
 }
 
 .data:active {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--rpz-press);
 }
 
 .opened {
-  background-color: #252525;
+  background-color: var(--rpz-bg-raised);
 }
 
 .struck {
@@ -380,7 +407,7 @@ function toggleBlacklistMode() {
 }
 
 .name {
-  color: #eee;
+  color: var(--rpz-text);
 }
 
 .num {
@@ -392,10 +419,14 @@ function toggleBlacklistMode() {
 }
 
 .sort:hover {
-  color: #eee;
+  color: var(--rpz-text);
 }
 
 .muted {
-  color: #8c8c8c;
+  color: var(--rpz-text-weak);
+}
+
+.warn {
+  color: var(--rpz-warn);
 }
 </style>
