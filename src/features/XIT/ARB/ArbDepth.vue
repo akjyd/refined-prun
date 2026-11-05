@@ -82,7 +82,7 @@ const ghost = computed(() => {
       :ticker="ticker"
       :exchanges="[from, to]"
       :takes="takes"
-      :traders
+      traders
       :ghost="ghost"
       @cxpo="onCxpo" />
   </div>
