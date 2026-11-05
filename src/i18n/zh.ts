@@ -1247,11 +1247,13 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'act.contribute.short': '{0}：只能设置 {1}（计划 {2}，滑块上限 {3}）。',
   'type.GovBurn Maintain': '仓库维护',
   'act.vote.desc': '为 {0} 的 COGC 投当前项目',
-  'act.vote.noProgram': '{0} 当前没有 COGC 项目，不投票。',
+  'act.vote.noProgram': '{0} 没有可投的项目（本期无项目、未设默认项目、记录里也没有），不投票。',
   'act.vote.already': '{1} 已投 {0}。',
   'act.vote.noRow': '{1} 里找不到 {0} 的投票行。',
   'act.vote.failed': '{1} 投 {0} 未生效。',
   'act.vote.done': '{1} 已投票：{0}。',
+  'gov.cfg.cogcProgram': '无项目时投的 COGC 项目',
+  'gov.cfg.noProgram': '不设',
 
   // 新功能 —— XIT RECIPES 和 CXOB 日利
   'recipes.title': '配方选择',

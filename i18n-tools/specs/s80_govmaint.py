@@ -24,8 +24,10 @@ E('type.GovBurn Maintain', 'GovBurn Maintain', '仓库维护')
 
 # COGC vote during maintain.
 E('act.vote.desc', 'Vote the current CoGC program on {0}', '为 {0} 的 COGC 投当前项目')
-E('act.vote.noProgram', 'No CoGC program runs on {0} now. No vote.', '{0} 当前没有 COGC 项目，不投票。')
+E('act.vote.noProgram', 'No program to vote on {0}: none now, no default, none in the record. No vote.', '{0} 没有可投的项目（本期无项目、未设默认项目、记录里也没有），不投票。')
 E('act.vote.already', 'You already voted {0} on {1}.', '{1} 已投 {0}。')
 E('act.vote.noRow', 'No vote row for {0} in {1}.', '{1} 里找不到 {0} 的投票行。')
 E('act.vote.failed', 'The vote for {0} on {1} did not register.', '{1} 投 {0} 未生效。')
 E('act.vote.done', 'Voted {0} on {1}.', '{1} 已投票：{0}。')
+E('gov.cfg.cogcProgram', 'CoGC program when none runs', '无项目时投的 COGC 项目')
+E('gov.cfg.noProgram', 'Not set', '不设')

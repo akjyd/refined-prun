@@ -1319,11 +1319,14 @@ export default {
   'act.contribute.short': '{0}: could only set {1} of {2} (slider max {3}).',
   'type.GovBurn Maintain': 'GovBurn Maintain',
   'act.vote.desc': 'Vote the current CoGC program on {0}',
-  'act.vote.noProgram': 'No CoGC program runs on {0} now. No vote.',
+  'act.vote.noProgram':
+    'No program to vote on {0}: none now, no default, none in the record. No vote.',
   'act.vote.already': 'You already voted {0} on {1}.',
   'act.vote.noRow': 'No vote row for {0} in {1}.',
   'act.vote.failed': 'The vote for {0} on {1} did not register.',
   'act.vote.done': 'Voted {0} on {1}.',
+  'gov.cfg.cogcProgram': 'CoGC program when none runs',
+  'gov.cfg.noProgram': 'Not set',
 
   // 新功能 —— XIT RECIPES 和 CXOB 日利
   'recipes.title': 'RECIPES',

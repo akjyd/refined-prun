@@ -4,6 +4,7 @@ import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { lookupLocalization } from '@src/infrastructure/prun-ui/i18n';
 import { clickElement } from '@src/util';
 import { waitUntil } from '@src/utils/wait';
+import { userData } from '@src/store/user-data';
 import { t } from '@src/i18n';
 
 interface Data {
@@ -18,6 +19,20 @@ interface Fiber {
 // The program of the period that runs now.
 export function currentProgram(cogc: PrunApi.Cogc | undefined, now: number) {
   return cogc?.programs?.find(x => x.start.timestamp <= now && now < x.end.timestamp)?.type;
+}
+
+// What to vote: the program that runs now; else the planet's default program set in XIT GOVBURN;
+// else the latest past period with a program (player, 2026-11-05).
+export function programToVote(cogc: PrunApi.Cogc | undefined, planet: string, now: number) {
+  const current = currentProgram(cogc, now);
+  if (current !== undefined && current !== null) {
+    return current;
+  }
+  const preset = userData.govburn.config.cogcPrograms[planet];
+  if (preset !== undefined) {
+    return preset;
+  }
+  return cogc?.programs?.find(x => x.end.timestamp <= now && x.type !== null)?.type ?? undefined;
 }
 
 function programName(type: string) {
@@ -76,7 +91,7 @@ export const VOTE_COGC = act.addActionStep<Data>({
       skip();
       return;
     }
-    const type = currentProgram(cogc(), Date.now());
+    const type = programToVote(cogc(), data.planet, Date.now());
     if (type === undefined || type === null) {
       log.info(t('act.vote.noProgram', data.planet));
       skip();

@@ -93,6 +93,8 @@ export const initialUserData = deepFreeze({
       resupplyDays: 30,
       red: 3,
       yellow: 7,
+      // CoGC program to vote when no program runs now, by planet natural id.
+      cogcPrograms: {} as Record<string, string | undefined>,
     },
     // Last time XIT GOVBURN refreshed all building data.
     refreshedAt: 0,
