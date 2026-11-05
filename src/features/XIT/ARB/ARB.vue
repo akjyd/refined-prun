@@ -21,6 +21,9 @@ const $style = useCssModule();
 
 const EXCHANGES = ['AI1', 'CI1', 'IC1', 'NC1'];
 const ROUTES = EXCHANGES.flatMap(a => EXCHANGES.filter(b => b !== a).map(b => `${a}>${b}`));
+// Trades that make less than this do not pay for the flight (player, 2026-11-05).
+const MIN_PROFIT = 30_000;
+
 const exchangeChips = EXCHANGES.map(x => ({ value: x, label: x }));
 
 const mode = ref<ArbitrageMode>('now');
@@ -79,7 +82,7 @@ const allRows = computed(() => {
         continue;
       }
       const result = arbitrage(a.asks, b.bids, b.asks, mode.value, capacity);
-      if (!result || result.units <= 0 || result.profit <= 0) {
+      if (!result || result.units <= 0 || result.profit < MIN_PROFIT) {
         continue;
       }
       rows.push({

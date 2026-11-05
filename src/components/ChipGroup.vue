@@ -1,8 +1,6 @@
 <script setup lang="ts" generic="T extends string">
-import RadioGroupContainer from '@src/components/RadioGroupContainer.vue';
-import RadioItem from '@src/components/forms/RadioItem.vue';
-
-// A row of the game's radio items. With `multiple`, each item turns on and off by itself.
+// A row of chips in the style of the game's radio items: a bar on top that lights up when the
+// chip is on. With `multiple`, each chip turns on and off by itself.
 const { options, multiple = false } = defineProps<{
   options: { value: T; label: string }[];
   multiple?: boolean;
@@ -27,30 +25,60 @@ function pick(value: T) {
 </script>
 
 <template>
-  <div :class="$style.chips">
-    <RadioGroupContainer horizontal>
-      <RadioItem
-        v-for="o in options"
-        :key="o.value"
-        horizontal
-        :model-value="isOn(o.value)"
-        @update:model-value="pick(o.value)">
-        {{ o.label }}
-      </RadioItem>
-    </RadioGroupContainer>
-  </div>
+  <span :class="$style.chips">
+    <span
+      v-for="o in options"
+      :key="o.value"
+      :class="[$style.chip, isOn(o.value) ? $style.on : undefined]"
+      @click="pick(o.value)">
+      {{ o.label }}
+    </span>
+  </span>
 </template>
 
 <style module>
-.chips > div > div {
+.chips {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.chip {
+  position: relative;
+  min-width: 36px;
+  padding: 6px 7px 3px;
+  background-color: #252525;
+  color: #8c8c8c;
+  text-align: center;
+  white-space: nowrap;
   cursor: pointer;
+  user-select: none;
 }
 
-.chips > div > div:hover {
-  background-color: rgba(255, 255, 255, 0.06);
+.chip::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  left: 3px;
+  height: 2px;
+  background-color: #444;
 }
 
-.chips > div > div:active {
-  background-color: rgba(255, 255, 255, 0.1);
+.chip:hover {
+  background-color: #2e2e2e;
+  color: #eee;
+}
+
+.chip:active {
+  background-color: #343434;
+}
+
+.on {
+  color: #eee;
+}
+
+.on::before {
+  background-color: #f7a600;
+  box-shadow: 0 0 4px #f7a600;
 }
 </style>
