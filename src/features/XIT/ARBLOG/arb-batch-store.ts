@@ -1,4 +1,4 @@
-import { ArbBatch, ArbPlan, OrderTrades, syncBatches } from '@src/core/arb-batches';
+import { ArbBatch, ArbPlan, ArbSnapshot, OrderTrades, syncBatches } from '@src/core/arb-batches';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { userData } from '@src/store/user-data';
 import { createId } from '@src/store/create-id';
@@ -10,6 +10,8 @@ interface Pending {
   to: string;
   mode: ArbBatch['mode'];
   plan: ArbPlan;
+  tripId?: string;
+  snapshot?: ArbSnapshot;
   at: number;
 }
 
@@ -28,6 +30,11 @@ let chase: Chase | undefined;
 
 export function startArbBatch(value: Omit<Pending, 'at'>) {
   pending = { ...value, at: Date.now() };
+}
+
+// True when no buy from XIT ARB waits for its order.
+export function isArbBatchLinked() {
+  return pending === undefined;
 }
 
 export function startChase(batchId: string, ticker: string, exchange: string) {
@@ -88,6 +95,8 @@ export function trackArbBatches(orders: PrunApi.CXOrder[]) {
         mode: pending.mode,
         createdAt: created,
         plan: pending.plan,
+        tripId: pending.tripId,
+        snapshot: pending.snapshot,
         buyOrders: [order.id],
         trades: [],
       });

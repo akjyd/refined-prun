@@ -21,8 +21,21 @@ export interface ArbPlan {
   safety?: number;
 }
 
+// The orders the plan was going to take when you bought, for comparing later.
+export interface ArbSnapshot {
+  // Offers on the start exchange, cheapest first: price, amount (undefined = no limit), taken.
+  buys: { price: number; amount?: number; take: number }[];
+  // "now": the requests on the end exchange you would sell to. "listed": empty.
+  sells: { price: number; amount?: number; take: number }[];
+  // "listed": the price you would list at.
+  listPrice?: number;
+}
+
 export interface ArbBatch {
   id: string;
+  // Batches bought together for one flight share a trip id.
+  tripId?: string;
+  snapshot?: ArbSnapshot;
   ticker: string;
   from: string;
   to: string;

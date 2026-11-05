@@ -2,13 +2,15 @@
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
-import { arbitrage, ArbitrageMode, unitsPerShip } from '@src/core/arbitrage';
-import { shipSizes } from '@src/core/ship-sizes';
+import { ArbitrageMode } from '@src/core/arbitrage';
 import { fioBooks, loadFioBooks } from '@src/infrastructure/fio/exchange-full';
 import { cxStore } from '@src/infrastructure/fio/cx';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import ArbDepth from '@src/features/XIT/ARB/ArbDepth.vue';
+import CartPanel from '@src/features/XIT/ARB/CartPanel.vue';
+import { NO_LIMIT, tradeOf } from '@src/features/XIT/ARB/arb-books';
+import { addToCart, cartLines, cartRoute, inCart } from '@src/features/XIT/ARB/cart';
 import { ageText } from '@src/features/XIT/ARB/age';
 import BlacklistPanel from '@src/components/BlacklistPanel.vue';
 import { arbReasons } from '@src/core/blacklist-reasons';
@@ -45,9 +47,11 @@ const routeChips = computed(() => [
 const starts = ref<string[]>([]);
 const ends = ref<string[]>([]);
 
-const shipId = ref(shipSizes[0].id);
-const ship = computed(() => shipSizes.find(x => x.id === shipId.value) ?? shipSizes[0]);
-const shipChips = shipSizes.map(x => ({ value: x.id, label: x.label }));
+// Days of end-exchange trade the units are compared with (player, 2026-11-05: 3 by default).
+const days = ref<'1' | '3' | '7'>('3');
+const dayChips = computed(() =>
+  (['1', '3', '7'] as const).map(x => ({ value: x, label: t('arb.days', x) })),
+);
 
 onMounted(() => {
   if (Date.now() - fioBooks.loadedAt > 5 * 60_000) {
@@ -65,43 +69,42 @@ interface Row {
   ticker: string;
   from: string;
   to: string;
-  // Units the trade may take: a full ship, or the amount you set for this row.
-  capacity: number;
   units: number;
   cost: number;
   profit: number;
   // Profit / what you pay.
   return: number;
-  // Units traded on the end exchange in the last 7 days.
-  traded7: number;
-  weight: number;
-  volume: number;
+  // Average units traded per day on the end exchange (7-day trade / 7).
+  daily: number;
+  live: boolean;
+  time?: number;
 }
 
-// Amounts you set in an expanded row, by row key. Most trades are not a full ship.
-const unitLimits = reactive(new Map<string, number>());
+function dailyTrade(ticker: string, code: string) {
+  return (cxStore.prices.get(code)?.get(ticker)?.Traded7D ?? 0) / 7;
+}
 
+// Every route of every material the order books allow, not limited by a ship; the cart applies
+// the ship. With goods in the cart, only the cart's route shows.
 const allRows = computed(() => {
-  const books = fioBooks.books;
   const rows: Row[] = [];
+  const route = cartRoute.value;
+  const routes = route ? [`${route.from}>${route.to}`] : ROUTES;
   for (const material of materialsStore.all.value ?? []) {
     const ticker = material.ticker;
-    const full = unitsPerShip(material.weight, material.volume, ship.value);
-    for (const r of ROUTES) {
+    for (const r of routes) {
       const [from, to] = r.split('>');
-      const a = books.get(`${ticker}.${from}`);
-      const b = books.get(`${ticker}.${to}`);
-      if (!a || !b || !tradedOn(ticker, from) || !tradedOn(ticker, to)) {
+      if (!tradedOn(ticker, from) || !tradedOn(ticker, to)) {
         continue;
       }
       const key = `${ticker}.${r}`;
-      const limit = unitLimits.get(key);
-      const capacity = limit !== undefined ? Math.min(limit, full) : full;
-      const result = arbitrage(a.asks, b.bids, b.asks, mode.value, capacity);
-      // A row with an amount you set stays while it makes money, so it does not vanish while
-      // you change the amount.
-      const minProfit = limit !== undefined ? 0 : MIN_PROFIT;
-      if (!result || result.units <= 0 || result.profit <= 0 || result.profit < minProfit) {
+      const line = cartLines.value.find(x => x.item.ticker === ticker);
+      const trade = line?.trade ?? tradeOf(ticker, from, to, mode.value, NO_LIMIT);
+      if (!trade) {
+        continue;
+      }
+      const result = trade.result;
+      if (!line && (result.units <= 0 || result.profit < MIN_PROFIT)) {
         continue;
       }
       rows.push({
@@ -109,19 +112,24 @@ const allRows = computed(() => {
         ticker,
         from,
         to,
-        capacity,
         units: result.units,
         cost: result.cost,
-        traded7: cxStore.prices.get(to)?.get(ticker)?.Traded7D ?? 0,
-        weight: material.weight,
-        volume: material.volume,
         profit: result.profit,
         return: result.cost > 0 ? result.profit / result.cost : 0,
+        daily: dailyTrade(ticker, to),
+        live: trade.live,
+        time: trade.time,
       });
     }
   }
   return rows;
 });
+
+// Units over the end exchange's trade in the chosen days.
+function shareOf(row: Row) {
+  const trade = row.daily * Number(days.value);
+  return trade > 0 ? row.units / trade : Infinity;
+}
 
 // Return / (daily volatility of the end exchange × √flight days); undefined until FIO sends the
 // daily prices.
@@ -131,7 +139,7 @@ function safetyOf(row: Row) {
   return safetyMultiple(row.return, volatility, flightDays(row.from, row.to));
 }
 
-type SortKey = 'ticker' | 'units' | 'cost' | 'profit' | 'return' | 'safety' | 'traded7';
+type SortKey = 'ticker' | 'share' | 'cost' | 'profit' | 'return' | 'safety';
 const sortKey = ref<SortKey>('profit');
 const sortDown = ref(true);
 
@@ -149,7 +157,7 @@ function arrow(key: SortKey) {
 }
 
 function onRoute(row: Row) {
-  if (routeMode.value === 'all') {
+  if (cartRoute.value || routeMode.value === 'all') {
     return true;
   }
   return (
@@ -170,6 +178,9 @@ const rows = computed(() => {
     if (sortKey.value === 'safety') {
       return safetyOf(x) ?? -Infinity;
     }
+    if (sortKey.value === 'share') {
+      return shareOf(x);
+    }
     return sortKey.value === 'ticker' ? 0 : x[sortKey.value];
   };
   return list.sort((a, b) =>
@@ -178,6 +189,11 @@ const rows = computed(() => {
       : sign * (value(a) - value(b)),
   );
 });
+
+function cartSafety(ticker: string) {
+  const row = allRows.value.find(x => x.ticker === ticker);
+  return row ? safetyOf(row) : undefined;
+}
 
 // Daily prices of the end exchanges in the list, for the safety multiple.
 watchEffect(() => requestCloses([...new Set(rows.value.map(x => `${x.ticker}.${x.to}`))]));
@@ -206,31 +222,28 @@ function unblacklist(ticker: string) {
   delete userData.arbBlacklist[ticker];
 }
 
-// Click a row to see the orders the trade takes, from the live books.
+// Live books for the open row and every good in the cart.
 const open = ref<string>();
 const books = new HiddenOrderBooks();
-watch(open, key => {
-  const row = allRows.value.find(x => x.key === key);
-  void books.show(row ? [`${row.ticker}.${row.from}`, `${row.ticker}.${row.to}`] : []);
-});
+watch(
+  () => {
+    const row = allRows.value.find(x => x.key === open.value);
+    const keys = cartLines.value.flatMap(x => [
+      `${x.item.ticker}.${x.item.from}`,
+      `${x.item.ticker}.${x.item.to}`,
+    ]);
+    if (row) {
+      keys.push(`${row.ticker}.${row.from}`, `${row.ticker}.${row.to}`);
+    }
+    return [...new Set(keys)].sort().join(',');
+  },
+  value => void books.show(value === '' ? [] : value.split(',')),
+  { immediate: true },
+);
 onUnmounted(() => books.close());
 
-function fullShip(row: Row) {
-  const material = materialsStore.getByTicker(row.ticker);
-  return material ? unitsPerShip(material.weight, material.volume, ship.value) : row.capacity;
-}
-
-function setUnits(row: Row, event: Event) {
-  const value = Math.floor(Number((event.target as HTMLInputElement).value));
-  if (Number.isFinite(value) && value > 0 && value < fullShip(row)) {
-    unitLimits.set(row.key, value);
-  } else {
-    unitLimits.delete(row.key);
-  }
-}
-
-function clearUnits(row: Row) {
-  unitLimits.delete(row.key);
+function add(row: Row) {
+  addToCart({ ticker: row.ticker, from: row.from, to: row.to, mode: mode.value }, row.units);
 }
 
 function onRowClick(row: Row) {
@@ -256,13 +269,13 @@ function toggleBlacklistMode() {
     <div :class="$style.bar">
       <ChipGroup v-model="mode" :options="modeChips" />
       <template v-if="!editingBlacklist">
-        <span :class="$style.group">
+        <span v-if="!cartRoute" :class="$style.group">
           <span :class="$style.muted">{{ t('arb.route') }}</span>
           <ChipGroup v-model="routeMode" :options="routeChips" />
         </span>
         <span :class="$style.group">
-          <span :class="$style.muted">{{ t('arb.ship') }}</span>
-          <ChipGroup v-model="shipId" :options="shipChips" />
+          <span :class="$style.muted">{{ t('arb.daysLabel') }}</span>
+          <ChipGroup v-model="days" :options="dayChips" />
         </span>
       </template>
       <span :class="$style.spacer" />
@@ -285,7 +298,10 @@ function toggleBlacklistMode() {
         <span v-if="!editingBlacklist" :class="$style.muted">{{ blacklistCount }}</span>
       </PrunButton>
     </div>
-    <div v-if="routeMode === 'custom' && !editingBlacklist" :class="[$style.bar, $style.sub]">
+    <CartPanel v-if="cartRoute && !editingBlacklist" :safety-of="cartSafety" />
+    <div
+      v-if="routeMode === 'custom' && !cartRoute && !editingBlacklist"
+      :class="[$style.bar, $style.sub]">
       <span :class="$style.group">
         <span :class="$style.muted">{{ t('arb.from') }}</span>
         <ChipGroup v-model="starts" multiple :options="exchangeChips" />
@@ -313,8 +329,8 @@ function toggleBlacklistMode() {
         >{{ t('arb.material') }}{{ arrow('ticker') }}</span
       >
       <span>{{ t('arb.route') }}</span>
-      <span :class="[$style.num, $style.sort]" @click="sortBy('units')"
-        >{{ t('arb.units') }}{{ arrow('units') }}</span
+      <span :class="[$style.num, $style.sort]" @click="sortBy('share')"
+        >{{ t('arb.unitsTrade', days) }}{{ arrow('share') }}</span
       >
       <span :class="[$style.num, $style.sort]" @click="sortBy('cost')"
         >{{ t('arb.cost') }}{{ arrow('cost') }}</span
@@ -328,9 +344,7 @@ function toggleBlacklistMode() {
       <span :class="[$style.num, $style.sort]" @click="sortBy('safety')"
         >{{ t('arb.safety') }}{{ arrow('safety') }}</span
       >
-      <span :class="[$style.num, $style.sort]" @click="sortBy('traded7')"
-        >{{ t('arb.traded7') }}{{ arrow('traded7') }}</span
-      >
+      <span />
     </div>
     <template v-for="r in rows" :key="r.key">
       <div
@@ -345,9 +359,19 @@ function toggleBlacklistMode() {
           ><MaterialIcon size="inline-table" :ticker="r.ticker"
         /></span>
         <span :class="$style.name"
-          >{{ r.from }} <span :class="$style.muted">→</span> {{ r.to }}</span
+          >{{ r.from }} <span :class="$style.muted">→</span> {{ r.to }}
+          <span v-if="cartRoute" :class="$style.age">{{
+            r.live ? t('arb.live') : t('arb.fioAgo', ageText(r.time))
+          }}</span></span
         >
-        <span :class="$style.num">{{ fixed0(r.units) }}</span>
+        <span :class="[$style.share, shareOf(r) > 1 ? $style.over : undefined]">
+          <span :class="$style.shareText"
+            >{{ fixed0(r.units) }} / {{ fixed0(r.daily * Number(days)) }}</span
+          >
+          <span :class="$style.shareBar"
+            ><i :style="{ width: `${Math.min(1, shareOf(r)) * 100}%` }"
+          /></span>
+        </span>
         <span :class="$style.num">{{ formatProfit(r.cost) }}</span>
         <span :class="[$style.num, $style.name]">{{ formatProfit(r.profit) }}</span>
         <span :class="$style.num">
@@ -360,24 +384,17 @@ function toggleBlacklistMode() {
         <span :class="[$style.num, (safetyOf(r) ?? Infinity) < 1 ? $style.warn : undefined]">{{
           safetyOf(r) !== undefined ? fixed01(safetyOf(r)!) : '--'
         }}</span>
-        <span :class="[$style.num, r.traded7 < r.units ? $style.warn : undefined]">{{
-          fixed0(r.traded7)
-        }}</span>
-      </div>
-      <div v-if="open === r.key" :class="$style.amount">
-        <span :class="$style.muted">{{ t('arb.units') }}</span>
-        <input
-          :id="`arb-units-${r.key}`"
-          :class="$style.input"
-          type="number"
-          min="1"
-          :max="fullShip(r)"
-          :value="r.capacity"
-          @change="setUnits(r, $event)" />
-        <button :class="$style.button" @click="clearUnits(r)">{{ t('arb.fullShip') }}</button>
-        <span>
-          {{ fixed0(r.units) }} · {{ fixed01(r.units * r.weight) }} t / {{ fixed0(ship.weight) }} t
-          · {{ fixed01(r.units * r.volume) }} m³ / {{ fixed0(ship.volume) }} m³
+        <span :class="$style.action">
+          <span v-if="inCart(r.ticker)" :class="$style.muted">{{ t('arb.inCart') }}</span>
+          <button
+            v-else-if="
+              !editingBlacklist &&
+              (!cartRoute || (r.from === cartRoute.from && r.to === cartRoute.to))
+            "
+            :class="$style.button"
+            @click.stop="add(r)">
+            {{ t('arb.add') }}
+          </button>
         </span>
       </div>
       <ArbDepth
@@ -386,7 +403,7 @@ function toggleBlacklistMode() {
         :from="r.from"
         :to="r.to"
         :mode="mode"
-        :capacity="r.capacity"
+        :capacity="cartLines.find(x => x.item.ticker === r.ticker)?.units ?? r.units"
         :safety="safetyOf(r)" />
     </template>
   </div>
@@ -394,8 +411,10 @@ function toggleBlacklistMode() {
 
 <style module>
 .root {
-  min-width: 760px;
+  min-width: 820px;
   padding: 6px 8px;
+  color: var(--rpz-text);
+  font-size: var(--rpz-fs-body);
   font-variant-numeric: tabular-nums;
 }
 
@@ -438,7 +457,7 @@ function toggleBlacklistMode() {
 
 .row {
   display: grid;
-  grid-template-columns: 56px minmax(80px, 1fr) 70px 80px 80px 70px 70px 80px;
+  grid-template-columns: 56px minmax(100px, 1fr) 150px 80px 80px 64px 64px 60px;
   gap: 0 16px;
   align-items: center;
   padding: 4px 8px;
@@ -498,6 +517,47 @@ function toggleBlacklistMode() {
 /* A warning is red, not the brand orange (player, 2026-11-05). */
 .warn {
   color: var(--rpz-neg);
+}
+
+.age {
+  display: block;
+  color: var(--rpz-text-weak);
+  font-size: var(--rpz-fs-label);
+}
+
+.share {
+  display: grid;
+  gap: 2px;
+}
+
+.shareText {
+  text-align: right;
+}
+
+.shareBar {
+  position: relative;
+  height: 4px;
+  background-color: #333;
+}
+
+.shareBar i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--rpz-text-weak);
+}
+
+.over .shareText {
+  color: var(--rpz-neg);
+}
+
+.over .shareBar i {
+  background-color: var(--rpz-neg);
+}
+
+.action {
+  text-align: right;
 }
 
 .amount {

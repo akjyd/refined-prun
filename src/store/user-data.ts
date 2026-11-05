@@ -114,6 +114,17 @@ export const initialUserData = deepFreeze({
   orderSeen: {} as Record<string, number | undefined>,
   // XIT ARB blacklist: material ticker -> reason id.
   arbBlacklist: {} as Record<string, string | undefined>,
+  // XIT ARB cart: the goods for one flight on one route.
+  arbCart: {
+    ship: '500/500',
+    items: [] as {
+      ticker: string;
+      from: string;
+      to: string;
+      mode: 'now' | 'listed';
+      units: number;
+    }[],
+  },
   // Arbitrage batches started from XIT ARB, oldest first.
   arbBatches: [] as import('@src/core/arb-batches').ArbBatch[],
   // XIT ARB: when each spread ('AL.AI1>NC1') was first seen, in ms.
