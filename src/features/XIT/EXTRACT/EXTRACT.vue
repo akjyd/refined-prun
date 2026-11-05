@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import PrunButton from '@src/components/PrunButton.vue';
+import SelectInput from '@src/components/forms/SelectInput.vue';
+import BlacklistPanel from '@src/components/BlacklistPanel.vue';
+import { extractReasons } from '@src/core/blacklist-reasons';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { userData } from '@src/store/user-data';
 import {
@@ -172,7 +175,56 @@ const resources = computed(() => {
     }
     return { ticker, name: getMaterialNameByTicker(ticker) ?? ticker, volume, rows, top };
   });
-  return list.sort((a, b) => (b.top?.cell.profit ?? -Infinity) - (a.top?.cell.profit ?? -Infinity));
+  return list;
+});
+
+// Click a column head to sort by it; click again to reverse.
+type SortKey = 'name' | 'output' | 'volume' | 'profit';
+const sortKey = ref<SortKey>('profit');
+const sortDown = ref(true);
+
+function sortBy(key: SortKey) {
+  if (sortKey.value === key) {
+    sortDown.value = !sortDown.value;
+  } else {
+    sortKey.value = key;
+    sortDown.value = key !== 'name';
+  }
+}
+
+function arrow(key: SortKey) {
+  return sortKey.value === key ? (sortDown.value ? ' ▾' : ' ▴') : '';
+}
+
+type Resource = (typeof resources.value)[number];
+
+function sortValue(r: Resource): number | undefined {
+  switch (sortKey.value) {
+    case 'output':
+      return r.top?.row.output;
+    case 'volume':
+      return r.volume;
+    case 'profit':
+      return r.top?.cell.profit;
+    default:
+      return undefined;
+  }
+}
+
+// Resources without a value go last in both directions.
+const sorted = computed(() => {
+  const sign = sortDown.value ? -1 : 1;
+  return [...resources.value].sort((a, b) => {
+    if (sortKey.value === 'name') {
+      return sign * a.name.localeCompare(b.name);
+    }
+    const x = sortValue(a);
+    const y = sortValue(b);
+    if (x === undefined || y === undefined) {
+      return x === y ? 0 : x === undefined ? 1 : -1;
+    }
+    return sign * (x - y);
+  });
 });
 
 const open = ref(new Set<string>());
@@ -200,11 +252,29 @@ function addPlanet(ticker: string) {
   adding.value = { ...adding.value, [ticker]: '' };
 }
 
+// Hiding a resource puts it on the blacklist with the picked reason.
+const reasons = extractReasons();
+const pickReason = ref(reasons[0].id);
+const showBlacklist = ref(false);
+const blacklist = computed(() =>
+  Object.fromEntries(
+    userData.extract.hidden.map(x => [x, userData.extract.hiddenReasons[x] ?? reasons[0].id]),
+  ),
+);
+
 function toggleHidden(ticker: string) {
   const hidden = userData.extract.hidden;
-  userData.extract.hidden = hidden.includes(ticker)
-    ? hidden.filter(x => x !== ticker)
-    : [...hidden, ticker];
+  if (hidden.includes(ticker)) {
+    unhide(ticker);
+  } else {
+    userData.extract.hidden = [...hidden, ticker];
+    userData.extract.hiddenReasons[ticker] = pickReason.value;
+  }
+}
+
+function unhide(ticker: string) {
+  userData.extract.hidden = userData.extract.hidden.filter(x => x !== ticker);
+  delete userData.extract.hiddenReasons[ticker];
 }
 
 // Planets with the resource, the richest first, as "Name (ID) factor".
@@ -238,12 +308,40 @@ function cogcName(cogc: string) {
 <template>
   <div :class="$style.root">
     <div :class="$style.toolbar">
+      <template v-if="editing">
+        <span :class="$style.muted">{{ t('bl.reason') }}</span>
+        <SelectInput
+          v-model="pickReason"
+          :options="reasons.map(x => ({ label: x.label, value: x.id }))" />
+      </template>
+      <PrunButton dark inline @click="showBlacklist = !showBlacklist">{{
+        t('bl.title')
+      }}</PrunButton>
       <PrunButton dark inline @click="editing = !editing">
         {{ editing ? t('extract.done') : t('extract.edit') }}
       </PrunButton>
     </div>
+    <BlacklistPanel v-if="showBlacklist" :entries="blacklist" :reasons="reasons" @remove="unhide" />
     <p v-if="resources.length === 0" :class="$style.muted">{{ t('extract.loading') }}</p>
-    <div v-for="r in resources" :key="r.ticker" :class="$style.resource">
+    <div v-if="resources.length > 0" :class="[$style.top, $style.head]">
+      <span :class="$style.sort" @click="sortBy('name')"
+        >{{ t('extract.headMaterial') }}{{ arrow('name') }}</span
+      >
+      <span>{{ t('extract.headPlanet') }}</span>
+      <span :class="$style.num">
+        <span :class="$style.sort" @click="sortBy('output')"
+          >{{ t('extract.headOutput') }}{{ arrow('output') }}</span
+        >
+        /
+        <span :class="$style.sort" @click="sortBy('volume')"
+          >{{ t('extract.headVolume') }}{{ arrow('volume') }}</span
+        >
+      </span>
+      <span :class="[$style.cellHead, $style.sort]" @click="sortBy('profit')"
+        >{{ t('extract.headProfit') }}{{ arrow('profit') }}</span
+      >
+    </div>
+    <div v-for="r in sorted" :key="r.ticker" :class="$style.resource">
       <div :class="[$style.top, $style.clickable]" @click="toggle(r.ticker)">
         <span :class="$style.resourceName">
           <span :class="$style.arrow">{{ isOpen(r.ticker) ? '▾' : '▸' }}</span>
@@ -365,6 +463,8 @@ function cogcName(cogc: string) {
 
 .toolbar {
   display: flex;
+  align-items: center;
+  gap: 6px;
   justify-content: flex-end;
   padding-bottom: 4px;
 }
@@ -402,6 +502,19 @@ function cogcName(cogc: string) {
 
 .clickable {
   cursor: pointer;
+}
+
+.head {
+  color: #8c8c8c;
+  background-color: transparent;
+}
+
+.sort {
+  cursor: pointer;
+}
+
+.cellHead {
+  text-align: center;
 }
 
 .resourceName {

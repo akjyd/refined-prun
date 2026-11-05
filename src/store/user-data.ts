@@ -103,11 +103,15 @@ export const initialUserData = deepFreeze({
   extract: {
     planets: {} as Record<string, string[] | undefined>,
     hidden: [] as string[],
+    // Why a resource is hidden; missing means no reason.
+    hiddenReasons: {} as Record<string, string | undefined>,
   },
   // Planet whose extraction gives the daily profit of a raw material in an order book, by 'AIR.NC1'.
   extractPlanets: {} as Record<string, string | undefined>,
   // Amount left of each of your CX orders when you last left XIT ORDERS, by order id.
   orderSeen: {} as Record<string, number | undefined>,
+  // XIT ARB blacklist: material ticker -> reason id.
+  arbBlacklist: {} as Record<string, string | undefined>,
   // XIT ARB: when each spread ('AL.AI1>NC1') was first seen, in ms.
   arbSeen: {} as Record<string, number | undefined>,
   // XIT CX4: favorite and recent materials, and the CXOB tile id used for each exchange.

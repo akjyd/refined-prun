@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import OrderCard from '@src/features/XIT/ORDERS/OrderCard.vue';
-import PrunButton from '@src/components/PrunButton.vue';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { compareMaterials } from '@src/core/sort-materials';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import { userData } from '@src/store/user-data';
-import { saveSeenOrders, startOrdersVisit } from '@src/core/order-seen';
+import { startOrdersVisit } from '@src/core/order-seen';
 import { t } from '@src/i18n';
 
 const $style = useCssModule();
@@ -38,13 +37,8 @@ watchEffect(() => {
   }
 });
 
+// Cards and deleted orders stay until the window closes.
 const refreshKey = ref(0);
-
-function refresh() {
-  saveSeenOrders();
-  kept.value.set(exchange.value, new Set(byExchange.value.get(exchange.value)));
-  refreshKey.value++;
-}
 
 const tickers = computed(() =>
   [...(kept.value.get(exchange.value) ?? [])].sort((a, b) =>
@@ -77,8 +71,6 @@ const stopVisit = watchEffect(() => {
         @click="exchange = code">
         {{ code }} <span :class="$style.count">{{ byExchange.get(code)?.size ?? 0 }}</span>
       </span>
-      <span :class="$style.spacer" />
-      <PrunButton dark inline @click="refresh">{{ t('orders.refresh') }}</PrunButton>
     </div>
     <p v-if="tickers.length === 0" :class="$style.muted">{{ t('orders.none') }}</p>
     <div :class="$style.cards">

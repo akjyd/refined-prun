@@ -146,12 +146,17 @@ function bookOf(cell: Cell) {
   return columnBooks.value.find(x => x.includes(cell)) ?? [];
 }
 
+// One column per exchange.
+const columnsStyle = computed(() => ({
+  gridTemplateColumns: `repeat(${exchanges.length}, minmax(210px, 1fr))`,
+}));
+
 const loaded = computed(() => books.value.some(x => x !== undefined));
 </script>
 
 <template>
   <div :class="$style.ladder">
-    <div :class="[$style.row, $style.head]">
+    <div :class="[$style.row, $style.head]" :style="columnsStyle">
       <span v-for="(code, i) in exchanges" :key="code" :class="$style.headCell">
         <span :class="$style.title">
           <span :class="$style.code"
@@ -172,7 +177,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
     <p v-if="!loaded" :class="$style.muted">{{ t('cx4.loading') }}</p>
     <template v-for="(rows, part) in [askRows, bidRows]" :key="part">
       <div v-if="part === 1" :class="$style.spread" />
-      <div v-for="(row, k) in rows" :key="k" :class="$style.row">
+      <div v-for="(row, k) in rows" :key="k" :class="$style.row" :style="columnsStyle">
         <span
           v-for="(cell, i) in row"
           :key="i"
