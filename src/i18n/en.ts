@@ -1529,4 +1529,6 @@ export default {
   'movers.low': 'Low',
   'movers.last': 'Last',
   'cx4.trader': 'Trader',
+  'arb.traded7': '7d traded',
+  'arb.fullShip': 'Full ship',
 };

@@ -17,7 +17,7 @@ import { percent1 } from '@src/utils/format';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
 import { dailyVolatility, flightDays, safetyMultiple } from '@src/core/volatility';
 import { dailyCloses, requestCloses } from '@src/infrastructure/fio/cxpc';
-import { fixed01 } from '@src/utils/format';
+import { fixed0, fixed01 } from '@src/utils/format';
 import { t } from '@src/i18n';
 
 const $style = useCssModule();
@@ -65,18 +65,28 @@ interface Row {
   ticker: string;
   from: string;
   to: string;
+  // Units the trade may take: a full ship, or the amount you set for this row.
   capacity: number;
+  units: number;
+  cost: number;
   profit: number;
   // Profit / what you pay.
   return: number;
+  // Units traded on the end exchange in the last 7 days.
+  traded7: number;
+  weight: number;
+  volume: number;
 }
+
+// Amounts you set in an expanded row, by row key. Most trades are not a full ship.
+const unitLimits = reactive(new Map<string, number>());
 
 const allRows = computed(() => {
   const books = fioBooks.books;
   const rows: Row[] = [];
   for (const material of materialsStore.all.value ?? []) {
     const ticker = material.ticker;
-    const capacity = unitsPerShip(material.weight, material.volume, ship.value);
+    const full = unitsPerShip(material.weight, material.volume, ship.value);
     for (const r of ROUTES) {
       const [from, to] = r.split('>');
       const a = books.get(`${ticker}.${from}`);
@@ -84,16 +94,27 @@ const allRows = computed(() => {
       if (!a || !b || !tradedOn(ticker, from) || !tradedOn(ticker, to)) {
         continue;
       }
+      const key = `${ticker}.${r}`;
+      const limit = unitLimits.get(key);
+      const capacity = limit !== undefined ? Math.min(limit, full) : full;
       const result = arbitrage(a.asks, b.bids, b.asks, mode.value, capacity);
-      if (!result || result.units <= 0 || result.profit < MIN_PROFIT) {
+      // A row with an amount you set stays while it makes money, so it does not vanish while
+      // you change the amount.
+      const minProfit = limit !== undefined ? 0 : MIN_PROFIT;
+      if (!result || result.units <= 0 || result.profit <= 0 || result.profit < minProfit) {
         continue;
       }
       rows.push({
-        key: `${ticker}.${r}`,
+        key,
         ticker,
         from,
         to,
         capacity,
+        units: result.units,
+        cost: result.cost,
+        traded7: cxStore.prices.get(to)?.get(ticker)?.Traded7D ?? 0,
+        weight: material.weight,
+        volume: material.volume,
         profit: result.profit,
         return: result.cost > 0 ? result.profit / result.cost : 0,
       });
@@ -110,7 +131,7 @@ function safetyOf(row: Row) {
   return safetyMultiple(row.return, volatility, flightDays(row.from, row.to));
 }
 
-type SortKey = 'ticker' | 'profit' | 'return' | 'safety';
+type SortKey = 'ticker' | 'units' | 'cost' | 'profit' | 'return' | 'safety' | 'traded7';
 const sortKey = ref<SortKey>('profit');
 const sortDown = ref(true);
 
@@ -194,6 +215,24 @@ watch(open, key => {
 });
 onUnmounted(() => books.close());
 
+function fullShip(row: Row) {
+  const material = materialsStore.getByTicker(row.ticker);
+  return material ? unitsPerShip(material.weight, material.volume, ship.value) : row.capacity;
+}
+
+function setUnits(row: Row, event: Event) {
+  const value = Math.floor(Number((event.target as HTMLInputElement).value));
+  if (Number.isFinite(value) && value > 0 && value < fullShip(row)) {
+    unitLimits.set(row.key, value);
+  } else {
+    unitLimits.delete(row.key);
+  }
+}
+
+function clearUnits(row: Row) {
+  unitLimits.delete(row.key);
+}
+
 function onRowClick(row: Row) {
   if (editingBlacklist.value) {
     if (row.ticker in userData.arbBlacklist) {
@@ -274,6 +313,12 @@ function toggleBlacklistMode() {
         >{{ t('arb.material') }}{{ arrow('ticker') }}</span
       >
       <span>{{ t('arb.route') }}</span>
+      <span :class="[$style.num, $style.sort]" @click="sortBy('units')"
+        >{{ t('arb.units') }}{{ arrow('units') }}</span
+      >
+      <span :class="[$style.num, $style.sort]" @click="sortBy('cost')"
+        >{{ t('arb.cost') }}{{ arrow('cost') }}</span
+      >
       <span :class="[$style.num, $style.sort]" @click="sortBy('profit')"
         >{{ t('arb.profit') }}{{ arrow('profit') }}</span
       >
@@ -282,6 +327,9 @@ function toggleBlacklistMode() {
       >
       <span :class="[$style.num, $style.sort]" @click="sortBy('safety')"
         >{{ t('arb.safety') }}{{ arrow('safety') }}</span
+      >
+      <span :class="[$style.num, $style.sort]" @click="sortBy('traded7')"
+        >{{ t('arb.traded7') }}{{ arrow('traded7') }}</span
       >
     </div>
     <template v-for="r in rows" :key="r.key">
@@ -299,6 +347,8 @@ function toggleBlacklistMode() {
         <span :class="$style.name"
           >{{ r.from }} <span :class="$style.muted">→</span> {{ r.to }}</span
         >
+        <span :class="$style.num">{{ fixed0(r.units) }}</span>
+        <span :class="$style.num">{{ formatProfit(r.cost) }}</span>
         <span :class="[$style.num, $style.name]">{{ formatProfit(r.profit) }}</span>
         <span :class="$style.num">
           {{
@@ -310,6 +360,25 @@ function toggleBlacklistMode() {
         <span :class="[$style.num, (safetyOf(r) ?? Infinity) < 1 ? $style.warn : undefined]">{{
           safetyOf(r) !== undefined ? fixed01(safetyOf(r)!) : '--'
         }}</span>
+        <span :class="[$style.num, r.traded7 < r.units ? $style.warn : undefined]">{{
+          fixed0(r.traded7)
+        }}</span>
+      </div>
+      <div v-if="open === r.key" :class="$style.amount">
+        <span :class="$style.muted">{{ t('arb.units') }}</span>
+        <input
+          :id="`arb-units-${r.key}`"
+          :class="$style.input"
+          type="number"
+          min="1"
+          :max="fullShip(r)"
+          :value="r.capacity"
+          @change="setUnits(r, $event)" />
+        <button :class="$style.button" @click="clearUnits(r)">{{ t('arb.fullShip') }}</button>
+        <span>
+          {{ fixed0(r.units) }} · {{ fixed01(r.units * r.weight) }} t / {{ fixed0(ship.weight) }} t
+          · {{ fixed01(r.units * r.volume) }} m³ / {{ fixed0(ship.volume) }} m³
+        </span>
       </div>
       <ArbDepth
         v-if="open === r.key"
@@ -369,7 +438,7 @@ function toggleBlacklistMode() {
 
 .row {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 110px 90px 80px;
+  grid-template-columns: 56px minmax(80px, 1fr) 70px 80px 80px 70px 70px 80px;
   gap: 0 16px;
   align-items: center;
   padding: 4px 8px;
@@ -428,5 +497,44 @@ function toggleBlacklistMode() {
 
 .warn {
   color: var(--rpz-warn);
+}
+
+.amount {
+  display: flex;
+  align-items: center;
+  gap: var(--rpz-space-2);
+  padding: var(--rpz-space-2) var(--rpz-space-2) 0 64px;
+  background-color: var(--rpz-bg-raised);
+}
+
+.input {
+  width: 80px;
+  padding: 3px 6px;
+  border: 1px solid var(--rpz-stroke);
+  background-color: var(--rpz-bg-raised);
+  color: var(--rpz-text);
+  font: inherit;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--rpz-brand);
+}
+
+.button {
+  padding: 2px 8px;
+  border: 1px solid var(--rpz-stroke);
+  background: none;
+  color: var(--rpz-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: var(--rpz-hover);
+}
+
+.button:active {
+  background-color: var(--rpz-press);
 }
 </style>

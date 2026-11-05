@@ -1380,7 +1380,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.stopBook': '没有更多订单',
   'arb.live': '实时',
   'arb.fioAgo': 'FIO {0}前',
-  'arb.cost': '买入',
+  'arb.cost': '成本',
   'arb.revenue': '卖出',
 
   // 新功能 —— 黑名单
@@ -1450,6 +1450,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'movers.low': '最低',
   'movers.last': '最新',
   'cx4.trader': '交易者',
+  'arb.traded7': '7日成交',
+  'arb.fullShip': '满船',
 };
 
 export default zh;
