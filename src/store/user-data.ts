@@ -108,6 +108,8 @@ export const initialUserData = deepFreeze({
   extractPlanets: {} as Record<string, string | undefined>,
   // Amount left of each of your CX orders when you last left XIT ORDERS, by order id.
   orderSeen: {} as Record<string, number | undefined>,
+  // XIT ARB: when each spread ('AL.AI1>NC1') was first seen, in ms.
+  arbSeen: {} as Record<string, number | undefined>,
   // XIT CX4: favorite and recent materials, and the CXOB tile id used for each exchange.
   cx4: {
     favorites: [] as string[],

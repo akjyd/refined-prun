@@ -1321,6 +1321,31 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'act.resupply.pickTip2':
     '点物资切换：买 = 先用交易所仓库的，不够的买；仓库 = 只带走交易所仓库里有的，不买；不带 = 不补这种原料。工人消耗品总是会买。每个星球分别记住。',
   'act.resupply.warehouseCx': '仓库所在市场',
+
+  // 新功能 —— XIT ARB 倒货
+  'arb.title': '倒货',
+  'arb.description': '在一个市场买入、到另一个市场卖出：按 FIO 订单簿算价差，按价差排序。',
+  'arb.now': '立即卖',
+  'arb.listed': '挂单卖',
+  'arb.ship': '船',
+  'arb.loading': '正在读取 FIO 订单簿...',
+  'arb.loaded': 'FIO 订单簿 {0}前读取',
+  'arb.error': 'FIO 读取失败：{0}',
+  'arb.allRoutes': '全部路线',
+  'arb.material': '物资',
+  'arb.route': '路线',
+  'arb.buy': '买入',
+  'arb.sell': '卖出',
+  'arb.spread': '价差',
+  'arb.units': '数量',
+  'arb.profit': '利润',
+  'arb.jumps': '跳数',
+  'arb.fioTime': 'FIO 更新 A / B',
+  'arb.lasting': '已持续',
+  'arb.look': '看',
+  'arb.minutes': '{0}分',
+  'arb.hours': '{0}时',
+  'arb.days': '{0}天',
 };
 
 export default zh;

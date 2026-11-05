@@ -1396,4 +1396,30 @@ export default {
   'act.resupply.pickTip2':
     'Click a material to switch: buy = take from the CX warehouse and buy the rest; warehouse = take only what the CX warehouse has; skip = leave it out. Consumables are always bought. The choice is remembered for each planet.',
   'act.resupply.warehouseCx': 'Warehouse at',
+
+  // 新功能 —— XIT ARB 倒货
+  'arb.title': 'ARBITRAGE',
+  'arb.description':
+    'Buy on one exchange and sell on another: spreads from the FIO order books, sorted by spread.',
+  'arb.now': 'Sell now',
+  'arb.listed': 'List under best offer',
+  'arb.ship': 'Ship',
+  'arb.loading': 'Loading FIO order books...',
+  'arb.loaded': 'FIO books loaded {0} ago',
+  'arb.error': 'FIO failed: {0}',
+  'arb.allRoutes': 'All routes',
+  'arb.material': 'Material',
+  'arb.route': 'Route',
+  'arb.buy': 'Buy',
+  'arb.sell': 'Sell',
+  'arb.spread': 'Spread',
+  'arb.units': 'Units',
+  'arb.profit': 'Profit',
+  'arb.jumps': 'Jumps',
+  'arb.fioTime': 'FIO age A / B',
+  'arb.lasting': 'Seen for',
+  'arb.look': 'LOOK',
+  'arb.minutes': '{0}m',
+  'arb.hours': '{0}h',
+  'arb.days': '{0}d',
 };
