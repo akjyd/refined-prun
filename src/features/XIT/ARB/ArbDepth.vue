@@ -83,6 +83,7 @@ const ghost = computed(() => {
       :exchanges="[from, to]"
       :takes="takes"
       traders
+      :height="300"
       :ghost="ghost"
       @cxpo="onCxpo" />
   </div>

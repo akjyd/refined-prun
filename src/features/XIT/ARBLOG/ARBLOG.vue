@@ -302,6 +302,7 @@ function time(ms: number) {
               :class="$style.ladder"
               :ticker="r.batch.ticker"
               traders
+              :height="300"
               :exchanges="
                 r.open.some(x => x.type === 'BUYING') ? [r.batch.from, r.batch.to] : [r.batch.to]
               " />

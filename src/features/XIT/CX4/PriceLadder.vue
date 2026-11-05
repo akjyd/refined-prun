@@ -26,6 +26,7 @@ const {
   trim,
   ghost,
   traders = false,
+  height,
 } = defineProps<{
   ticker: string;
   exchanges: string[];
@@ -36,6 +37,8 @@ const {
   // XIT ARB, ARBLOG: the first column shows the trader, as in the game's CXOB, not the daily
   // profit.
   traders?: boolean;
+  // A fixed height in px: the orders scroll inside it and start at the spread, as in XIT ORDERS.
+  height?: number;
   // XIT ARB: the offer you will list, shown in the offers of its exchange.
   ghost?: { exchange: string; price: number; amount: number };
 }>();
@@ -215,6 +218,25 @@ watchEffect(() => {
   }
 });
 
+// Scroll to the spread (between offers and requests) once the books arrive.
+const body = ref<HTMLElement>();
+let scrolled = false;
+watch(
+  () => columns.value.some(x => x.asks.length + x.bids.length > 0),
+  async ready => {
+    if (scrolled || !ready || height === undefined) {
+      return;
+    }
+    await nextTick();
+    const spread = body.value?.querySelector<HTMLElement>(`.${$style.spread}`);
+    if (body.value && spread) {
+      body.value.scrollTop = spread.offsetTop - body.value.clientHeight / 2;
+      scrolled = true;
+    }
+  },
+  { immediate: true },
+);
+
 const loaded = computed(() => books.value.some(x => x !== undefined));
 </script>
 
@@ -241,53 +263,75 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
       </span>
     </div>
     <p v-if="!loaded" :class="$style.muted">{{ t('cx4.loading') }}</p>
-    <template v-for="(rows, part) in [askRows, bidRows]" :key="part">
-      <div v-if="part === 1" :class="$style.spread" />
-      <div v-for="(row, k) in rows" :key="k" :class="$style.row" :style="columnsStyle">
-        <span
-          v-for="(cell, i) in row"
-          :key="i"
-          :draggable="cell?.own === true"
-          :data-price="drag.newPrice.value !== undefined ? fixed02(drag.newPrice.value) : ''"
-          :class="
-            cell
-              ? [
-                  $style.cell,
-                  cell.own ? $style.own : undefined,
-                  cell.taken ? $style.taken : undefined,
-                  cell.ghost ? $style.ghost : undefined,
-                  cell.change !== undefined ? $style.changed : undefined,
-                  drag.lineAbove(cell.id) ? $style.dropAbove : undefined,
-                  drag.lineBelow(cell.id) ? $style.dropBelow : undefined,
-                ]
-              : $style.empty
-          "
-          @dragstart="cell && drag.start($event, cell)"
-          @dragover="cell && drag.over($event, bookOf(cell), bookOf(cell).indexOf(cell))"
-          @dragend="drag.end"
-          @drop="drag.drop">
-          <template v-if="cell">
-            <span v-if="traders" :class="$style.trader">{{ cell.ghost ? '' : cell.trader }}</span>
-            <span v-else :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
-            <span :class="[$style.num, $style.amount, cell.own ? link.link : undefined]">
-              <DeleteExchangeOrderButton
-                v-if="cell.own"
-                :order-id="cell.id"
-                screen-command="CXOS" />
-              <span v-if="cell.change" :class="$style.change">{{ cell.change }}</span>
-              {{ cell.amount }}
-            </span>
-            <span :class="$style.num">
-              {{ fixed02(cell.price) }}
-            </span>
-          </template>
-        </span>
-      </div>
-    </template>
+    <div
+      ref="body"
+      :class="height !== undefined ? $style.body : undefined"
+      :style="height !== undefined ? { height: `${height}px` } : undefined">
+      <template v-for="(rows, part) in [askRows, bidRows]" :key="part">
+        <div v-if="part === 1" :class="$style.spread" />
+        <div v-for="(row, k) in rows" :key="k" :class="$style.row" :style="columnsStyle">
+          <span
+            v-for="(cell, i) in row"
+            :key="i"
+            :draggable="cell?.own === true"
+            :data-price="drag.newPrice.value !== undefined ? fixed02(drag.newPrice.value) : ''"
+            :class="
+              cell
+                ? [
+                    $style.cell,
+                    cell.own ? $style.own : undefined,
+                    cell.taken ? $style.taken : undefined,
+                    cell.ghost ? $style.ghost : undefined,
+                    cell.change !== undefined ? $style.changed : undefined,
+                    drag.lineAbove(cell.id) ? $style.dropAbove : undefined,
+                    drag.lineBelow(cell.id) ? $style.dropBelow : undefined,
+                  ]
+                : $style.empty
+            "
+            @dragstart="cell && drag.start($event, cell)"
+            @dragover="cell && drag.over($event, bookOf(cell), bookOf(cell).indexOf(cell))"
+            @dragend="drag.end"
+            @drop="drag.drop">
+            <template v-if="cell">
+              <span v-if="traders" :class="$style.trader">{{ cell.ghost ? '' : cell.trader }}</span>
+              <span v-else :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
+              <span :class="[$style.num, $style.amount, cell.own ? link.link : undefined]">
+                <DeleteExchangeOrderButton
+                  v-if="cell.own"
+                  :order-id="cell.id"
+                  screen-command="CXOS" />
+                <span v-if="cell.change" :class="$style.change">{{ cell.change }}</span>
+                {{ cell.amount }}
+              </span>
+              <span :class="$style.num">
+                {{ fixed02(cell.price) }}
+              </span>
+            </template>
+          </span>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
 <style module>
+.body {
+  position: relative;
+  overflow-y: auto;
+  /* Match the game scrollbar. */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 51, 51) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(51, 51, 51);
+    border-radius: 5px;
+  }
+}
+
 .ladder {
   min-width: 0;
   font-size: var(--rpz-fs-body);
