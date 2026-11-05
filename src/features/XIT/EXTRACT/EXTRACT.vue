@@ -9,7 +9,7 @@ import {
   PlanetInfo,
   ResourceSite,
 } from '@src/core/extraction/extraction';
-import { exchangePrice } from '@src/core/daily-profit/recipe-choice';
+import { exchangePrice, withPrice } from '@src/core/daily-profit/recipe-choice';
 import { layoutText } from '@src/core/daily-profit/daily-profit';
 import { formatProfit, profitClass } from '@src/core/daily-profit/profit-format';
 import { useProfitData } from '@src/infrastructure/prunplanner/profit-data';
@@ -92,6 +92,17 @@ function dailyVolume(ticker: string) {
   return sumBy(traded, x => x) / traded.length / 30;
 }
 
+// The daily profit when the material sells at the lowest offer of the exchange; undefined when
+// nobody offers it there. The other prices stay the 7-day VWAP.
+function profitAtAsk(ticker: string, site: ResourceSite, planet: PlanetInfo, code: string) {
+  const ask = cxStore.fetched ? cxStore.prices.get(code)?.get(ticker)?.Ask : undefined;
+  if (ask === undefined || ask === null) {
+    return undefined;
+  }
+  const price = withPrice(exchangePrice(code), ticker, ask);
+  return extractionProfit(profitData.data, ticker, site, planet, price).profit;
+}
+
 // Each resource: the planet with the highest daily profit, then the watched planets.
 const resources = computed(() => {
   const d = data.value;
@@ -129,7 +140,8 @@ const resources = computed(() => {
       }
       const cells = EXCHANGES.map(code => ({
         code,
-        profit: extractionProfit(profitData.data, ticker, site, planet, exchangePrice(code)).profit,
+        // At the current lowest offer (from the price file) of this exchange.
+        profit: profitAtAsk(ticker, site, planet, code),
         jumps: jumpsTo(id, code),
       }));
       const base = extractionProfit(profitData.data, ticker, site, planet, universe);
