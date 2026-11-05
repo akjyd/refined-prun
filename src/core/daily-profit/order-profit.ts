@@ -5,7 +5,7 @@ import {
   withPrice,
 } from '@src/core/daily-profit/recipe-choice';
 import { extractionProfit, PlanetInfo, ResourceSite } from '@src/core/extraction/extraction';
-import { watchedPlanets } from '@src/core/extraction/watched-planets';
+import { watchedPlanetsOf } from '@src/core/extraction/watched-planets';
 import { useProfitData } from '@src/infrastructure/prunplanner/profit-data';
 import { getLiveCogc, requestLiveCogc } from '@src/infrastructure/fio/planet-cogc';
 import { userData } from '@src/store/user-data';
@@ -60,7 +60,7 @@ export function isRaw(ticker: string) {
 
 // Planets to pick from: your watched planets for the resource.
 export function planetOptions(ticker: string) {
-  return watchedPlanets[ticker] ?? [];
+  return watchedPlanetsOf(ticker);
 }
 
 export function chosenPlanet(ticker: string, exchange: string) {

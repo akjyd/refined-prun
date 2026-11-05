@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import MaterialIcon from '@src/components/MaterialIcon.vue';
+import PrunButton from '@src/components/PrunButton.vue';
+import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
+import { userData } from '@src/store/user-data';
 import {
   extractionProfit,
   jumpsFrom,
@@ -15,7 +18,7 @@ import { cxStore } from '@src/infrastructure/fio/cx';
 import { starsStore } from '@src/infrastructure/prun-api/data/stars';
 import { stationsStore } from '@src/infrastructure/prun-api/data/stations';
 import { getSystemLineFromAddress } from '@src/infrastructure/prun-api/data/addresses';
-import { hiddenResources, watchedPlanets } from '@src/core/extraction/watched-planets';
+import { isHiddenResource, watchedPlanetsOf } from '@src/core/extraction/watched-planets';
 import { getMaterialNameByTicker } from '@src/util';
 import { fixed0 } from '@src/utils/format';
 import { t } from '@src/i18n';
@@ -97,7 +100,7 @@ const resources = computed(() => {
   }
   const universe = exchangePrice('UNIVERSE');
   const tickers = Object.keys(d.resources)
-    .filter(x => !hiddenResources.has(x))
+    .filter(x => editing.value || !isHiddenResource(x))
     .sort();
   const list = tickers.map(ticker => {
     const sites = d.resources[ticker];
@@ -114,7 +117,7 @@ const resources = computed(() => {
         bestProfit = profit;
       }
     }
-    const ids = [best?.[0], ...(watchedPlanets[ticker] ?? [])].filter(
+    const ids = [best?.[0], ...watchedPlanetsOf(ticker)].filter(
       (x, i, all): x is string => x !== undefined && all.indexOf(x) === i,
     );
     const volume = dailyVolume(ticker);
@@ -134,6 +137,7 @@ const resources = computed(() => {
       return [
         {
           id,
+          watched: watchedPlanetsOf(ticker).includes(id),
           name: planet.name !== '' ? planet.name : id,
           cogc: planet.cogc,
           layout: layoutText(profitData.data, base.building, base.count),
@@ -161,6 +165,45 @@ const resources = computed(() => {
 
 const open = ref(new Set<string>());
 
+// Edit mode: add and remove watched planets, hide and show resources.
+const editing = ref(false);
+const adding = ref<Record<string, string>>({});
+
+function isOpen(ticker: string) {
+  return editing.value || open.value.has(ticker);
+}
+
+function removePlanet(ticker: string, id: string) {
+  userData.extract.planets[ticker] = watchedPlanetsOf(ticker).filter(x => x !== id);
+}
+
+// The input holds "Name (ID)" or an ID.
+function addPlanet(ticker: string) {
+  const text = (adding.value[ticker] ?? '').trim();
+  const id = /\(([^)]+)\)\s*[\d.]*$/.exec(text)?.[1] ?? text;
+  const site = data.value?.resources[ticker]?.find(x => x[0].toUpperCase() === id.toUpperCase());
+  if (site && !watchedPlanetsOf(ticker).includes(site[0])) {
+    userData.extract.planets[ticker] = [...watchedPlanetsOf(ticker), site[0]];
+  }
+  adding.value = { ...adding.value, [ticker]: '' };
+}
+
+function toggleHidden(ticker: string) {
+  const hidden = userData.extract.hidden;
+  userData.extract.hidden = hidden.includes(ticker)
+    ? hidden.filter(x => x !== ticker)
+    : [...hidden, ticker];
+}
+
+// Planets with the resource, the richest first, as "Name (ID) factor".
+function candidates(ticker: string) {
+  const sites = [...(data.value?.resources[ticker] ?? [])].sort((a, b) => b[2] - a[2]);
+  return sites.slice(0, 200).map(x => {
+    const name = planetInfo(x[0])?.name ?? '';
+    return `${name !== '' ? name + ' ' : ''}(${x[0]}) ${x[2].toFixed(3)}`;
+  });
+}
+
 function toggle(ticker: string) {
   const next = new Set(open.value);
   if (next.has(ticker)) {
@@ -182,17 +225,33 @@ function cogcName(cogc: string) {
 
 <template>
   <div :class="$style.root">
+    <div :class="$style.toolbar">
+      <PrunButton dark inline @click="editing = !editing">
+        {{ editing ? t('extract.done') : t('extract.edit') }}
+      </PrunButton>
+    </div>
     <p v-if="resources.length === 0" :class="$style.muted">{{ t('extract.loading') }}</p>
     <div v-for="r in resources" :key="r.ticker" :class="$style.resource">
       <div :class="[$style.top, $style.clickable]" @click="toggle(r.ticker)">
         <span :class="$style.resourceName">
-          <span :class="$style.arrow">{{ open.has(r.ticker) ? '▾' : '▸' }}</span>
-          <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="r.ticker" /></span>
-          <span :class="$style.name">{{ r.name }}</span>
+          <span :class="$style.arrow">{{ isOpen(r.ticker) ? '▾' : '▸' }}</span>
+          <span :class="$style.iconLink" @click.stop
+            ><MaterialIcon size="inline-table" :ticker="r.ticker"
+          /></span>
+          <span :class="[$style.name, isHiddenResource(r.ticker) ? $style.hiddenName : undefined]">
+            {{ r.name }}
+          </span>
+          <PrunButton v-if="editing" dark inline @click.stop="toggleHidden(r.ticker)">
+            {{ isHiddenResource(r.ticker) ? t('extract.show') : t('extract.hide') }}
+          </PrunButton>
         </span>
         <template v-if="r.top">
           <span>
-            <span :class="$style.name">{{ r.top.row.name }}</span>
+            <span
+              :class="[$style.name, $style.planet]"
+              @click.stop="showBuffer(`PLI ${r.top.row.id}`)"
+              >{{ r.top.row.name }}</span
+            >
             <span :class="$style.muted"> {{ cogcName(r.top.row.cogc) }}</span>
             <span :class="$style.layout">{{ r.top.row.layout }}</span>
           </span>
@@ -215,10 +274,19 @@ function cogcName(cogc: string) {
           </span>
         </template>
       </div>
-      <template v-if="open.has(r.ticker)">
+      <template v-if="isOpen(r.ticker)">
         <div v-for="p in r.rows" :key="p.id" :class="$style.row">
           <span>
-            <span :class="$style.name">{{ p.name }}</span>
+            <PrunButton
+              v-if="editing && p.watched"
+              dark
+              inline
+              @click="removePlanet(r.ticker, p.id)">
+              ×
+            </PrunButton>
+            <span :class="[$style.name, $style.planet]" @click="showBuffer(`PLI ${p.id}`)">{{
+              p.name
+            }}</span>
             <span :class="$style.muted"> {{ cogcName(p.cogc) }}</span>
             <span :class="$style.layout">{{ p.layout }}</span>
           </span>
@@ -238,6 +306,17 @@ function cogcName(cogc: string) {
             </span>
           </span>
         </div>
+        <form v-if="editing" :class="$style.add" @submit.prevent="addPlanet(r.ticker)">
+          <input
+            v-model="adding[r.ticker]"
+            :class="$style.input"
+            :list="`extract-planets-${r.ticker}`"
+            :placeholder="t('extract.addPlaceholder')" />
+          <datalist :id="`extract-planets-${r.ticker}`">
+            <option v-for="c in candidates(r.ticker)" :key="c" :value="c" />
+          </datalist>
+          <PrunButton dark inline @click="addPlanet(r.ticker)">{{ t('extract.add') }}</PrunButton>
+        </form>
       </template>
     </div>
   </div>
@@ -258,6 +337,46 @@ function cogcName(cogc: string) {
   align-items: center;
   padding: 4px 4px;
   border-top: 1px solid #2c2c2c;
+}
+
+.iconLink {
+  display: inline-flex;
+}
+
+.planet {
+  cursor: pointer;
+}
+
+.planet:hover {
+  text-decoration: underline;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 4px;
+}
+
+.hiddenName {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.add {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: 24px;
+  padding: 4px;
+}
+
+.input {
+  width: 260px;
+  padding: 2px 6px;
+  border: 1px solid #3a3a3a;
+  background-color: #252525;
+  color: #eee;
+  font: inherit;
 }
 
 .top {

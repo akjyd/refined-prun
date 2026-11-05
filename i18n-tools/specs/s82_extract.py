@@ -25,3 +25,9 @@ for k, en, zh in [
     ('WORKFORCE_SCIENTISTS', 'Scientists', '科学家'),
 ]:
     E(f'extract.cogc.{k}', en, zh)
+E('extract.edit', 'EDIT', '编辑')
+E('extract.done', 'DONE', '完成')
+E('extract.hide', 'HIDE', '隐藏')
+E('extract.show', 'SHOW', '显示')
+E('extract.add', 'ADD', '添加')
+E('extract.addPlaceholder', 'Planet name or ID', '星球名或编号')

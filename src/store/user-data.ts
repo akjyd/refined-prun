@@ -97,6 +97,11 @@ export const initialUserData = deepFreeze({
   },
   // Recipe key picked in XIT RECIPES, by material ticker.
   recipeChoices: {} as Record<string, string | undefined>,
+  // XIT EXTRACT: watched planets by resource, and hidden resources. Filled by a migration.
+  extract: {
+    planets: {} as Record<string, string[] | undefined>,
+    hidden: [] as string[],
+  },
   // Planet whose extraction gives the daily profit of a raw material in an order book, by 'AIR.NC1'.
   extractPlanets: {} as Record<string, string | undefined>,
   // Amount left of each of your CX orders when you last left XIT ORDERS, by order id.

@@ -1356,6 +1356,12 @@ export default {
   'extract.cogc.WORKFORCE_TECHNICIANS': 'Technicians',
   'extract.cogc.WORKFORCE_ENGINEERS': 'Engineers',
   'extract.cogc.WORKFORCE_SCIENTISTS': 'Scientists',
+  'extract.edit': 'EDIT',
+  'extract.done': 'DONE',
+  'extract.hide': 'HIDE',
+  'extract.show': 'SHOW',
+  'extract.add': 'ADD',
+  'extract.addPlaceholder': 'Planet name or ID',
 
   // 新功能 —— XIT CX4 四市场订单簿
   'cx4.title': 'CX4',

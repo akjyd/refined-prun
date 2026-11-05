@@ -1282,6 +1282,12 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'extract.cogc.WORKFORCE_TECHNICIANS': '技术员',
   'extract.cogc.WORKFORCE_ENGINEERS': '工程师',
   'extract.cogc.WORKFORCE_SCIENTISTS': '科学家',
+  'extract.edit': '编辑',
+  'extract.done': '完成',
+  'extract.hide': '隐藏',
+  'extract.show': '显示',
+  'extract.add': '添加',
+  'extract.addPlaceholder': '星球名或编号',
 
   // 新功能 —— XIT CX4 四市场订单簿
   'cx4.title': '四市场订单簿',

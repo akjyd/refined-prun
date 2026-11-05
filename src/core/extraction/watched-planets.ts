@@ -1,5 +1,8 @@
-// Planets the player watches for each resource, shown under the best planet (player list, 2026-11-04).
-export const watchedPlanets: Record<string, string[]> = {
+import { userData } from '@src/store/user-data';
+
+// Default planets the player watches for each resource (player list, 2026-11-04).
+// XIT EXTRACT edits the copy in userData.extract.
+export const defaultWatchedPlanets: Record<string, string[]> = {
   AMM: ['AM-528g'],
   ALO: ['BI-500b'],
   AR: ['KI-401d', 'RC-040f'],
@@ -22,5 +25,13 @@ export const watchedPlanets: Record<string, string[]> = {
   ZIR: ['KI-401b'],
 };
 
-// Resources the player does not want to see.
-export const hiddenResources = new Set(['HEX', 'MAG']);
+// Resources the player does not want to see, by default.
+export const defaultHiddenResources = ['HEX', 'MAG'];
+
+export function watchedPlanetsOf(ticker: string) {
+  return userData.extract.planets[ticker] ?? [];
+}
+
+export function isHiddenResource(ticker: string) {
+  return userData.extract.hidden.includes(ticker);
+}

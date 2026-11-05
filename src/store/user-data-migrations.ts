@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { migrateVersionedUserData } from '@src/store/user-data-versioned-migrations';
 import removeArrayElement from '@src/utils/remove-array-element';
+import {
+  defaultHiddenResources,
+  defaultWatchedPlanets,
+} from '@src/core/extraction/watched-planets';
 
 type Migration = [id: string, migration: (userData: any) => void];
 // A checkpoint marks that all migrations before it are applied.
@@ -16,6 +20,15 @@ function isCheckpoint(entry: MigrationEntry): entry is Checkpoint {
 // New migrations should be added to the top of the list.
 // The date is for reference only, and it does not affect migration order.
 const migrations: MigrationEntry[] = [
+  [
+    '05.11.2026 Add editable extraction planets',
+    userData => {
+      userData.extract ??= {
+        planets: structuredClone(defaultWatchedPlanets),
+        hidden: [...defaultHiddenResources],
+      };
+    },
+  ],
   [
     '05.11.2026 Add seen order amounts',
     userData => {
