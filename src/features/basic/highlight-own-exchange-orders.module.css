@@ -3,3 +3,15 @@
     font-weight: bold;
   }
 }
+
+.changed {
+  > td {
+    background-color: rgba(247, 166, 0, 0.25);
+  }
+}
+
+.change {
+  margin-right: 4px;
+  color: #f7a600;
+  font-size: 11px;
+}

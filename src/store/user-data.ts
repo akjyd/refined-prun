@@ -99,6 +99,8 @@ export const initialUserData = deepFreeze({
   recipeChoices: {} as Record<string, string | undefined>,
   // Planet whose extraction gives the daily profit of a raw material in an order book, by 'AIR.NC1'.
   extractPlanets: {} as Record<string, string | undefined>,
+  // Amount left of each of your CX orders when you last left XIT ORDERS, by order id.
+  orderSeen: {} as Record<string, number | undefined>,
   // XIT CX4: favorite and recent materials, and the CXOB tile id used for each exchange.
   cx4: {
     favorites: [] as string[],

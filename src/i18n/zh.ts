@@ -837,6 +837,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.cxob-depth-bars': 'CXOB：加市场深度条。',
   'feature.cxob-drag-reprice': 'CXOB：把自己的挂单拖到订单簿的另一个位置，按那里的价格重新挂单。',
   'feature.cxob-hide-section-headers': 'CXOB：隐藏「卖单」「买单」标题。',
+  'feature.cxob-plain-prices': 'CXOB：卖价和买价用普通颜色显示，方便看出变化和标记。',
   'feature.cxob-supply-demand-values': 'CXOB：显示供需数值。',
   'feature.cxos-hide-delete-filled': 'CXOS：隐藏筛选栏时也隐藏「删除已成交」按钮。',
   'feature.cxos-hide-exchange': 'CXOS：隐藏「交易所」列。',
@@ -1304,6 +1305,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'orders.badDrop': '不能放在这里：会越过价差，直接成交。',
   'orders.replaceFailed': '原单已撤销，但重新挂 {0} 个 {1} 失败（{3}）。原价是 {2}。',
   'orders.refresh': '刷新',
+  'orders.cxpo': '改价',
+  'orders.new': '新',
 };
 
 export default zh;

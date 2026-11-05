@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
-import PrunLink from '@src/components/PrunLink.vue';
+import CxpoButton from '@src/components/CxpoButton.vue';
+import { orderChange } from '@src/core/order-seen';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
@@ -27,6 +28,8 @@ interface Cell {
   ask: boolean;
   price: number;
   amount: string;
+  // Change of your order since you last left XIT ORDERS.
+  change?: string;
   profit?: number;
   own: boolean;
   mark?: string;
@@ -60,6 +63,11 @@ function ownAmount(order: PrunApi.CXBrokerOrder) {
   return mine ? `${fixed0(mine.amount)}/${fixed0(mine.initialAmount)}` : undefined;
 }
 
+function ownChange(order: PrunApi.CXBrokerOrder) {
+  const mine = order.trader.id === companyStore.value?.id ? cxosStore.getById(order.id) : undefined;
+  return mine ? orderChange(mine.id, mine.amount) : undefined;
+}
+
 // Rank of each value among the others, the highest first; equal values share a rank.
 function ranks(values: (number | undefined)[]) {
   const distinct = [...new Set(values.filter((x): x is number => x !== undefined))].sort(
@@ -82,6 +90,7 @@ const columns = computed(() => {
       amount: ownAmount(order) ?? (order.amount === null ? '∞' : fixed0(order.amount)),
       profit: profitAt(order.limit.amount),
       own: order.trader.id === ownId,
+      change: ownChange(order),
     });
     const asks = book.sellingOrders.map(x => toCell(x, true)).sort((a, b) => b.price - a.price);
     const bids = book.buyingOrders.map(x => toCell(x, false)).sort((a, b) => b.price - a.price);
@@ -152,7 +161,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
           <span :class="$style.stock">
             {{ t('cx4.stock') }} {{ stock[i] !== undefined ? fixed0(stock[i]) : '--' }}
           </span>
-          <PrunLink inline :command="`CXPO ${ticker}.${code}`" />
+          <CxpoButton :cx-ticker="`${ticker}.${code}`" />
         </span>
         <span :class="$style.columns">
           <span>{{ t('cxob.profitHead') }}</span>
@@ -175,6 +184,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
               ? [
                   $style.cell,
                   cell.own ? $style.own : undefined,
+                  cell.change !== undefined ? $style.changed : undefined,
                   drag.lineAbove(cell.id) ? $style.dropAbove : undefined,
                   drag.lineBelow(cell.id) ? $style.dropBelow : undefined,
                 ]
@@ -191,10 +201,10 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
                 v-if="cell.own"
                 :order-id="cell.id"
                 screen-command="CXOS" />
+              <span v-if="cell.change" :class="$style.change">{{ cell.change }}</span>
               {{ cell.amount }}
             </span>
-            <span
-              :class="[$style.num, cell.ask ? C.ColoredValue.negative : C.ColoredValue.positive]">
+            <span :class="$style.num">
               {{ fixed02(cell.price) }}
             </span>
           </template>
@@ -245,7 +255,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .columns,
 .cell {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 96px 70px;
+  grid-template-columns: minmax(44px, 1fr) 130px 70px;
   gap: 0 6px;
 }
 
@@ -269,6 +279,16 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 /* Your own orders are bold, as in CXOB; the del button sits before the amount. */
+.changed {
+  background-color: rgba(247, 166, 0, 0.25);
+}
+
+.change {
+  margin-right: 4px;
+  color: #f7a600;
+  font-size: 11px;
+}
+
 .own {
   font-weight: bold;
   cursor: grab;

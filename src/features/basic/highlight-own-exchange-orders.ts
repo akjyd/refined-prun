@@ -9,6 +9,7 @@ import { fxobStore } from '@src/infrastructure/prun-api/data/fxob';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { createReactiveSpan } from '@src/utils/reactive-element';
 import { fixed0 } from '@src/utils/format';
+import { orderChange } from '@src/core/order-seen';
 
 type GetOwnOrders = (parameter?: string) => { id: string }[] | undefined;
 
@@ -45,6 +46,17 @@ function onTileReady(tile: PrunTile, getOwnOrders: GetOwnOrders, orderCommand: s
         return order ? `/${fixed0(order.initialAmount)}` : undefined;
       });
       amountColumn.appendChild(createReactiveSpan(tr, placed));
+      // What changed since you last left XIT ORDERS.
+      const change = computed(() => {
+        const order = ownOrder.value ? cxosStore.getById(ownOrder.value.id) : undefined;
+        return order ? orderChange(order.id, order.amount) : undefined;
+      });
+      const changeSpan = createReactiveSpan(tr, change);
+      changeSpan.classList.add($style.change);
+      amountColumn.prepend(changeSpan);
+      watchEffectWhileNodeAlive(tr, () =>
+        tr.classList.toggle($style.changed, change.value !== undefined),
+      );
     }
     watchEffectWhileNodeAlive(tr, () => {
       const isOwnOrder = ownOrder.value !== undefined;

@@ -3,6 +3,7 @@ import { UI_TILES_CHANGE_COMMAND } from '@src/infrastructure/prun-api/client-mes
 import { dispatchClientPrunMessage } from '@src/infrastructure/prun-api/prun-api-listener';
 import { changeInputValue, clickElement } from '@src/util';
 import { sleep } from '@src/utils/sleep';
+import { waitUntil } from '@src/utils/wait';
 import { setBufferSize, showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { rememberSplitOwner } from '@src/infrastructure/prun-ui/companion-buffer';
 
@@ -31,7 +32,19 @@ export class TileAllocator {
     } else {
       this.allocatedTile = await requestTile(command);
     }
-    return tiles.findByContainer(this.allocatedTile?.parentElement)[0];
+    const container = this.allocatedTile?.parentElement;
+    // After a command change the game makes a new frame; until the tile list sees it, the old
+    // frame (detached) is returned, and a step that waits for an element in it never ends.
+    const live = () =>
+      tiles
+        .findByContainer(container)
+        .find(x => x.frame.isConnected && x.fullCommand.toUpperCase() === command.toUpperCase());
+    await waitUntil(live, 10000);
+    const tile = live() ?? tiles.findByContainer(container)[0];
+    if (tile !== undefined) {
+      this.allocatedTile = tile.frame.parentElement ?? undefined;
+    }
+    return tile;
   }
 }
 

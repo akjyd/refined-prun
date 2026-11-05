@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
-import PrunLink from '@src/components/PrunLink.vue';
+import CxpoButton from '@src/components/CxpoButton.vue';
+import { orderChange } from '@src/core/order-seen';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
@@ -33,6 +34,8 @@ interface Row {
   ask: boolean;
   price: number;
   amount: string;
+  // Change of your order since you last left XIT ORDERS.
+  change?: string;
   profit?: number;
   own: boolean;
   mark?: string;
@@ -61,6 +64,7 @@ const liveRows = computed(() => {
       profit: profitAt(order.limit.amount),
       own,
       first: false,
+      change: mine ? orderChange(mine.id, mine.amount) : undefined,
     };
   };
   const asks = b.sellingOrders.map(x => toRow(x, true)).sort((x, y) => y.price - x.price);
@@ -146,7 +150,7 @@ watch(
       <span :class="$style.muted"
         >{{ t('cx4.stock') }} {{ stock !== undefined ? fixed0(stock) : '--' }}</span
       >
-      <PrunLink inline :command="`CXPO ${ticker}.${exchange}`" />
+      <CxpoButton :cx-ticker="`${ticker}.${exchange}`" />
     </div>
     <div :class="$style.columns">
       <span>{{ t('cxob.profitHead') }}</span>
@@ -163,6 +167,7 @@ watch(
         :class="[
           $style.row,
           r.own ? $style.own : undefined,
+          !r.gone && r.change !== undefined ? $style.changed : undefined,
           r.gone ? $style.gone : undefined,
           r.first ? $style.spread : undefined,
           !r.gone && drag.lineAbove(r.id) ? $style.dropAbove : undefined,
@@ -178,9 +183,10 @@ watch(
             v-if="r.own && !r.gone"
             :order-id="r.id"
             screen-command="CXOS" />
+          <span v-if="r.change && !r.gone" :class="$style.change">{{ r.change }}</span>
           {{ r.amount }}
         </span>
-        <span :class="[$style.num, r.ask ? C.ColoredValue.negative : C.ColoredValue.positive]">
+        <span :class="$style.num">
           {{ fixed02(r.price) }}
         </span>
       </div>
@@ -216,7 +222,7 @@ watch(
 .columns,
 .row {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 96px 70px;
+  grid-template-columns: minmax(44px, 1fr) 130px 70px;
   gap: 0 6px;
   padding: 1px 8px;
 }
@@ -250,6 +256,16 @@ watch(
 
 .spread {
   border-top: 1px solid #5a5a5a;
+}
+
+.changed {
+  background-color: rgba(247, 166, 0, 0.25);
+}
+
+.change {
+  margin-right: 4px;
+  color: #f7a600;
+  font-size: 11px;
 }
 
 .gone {

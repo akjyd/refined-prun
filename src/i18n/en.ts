@@ -876,6 +876,7 @@ export default {
   'feature.cxob-drag-reprice':
     'CXOB: Drag one of your orders to another place in the book to place it again there.',
   'feature.cxob-hide-section-headers': 'CXOB: Hides "Offers" and "Requests" headers.',
+  'feature.cxob-plain-prices': 'CXOB: Shows offer and request prices in the normal color.',
   'feature.cxob-supply-demand-values': 'CXOB: Adds supply and demand value labels.',
   'feature.cxos-hide-delete-filled':
     'CXOS: Hides the "Delete Filled" button when filters are hidden.',
@@ -1379,4 +1380,6 @@ export default {
   'orders.replaceFailed':
     'The old order was deleted, but placing {0} {1} again failed ({3}). The old price was {2}.',
   'orders.refresh': 'REFRESH',
+  'orders.cxpo': 'CXPO',
+  'orders.new': 'new',
 };
