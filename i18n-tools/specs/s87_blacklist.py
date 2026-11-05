@@ -14,3 +14,5 @@ E('bl.far', 'Too far', '太远')
 E('bl.market', 'Market too small', '市场太小')
 E('bl.auto7d', 'Auto: no trade in 7 days on any exchange', '自动：所有市场 7 天无成交')
 E('bl.reason', 'Reason', '理由')
+
+E('bl.done', 'DONE', '完成')

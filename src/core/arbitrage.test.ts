@@ -19,6 +19,16 @@ describe('arbitrage', () => {
     expect(r.units).toBe(15);
     expect(r.profit).toBe(10 * 25 + 5 * 15);
     expect(r.spread).toBeCloseTo(0.25);
+    expect(r.fillsA.map(x => x.take)).toEqual([10, 5, 0]);
+    expect(r.fillsB.map(x => x.take)).toEqual([15, 0]);
+    expect(r.cost).toBe(10 * 100 + 5 * 110);
+    expect(r.limit).toBe('price');
+  });
+
+  it('stops when the ship is full', () => {
+    const r = arbitrage(asksA, bidsB, asksB, 'now', 12)!;
+    expect(r.fillsA.map(x => x.take)).toEqual([10, 2, 0]);
+    expect(r.limit).toBe('ship');
   });
 
   it('lists one step under the best offer', () => {
@@ -27,6 +37,8 @@ describe('arbitrage', () => {
     expect(r.sell).toBe(149);
     expect(r.units).toBe(25);
     expect(r.profit).toBe(10 * 49 + 10 * 39 + 5 * 19);
+    expect(r.fillsA.map(x => x.take)).toEqual([10, 10, 5]);
+    expect(r.limit).toBe('ship');
   });
 
   it('fits a ship', () => {

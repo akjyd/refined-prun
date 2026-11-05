@@ -21,3 +21,11 @@ E('act.contribute.noTable', 'No contribution table in {0}.', '{0} 里找不到�
 E('act.contribute.noRow', 'No {0} row in {1}.', '{1} 里找不到 {0} 这一行。')
 E('act.contribute.short', '{0}: could only set {1} of {2} (slider max {3}).', '{0}：只能设置 {1}（计划 {2}，滑块上限 {3}）。')
 E('type.GovBurn Maintain', 'GovBurn Maintain', '仓库维护')
+
+# COGC vote during maintain.
+E('act.vote.desc', 'Vote the current CoGC program on {0}', '为 {0} 的 COGC 投当前项目')
+E('act.vote.noProgram', 'No CoGC program runs on {0} now. No vote.', '{0} 当前没有 COGC 项目，不投票。')
+E('act.vote.already', 'You already voted {0} on {1}.', '{1} 已投 {0}。')
+E('act.vote.noRow', 'No vote row for {0} in {1}.', '{1} 里找不到 {0} 的投票行。')
+E('act.vote.failed', 'The vote for {0} on {1} did not register.', '{1} 投 {0} 未生效。')
+E('act.vote.done', 'Voted {0} on {1}.', '{1} 已投票：{0}。')

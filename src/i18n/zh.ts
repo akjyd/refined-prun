@@ -1246,6 +1246,12 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'act.contribute.noRow': '{1} 里找不到 {0} 这一行。',
   'act.contribute.short': '{0}：只能设置 {1}（计划 {2}，滑块上限 {3}）。',
   'type.GovBurn Maintain': '仓库维护',
+  'act.vote.desc': '为 {0} 的 COGC 投当前项目',
+  'act.vote.noProgram': '{0} 当前没有 COGC 项目，不投票。',
+  'act.vote.already': '{1} 已投 {0}。',
+  'act.vote.noRow': '{1} 里找不到 {0} 的投票行。',
+  'act.vote.failed': '{1} 投 {0} 未生效。',
+  'act.vote.done': '{1} 已投票：{0}。',
 
   // 新功能 —— XIT RECIPES 和 CXOB 日利
   'recipes.title': '配方选择',
@@ -1334,7 +1340,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.listed': '挂单卖',
   'arb.ship': '船',
   'arb.loading': '正在读取 FIO 订单簿...',
-  'arb.loaded': 'FIO 订单簿 {0}前读取',
+  'arb.loaded': 'FIO {0}前',
   'arb.error': 'FIO 读取失败：{0}',
   'arb.allRoutes': '全部路线',
   'arb.material': '物资',
@@ -1355,6 +1361,22 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.to': '终点',
   'arb.any': '全部',
   'arb.fioAge': 'FIO 订单簿的数据时间：{0} {1}前，{2} {3}前。下面是游戏实时订单簿。',
+  'arb.custom': '自定义',
+  'arb.return': '回报率',
+  'arb.asksBuy': '卖单 · 你买入',
+  'arb.bidsSell': '买单 · 你卖出',
+  'arb.asksList': '卖单 · 你挂单',
+  'arb.colOrder': '挂单',
+  'arb.colBuy': '你买',
+  'arb.colSell': '你卖',
+  'arb.yours': '你的单',
+  'arb.stopShip': '船满 {0}',
+  'arb.stopPrice': '下一单不赚钱',
+  'arb.stopBook': '没有更多订单',
+  'arb.live': '实时',
+  'arb.fioAgo': 'FIO {0}前',
+  'arb.cost': '买入',
+  'arb.revenue': '卖出',
 
   // 新功能 —— 黑名单
   'bl.title': '黑名单',
@@ -1370,6 +1392,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'bl.market': '市场太小',
   'bl.auto7d': '自动：所有市场 7 天无成交',
   'bl.reason': '理由',
+  'bl.done': '完成',
 };
 
 export default zh;

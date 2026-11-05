@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import PrunButton from '@src/components/PrunButton.vue';
-import SelectInput from '@src/components/forms/SelectInput.vue';
+import ChipGroup from '@src/components/ChipGroup.vue';
 import BlacklistPanel from '@src/components/BlacklistPanel.vue';
 import { extractReasons } from '@src/core/blacklist-reasons';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
@@ -310,7 +310,7 @@ function cogcName(cogc: string) {
     <div :class="$style.toolbar">
       <template v-if="editing">
         <span :class="$style.muted">{{ t('bl.reason') }}</span>
-        <SelectInput
+        <ChipGroup
           v-model="pickReason"
           :options="reasons.map(x => ({ label: x.label, value: x.id }))" />
       </template>

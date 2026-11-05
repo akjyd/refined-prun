@@ -2,6 +2,7 @@ import { act } from '@src/features/XIT/ACT/act-registry';
 import Edit from '@src/features/XIT/ACT/actions/govburn-data/Edit.vue';
 import { MTRA_TRANSFER } from '@src/features/XIT/ACT/action-steps/MTRA_TRANSFER';
 import { CONTRIBUTE } from '@src/features/XIT/ACT/action-steps/CONTRIBUTE';
+import { VOTE_COGC } from '@src/features/XIT/ACT/action-steps/VOTE_COGC';
 import { AssertFn } from '@src/features/XIT/ACT/shared-types';
 import { planetsStore } from '@src/infrastructure/prun-api/data/planets';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
@@ -124,8 +125,15 @@ act.addAction({
       byTarget.set(target, materials);
     }
 
+    // A planet with a CoGC also gets a vote for the program that runs now.
+    const vote = () => {
+      if (userData.govburn.planets[naturalId]?.cogc !== undefined) {
+        emitStep(VOTE_COGC({ planet: naturalId }));
+      }
+    };
     if (transfers.size === 0) {
       log.info(t('act.gbm.nothing', naturalId));
+      vote();
       return;
     }
     for (const [ticker, amount] of transfers) {
@@ -140,5 +148,6 @@ act.addAction({
         }),
       );
     }
+    vote();
   },
 });
