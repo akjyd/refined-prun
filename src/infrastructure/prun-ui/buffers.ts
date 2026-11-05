@@ -30,7 +30,12 @@ export async function showBuffer(command: string, options?: ShowBufferOptions) {
   correctXitArgs(parts);
   command = parts.join(' ');
   if (!options?.force) {
-    const existing = tiles.find(command).find(x => !x.docked);
+    // Skip the hidden windows RP keeps open in the background (for example the CXOB windows that
+    // XIT ARB, CX4, ORDERS and ARBLOG keep for live order books): focusing one of them shows
+    // nothing, so the player could not open that order book.
+    const existing = tiles
+      .find(command)
+      .find(x => !x.docked && x.frame.closest(`.${css.hidden}`) === null);
     if (existing) {
       const window = existing.frame.closest(`.${C.Window.window}`)!;
       const command = UI_WINDOWS_REQUEST_FOCUS(existing.id);
