@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import unimport from 'unimport/unplugin';
 import { createHash } from 'crypto';
+import { readFileSync, writeFileSync } from 'fs';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -34,6 +35,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    manifestVersion(),
     vue(),
     vueJsx(),
     unimport.vite({
@@ -155,4 +157,26 @@ function sanitizeOutputSegment(segment: string): string {
 
 function buildTime() {
   return new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Shanghai' }).slice(5, 16);
+}
+
+// Version "YYYY.MDD.HMM" from the build time in China time, e.g. 2026.1105.1953.
+// Chrome takes up to four numbers of 0..65535 without leading zeros.
+function buildVersion() {
+  const [date, time] = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Shanghai' }).split(' ');
+  const [y, m, d] = date.split('-');
+  const [h, min] = time.split(':');
+  return `${Number(y)}.${Number(m + d)}.${Number(h + min)}`;
+}
+
+function manifestVersion() {
+  const version = buildVersion();
+  return {
+    name: 'manifest-version',
+    closeBundle() {
+      const file = resolve(outDir, 'manifest.json');
+      const manifest = JSON.parse(readFileSync(file, 'utf8'));
+      manifest.version = version;
+      writeFileSync(file, JSON.stringify(manifest, null, 2));
+    },
+  };
 }

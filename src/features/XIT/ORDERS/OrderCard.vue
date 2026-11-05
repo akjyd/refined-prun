@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
 import CxpoButton from '@src/components/CxpoButton.vue';
-import { orderChange } from '@src/core/order-seen';
+import { getOwnCxOrder, orderChange } from '@src/core/order-seen';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
-import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
@@ -54,7 +53,7 @@ const liveRows = computed(() => {
   const toRow = (order: PrunApi.CXBrokerOrder, ask: boolean): Row => {
     const own = order.trader.id === ownId;
     // Your own orders show the amount left / the amount placed.
-    const mine = own ? cxosStore.getById(order.id) : undefined;
+    const mine = own ? getOwnCxOrder(order.id) : undefined;
     const amount = order.amount === null ? '∞' : fixed0(order.amount);
     return {
       id: order.id,
@@ -212,7 +211,6 @@ watch(
 
 .icon {
   display: inline-flex;
-  pointer-events: none;
 }
 
 .spacer {

@@ -35,7 +35,7 @@ const INDUSTRIES = [
   'RESOURCE_EXTRACTION',
 ];
 
-const tab = ref(RECENT);
+const tab = ref(FAVORITES);
 const current = ref<string>(userData.cx4.recent[0] ?? '');
 const profitData = useProfitData();
 

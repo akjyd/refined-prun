@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
 import CxpoButton from '@src/components/CxpoButton.vue';
-import { orderChange } from '@src/core/order-seen';
+import { getOwnCxOrder, orderChange } from '@src/core/order-seen';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
-import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
@@ -59,12 +58,12 @@ function ownAmount(order: PrunApi.CXBrokerOrder) {
   if (order.trader.id !== companyStore.value?.id) {
     return undefined;
   }
-  const mine = cxosStore.getById(order.id);
+  const mine = getOwnCxOrder(order.id);
   return mine ? `${fixed0(mine.amount)}/${fixed0(mine.initialAmount)}` : undefined;
 }
 
 function ownChange(order: PrunApi.CXBrokerOrder) {
-  const mine = order.trader.id === companyStore.value?.id ? cxosStore.getById(order.id) : undefined;
+  const mine = order.trader.id === companyStore.value?.id ? getOwnCxOrder(order.id) : undefined;
   return mine ? orderChange(mine.id, mine.amount) : undefined;
 }
 

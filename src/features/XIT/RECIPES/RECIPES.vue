@@ -109,7 +109,9 @@ function recipeText(recipe: Recipe) {
     </div>
     <div v-for="m in materials" :key="m.ticker" :class="$style.material">
       <div :class="[$style.row, $style.clickable]" @click="toggle(m.ticker)">
-        <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="m.ticker" /></span>
+        <span :class="$style.icon" @click.stop
+          ><MaterialIcon size="inline-table" :ticker="m.ticker"
+        /></span>
         <span :class="$style.name">{{ m.name }}</span>
         <span :class="$style.summary">
           <span :class="$style.arrow">{{ open.has(m.ticker) ? '▾' : '▸' }}</span>
@@ -132,12 +134,14 @@ function recipeText(recipe: Recipe) {
           <span :class="$style.items">
             <span v-for="(n, k) in r.recipe.inputs" :key="k" :class="$style.item">
               {{ fixed01(n) }}
-              <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="k" /></span>
+              <span :class="$style.icon" @click.stop
+                ><MaterialIcon size="inline-table" :ticker="k"
+              /></span>
             </span>
             <span :class="$style.muted">→</span>
             <span v-for="(n, k) in r.recipe.outputs" :key="k" :class="$style.item">
               {{ fixed01(n) }}
-              <span :class="[$style.icon, k === m.ticker ? $style.target : undefined]">
+              <span :class="[$style.icon, k === m.ticker ? $style.target : undefined]" @click.stop>
                 <MaterialIcon size="inline-table" :ticker="k" />
               </span>
             </span>
@@ -147,7 +151,6 @@ function recipeText(recipe: Recipe) {
         </div>
       </div>
     </div>
-    <p :class="$style.muted">{{ t('recipes.note') }}</p>
   </div>
 </template>
 
@@ -210,7 +213,6 @@ function recipeText(recipe: Recipe) {
 
 .icon {
   display: inline-flex;
-  pointer-events: none;
 }
 
 .target {

@@ -34,7 +34,7 @@ async function onFooterReady(footer: HTMLElement) {
         class={[$style.label, C.HeadItem.label]}
         data-tooltip="Refined PrUn version."
         data-tooltip-position="top">
-        v. {config.version} · {__BUILD_TIME__}
+        v{config.version}
       </div>
       <div class={[$style.label, C.HeadItem.label, $style.refresh]} onClick={refresh}>
         {priceAge.value !== undefined ? t('version.priceAge', priceAge.value) : ''} ↻

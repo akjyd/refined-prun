@@ -122,7 +122,15 @@ export const CONTRIBUTE = act.addActionStep<Data>({
     }
     await waitAct();
     await clickContribute(contribute);
-    await waitActionFeedback(tile);
+    // A payment that completes the CoGC bill redraws the tile, and the feedback then shows in
+    // the new frame. Wait for the feedback in whichever frame is live.
+    const hasFeedback = (x: PrunTile) =>
+      x.frame.getElementsByClassName(C.ActionFeedback.overlay).length > 0;
+    await waitUntil(() => {
+      const now = liveTile();
+      return now !== undefined && (now.frame !== tile.frame || hasFeedback(now));
+    }, 5000);
+    await waitActionFeedback(liveTile() ?? tile);
     complete();
   },
 });

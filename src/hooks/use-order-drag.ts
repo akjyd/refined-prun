@@ -1,5 +1,5 @@
 import { BookOrder, dropTargetPrice } from '@src/core/price-step';
-import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
+import { getOwnCxOrder } from '@src/core/order-seen';
 import { repriceOrder } from '@src/infrastructure/prun-ui/utils/reprice-order';
 import { showErrorOverlay } from '@src/infrastructure/prun-ui/tile-overlay';
 import { t } from '@src/i18n';
@@ -45,7 +45,7 @@ export function useOrderDrag() {
 
   async function drop(e: DragEvent) {
     e.preventDefault();
-    const order = dragged.value ? cxosStore.getById(dragged.value.id) : undefined;
+    const order = dragged.value ? getOwnCxOrder(dragged.value.id) : undefined;
     const price = newPrice.value;
     end();
     if (!order) {

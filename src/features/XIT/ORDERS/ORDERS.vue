@@ -6,7 +6,7 @@ import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { compareMaterials } from '@src/core/sort-materials';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import { userData } from '@src/store/user-data';
-import { saveSeenOrders } from '@src/core/order-seen';
+import { saveSeenOrders, startOrdersVisit } from '@src/core/order-seen';
 import { t } from '@src/i18n';
 
 const $style = useCssModule();
@@ -58,10 +58,12 @@ watch(
   value => void books.show(value === '' ? [] : value.split(',')),
   { immediate: true },
 );
-onUnmounted(() => {
-  books.close();
-  // The next visit shows what changed since now.
-  saveSeenOrders();
+onUnmounted(() => books.close());
+// Save this visit's amounts as soon as the orders are loaded.
+const stopVisit = watchEffect(() => {
+  if (startOrdersVisit()) {
+    queueMicrotask(() => stopVisit());
+  }
 });
 </script>
 
