@@ -9,8 +9,17 @@ import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import ArbDepth from '@src/features/XIT/ARB/ArbDepth.vue';
 import CartPanel from '@src/features/XIT/ARB/CartPanel.vue';
-import { NO_LIMIT, tradeOf } from '@src/features/XIT/ARB/arb-books';
-import { addToCart, cartLines, cartRoute, inCart } from '@src/features/XIT/ARB/cart';
+import { tradeOf } from '@src/features/XIT/ARB/arb-books';
+import { shipSizes } from '@src/core/ship-sizes';
+import {
+  addToCart,
+  arbDays,
+  cartLines,
+  cartRoute,
+  dailyTrade,
+  inCart,
+  unitCap,
+} from '@src/features/XIT/ARB/cart';
 import { ageText } from '@src/features/XIT/ARB/age';
 import BlacklistPanel from '@src/components/BlacklistPanel.vue';
 import { arbReasons } from '@src/core/blacklist-reasons';
@@ -48,7 +57,8 @@ const starts = ref<string[]>([]);
 const ends = ref<string[]>([]);
 
 // Days of end-exchange trade the units are compared with (player, 2026-11-05: 3 by default).
-const days = ref<'1' | '3' | '7'>('3');
+const days = arbDays;
+const shipChips = shipSizes.map(x => ({ value: x.id, label: x.label }));
 const dayChips = computed(() =>
   (['1', '3', '7'] as const).map(x => ({ value: x, label: t('arb.days', x) })),
 );
@@ -80,12 +90,8 @@ interface Row {
   time?: number;
 }
 
-function dailyTrade(ticker: string, code: string) {
-  return (cxStore.prices.get(code)?.get(ticker)?.Traded7D ?? 0) / 7;
-}
-
-// Every route of every material the order books allow, not limited by a ship; the cart applies
-// the ship. With goods in the cart, only the cart's route shows.
+// Every route of every material: units up to what the ship holds and the end exchange trades in
+// the chosen days. With goods in the cart, only the cart's route shows.
 const allRows = computed(() => {
   const rows: Row[] = [];
   const route = cartRoute.value;
@@ -99,7 +105,11 @@ const allRows = computed(() => {
       }
       const key = `${ticker}.${r}`;
       const line = cartLines.value.find(x => x.item.ticker === ticker);
-      const trade = line?.trade ?? tradeOf(ticker, from, to, mode.value, NO_LIMIT);
+      const cap = unitCap(ticker, to);
+      if (!line && cap <= 0) {
+        continue;
+      }
+      const trade = line?.trade ?? tradeOf(ticker, from, to, mode.value, cap);
       if (!trade) {
         continue;
       }
@@ -276,6 +286,10 @@ function toggleBlacklistMode() {
         <span :class="$style.group">
           <span :class="$style.muted">{{ t('arb.daysLabel') }}</span>
           <ChipGroup v-model="days" :options="dayChips" />
+        </span>
+        <span :class="$style.group">
+          <span :class="$style.muted">{{ t('arb.ship') }}</span>
+          <ChipGroup v-model="userData.arbCart.ship" :options="shipChips" />
         </span>
       </template>
       <span :class="$style.spacer" />

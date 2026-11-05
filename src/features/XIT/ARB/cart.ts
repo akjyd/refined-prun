@@ -3,12 +3,31 @@ import { shipSizes } from '@src/core/ship-sizes';
 import { ArbSnapshot } from '@src/core/arb-batches';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { userData } from '@src/store/user-data';
-import { NO_LIMIT, tradeOf } from '@src/features/XIT/ARB/arb-books';
+import { unitsPerShip } from '@src/core/arbitrage';
+import { cxStore } from '@src/infrastructure/fio/cx';
+import { tradeOf } from '@src/features/XIT/ARB/arb-books';
 
 // The XIT ARB cart: goods for one flight on one route. The route is the route of the first
 // good; the ship limits the units.
 
 export type CartItem = (typeof userData.arbCart.items)[number];
+
+// Days of end-exchange trade a good may take at most (player, 2026-11-05: 3 by default).
+export const arbDays = ref<'1' | '3' | '7'>('3');
+
+// Average units traded per day on an exchange (7-day trade / 7).
+export function dailyTrade(ticker: string, code: string) {
+  return (cxStore.prices.get(code)?.get(ticker)?.Traded7D ?? 0) / 7;
+}
+
+// The most units a trade may take, before the books: what the ship holds and what the end
+// exchange trades in the chosen days, whichever is less (player, 2026-11-06).
+export function unitCap(ticker: string, to: string) {
+  const material = materialsStore.getByTicker(ticker);
+  const ship = material ? unitsPerShip(material.weight, material.volume, cartShip.value) : 0;
+  const trade = Math.floor(dailyTrade(ticker, to) * Number(arbDays.value));
+  return Math.max(0, Math.min(ship, trade));
+}
 
 export const cartShip = computed(
   () => shipSizes.find(x => x.id === userData.arbCart.ship) ?? shipSizes[0],
@@ -42,7 +61,13 @@ export const cartLines = computed(() => {
   const items = userData.arbCart.items;
   const goods = items.map(item => {
     const material = materialsStore.getByTicker(item.ticker);
-    const market = tradeOf(item.ticker, item.from, item.to, item.mode, NO_LIMIT);
+    const market = tradeOf(
+      item.ticker,
+      item.from,
+      item.to,
+      item.mode,
+      unitCap(item.ticker, item.to),
+    );
     return {
       item,
       weight: material?.weight ?? 0,

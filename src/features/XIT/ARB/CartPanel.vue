@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import MaterialIcon from '@src/components/MaterialIcon.vue';
-import ChipGroup from '@src/components/ChipGroup.vue';
 import RangeInput from '@src/components/forms/RangeInput.vue';
-import { shipSizes } from '@src/core/ship-sizes';
 import { userData } from '@src/store/user-data';
 import { createId } from '@src/store/create-id';
 import { placeCxOrder } from '@src/infrastructure/prun-ui/utils/place-cx-order';
@@ -26,8 +24,6 @@ import { t } from '@src/i18n';
 const { safetyOf } = defineProps<{ safetyOf: (ticker: string) => number | undefined }>();
 
 const $style = useCssModule();
-
-const shipChips = shipSizes.map(x => ({ value: x.id, label: x.label }));
 
 function setUnits(index: number, value: number | string) {
   const line = cartLines.value.at(index);
@@ -123,10 +119,6 @@ async function buyAll() {
       <span
         ><b>{{ t('arb.cart') }}</b> {{ cartRoute?.from }} → {{ cartRoute?.to }}</span
       >
-      <span :class="$style.group">
-        <span :class="$style.muted">{{ t('arb.ship') }}</span>
-        <ChipGroup v-model="userData.arbCart.ship" :options="shipChips" />
-      </span>
       <span :class="$style.spacer" />
       <button :class="$style.tertiary" @click="clearCart">{{ t('arb.clearCart') }}</button>
     </div>
