@@ -239,6 +239,7 @@ function time(ms: number) {
           <PriceLadder
             :class="$style.ladder"
             :ticker="r.batch.ticker"
+            traders
             :exchanges="
               r.open.some(x => x.type === 'BUYING') ? [r.batch.from, r.batch.to] : [r.batch.to]
             " />

@@ -1449,6 +1449,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'movers.high': '最高',
   'movers.low': '最低',
   'movers.last': '最新',
+  'cx4.trader': '交易者',
 };
 
 export default zh;

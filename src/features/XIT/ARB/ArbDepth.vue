@@ -6,7 +6,7 @@ import { startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
 
 // The two live order books of a trade, as in XIT CX4. The orders the trade takes are gold; a
 // part-taken order shows taken/amount. For "listed", your offer shows in the offers of the end
-// exchange. Each side keeps two more orders.
+// exchange. The whole books show, with the trader names as in the game's CXOB.
 const { ticker, from, to, mode, capacity, safety } = defineProps<{
   ticker: string;
   from: string;
@@ -82,7 +82,7 @@ const ghost = computed(() => {
       :ticker="ticker"
       :exchanges="[from, to]"
       :takes="takes"
-      :trim="2"
+      :traders
       :ghost="ghost"
       @cxpo="onCxpo" />
   </div>

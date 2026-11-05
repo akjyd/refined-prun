@@ -18,13 +18,23 @@ import link from '@src/infrastructure/prun-ui/css/link.module.css';
 // The order books of the four exchanges side by side. Only the best offers and the best
 // requests are placed by price: the exchange with the higher best offer has it one row higher,
 // and the same for the best requests. The other orders follow without gaps.
-const { ticker, exchanges, takes, trim, ghost } = defineProps<{
+const {
+  ticker,
+  exchanges,
+  takes,
+  trim,
+  ghost,
+  traders = false,
+} = defineProps<{
   ticker: string;
   exchanges: string[];
   // XIT ARB: units a trade takes from each order, by order id. Taken orders are gold.
   takes?: Map<string, number>;
   // XIT ARB: per side, keep the taken orders and this many more; hide the rest.
   trim?: number;
+  // XIT ARB, ARBLOG: the first column shows the trader, as in the game's CXOB, not the daily
+  // profit.
+  traders?: boolean;
   // XIT ARB: the offer you will list, shown in the offers of its exchange.
   ghost?: { exchange: string; price: number; amount: number };
 }>();
@@ -44,6 +54,7 @@ interface Cell {
   profit?: number;
   own: boolean;
   mark?: string;
+  trader?: string;
   taken?: boolean;
   ghost?: boolean;
 }
@@ -108,6 +119,7 @@ const columns = computed(() => {
         amount: partial ? `${fixed0(take)}/${fixed0(order.amount!)}` : amount,
         profit: profitAt(order.limit.amount),
         own: order.trader.id === ownId,
+        trader: order.trader.name,
         change: ownChange(order),
         taken: take > 0,
       };
@@ -200,7 +212,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
       <span v-for="(code, i) in exchanges" :key="code" :class="$style.headCell">
         <span :class="$style.title">
           <span :class="$style.code"
-            >{{ code }} <PlanetPicker :ticker="ticker" :exchange="code"
+            >{{ code }} <PlanetPicker v-if="!traders" :ticker="ticker" :exchange="code"
           /></span>
           <span :class="$style.stock">
             {{ t('cx4.stock') }} {{ stock[i] !== undefined ? fixed0(stock[i]) : '--' }}
@@ -210,7 +222,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
           /></span>
         </span>
         <span :class="$style.columns">
-          <span>{{ t('cxob.profitHead') }}</span>
+          <span>{{ traders ? t('cx4.trader') : t('cxob.profitHead') }}</span>
           <span :class="$style.num">{{ t('cx4.amount') }}</span>
           <span :class="$style.num">{{ t('cx4.price') }}</span>
         </span>
@@ -243,7 +255,8 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
           @dragend="drag.end"
           @drop="drag.drop">
           <template v-if="cell">
-            <span :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
+            <span v-if="traders" :class="$style.trader">{{ cell.ghost ? '' : cell.trader }}</span>
+            <span v-else :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
             <span :class="[$style.num, $style.amount, cell.own ? link.link : undefined]">
               <DeleteExchangeOrderButton
                 v-if="cell.own"
@@ -392,6 +405,12 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 .num {
   text-align: right;
+}
+
+.trader {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .muted {

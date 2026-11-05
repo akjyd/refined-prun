@@ -1528,4 +1528,5 @@ export default {
   'movers.high': 'High',
   'movers.low': 'Low',
   'movers.last': 'Last',
+  'cx4.trader': 'Trader',
 };
