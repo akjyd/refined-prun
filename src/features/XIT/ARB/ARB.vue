@@ -495,8 +495,9 @@ function toggleBlacklistMode() {
   color: var(--rpz-text-weak);
 }
 
+/* A warning is red, not the brand orange (player, 2026-11-05). */
 .warn {
-  color: var(--rpz-warn);
+  color: var(--rpz-neg);
 }
 
 .amount {
