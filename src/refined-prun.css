@@ -8,6 +8,34 @@ html {
   --rp-color-accent-primary: #ffc856;
 }
 
+/* Design system of the zh-cn fork: "RP 中文分叉" (tokens.json in the Design System artifact).
+   New zh-cn windows take every color, space and font size from these variables only.
+   Rules: docs/ui-rules.md. */
+html {
+  --rpz-bg-base: #1e1e1e;
+  --rpz-bg-raised: #252525;
+  --rpz-bg-overlay: #2e2e2e;
+  --rpz-text: #eeeeee;
+  --rpz-text-weak: #8c8c8c;
+  --rpz-text-off: #6a6a6a;
+  --rpz-stroke: #707070;
+  --rpz-stroke-weak: #2c2c2c;
+  --rpz-brand: #f7a600;
+  --rpz-brand-fill: rgba(247, 166, 0, 0.2);
+  --rpz-on-brand: #1e1e1e;
+  --rpz-pos: #5cb85c;
+  --rpz-neg: #d9534f;
+  --rpz-warn: #f0ad4e;
+  --rpz-hover: rgba(255, 255, 255, 0.06);
+  --rpz-press: rgba(255, 255, 255, 0.1);
+  --rpz-space-1: 4px;
+  --rpz-space-2: 8px;
+  --rpz-space-3: 16px;
+  --rpz-fs-label: 11px;
+  --rpz-fs-body: 12px;
+  --rpz-fs-title: 13px;
+}
+
 @font-face {
   font-family: 'Font Awesome 6 Free';
   font-style: normal;
