@@ -39,7 +39,7 @@ function onTileReady(tile: PrunTile, getOwnOrders: GetOwnOrders, orderCommand: s
         e.stopPropagation();
       }
     });
-    if (orderCommand === 'CXOS') {
+    if (orderCommand === 'CXO') {
       // Your own CX orders show the amount left / the amount placed.
       const placed = computed(() => {
         const order = ownOrder.value ? cxosStore.getById(ownOrder.value.id) : undefined;

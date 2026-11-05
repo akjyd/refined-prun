@@ -9,6 +9,7 @@ import { configurableValue } from '@src/features/XIT/ACT/shared-types';
 import {
   computeResupplyBill,
   getExcludedProduction,
+  getWarehouseOnly,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';
 import { watchWhile } from '@src/utils/watch';
 import {
@@ -79,6 +80,7 @@ act.addMaterialGroup<Config>({
       days,
       config.materialFilter,
       getExcludedProduction(planet),
+      getWarehouseOnly(planet),
     );
   },
 });

@@ -70,7 +70,8 @@ act.addAction<Config>({
 
     const noBuy = new Set(userData.settings.noBuy);
     for (const ticker of Object.keys(materials)) {
-      if (noBuy.has(ticker)) {
+      // Warehouse-only materials: the CX warehouse part was taken above; do not buy the rest.
+      if (noBuy.has(ticker) || materials[ticker].warehouseOnly === true) {
         continue;
       }
       const { quantity: amount, price } = materials[ticker];

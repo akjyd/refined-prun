@@ -1,7 +1,11 @@
 // Prices are per unit in the currency of the action's target exchange.
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 
-export type MaterialBill = Record<string, { quantity: number; price?: number }>;
+// With warehouseOnly, take what the CX warehouse has, but do not buy the rest.
+export type MaterialBill = Record<
+  string,
+  { quantity: number; price?: number; warehouseOnly?: boolean }
+>;
 
 export function materialBillFromQuantities(quantities: Record<string, number>): MaterialBill {
   const materials: MaterialBill = {};

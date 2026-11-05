@@ -10,8 +10,9 @@ import {
   getExcludedProduction,
   getProductionOnlyTickers,
   setExcludedProduction,
+  getWarehouseOnly,
+  setWarehouseOnly,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';
-import RadioItem from '@src/components/forms/RadioItem.vue';
 import { maxFittingDays } from '@src/features/XIT/ACT/material-groups/resupply/fit-days';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import {
@@ -77,14 +78,36 @@ const effectiveDays = computed(() => {
 const productionTickers = computed(() => getProductionOnlyTickers(effectivePlanet.value));
 const excluded = computed(() => getExcludedProduction(effectivePlanet.value));
 
-function isPicked(ticker: string) {
-  return !excluded.value.includes(ticker);
+const warehouseOnly = computed(() => getWarehouseOnly(effectivePlanet.value));
+
+// Click order: buy, warehouse, skip, then buy again.
+function modeOf(ticker: string) {
+  if (excluded.value.includes(ticker)) {
+    return 'none';
+  }
+  return warehouseOnly.value.includes(ticker) ? 'warehouse' : 'buy';
 }
 
-function setPicked(ticker: string, picked: boolean) {
-  const rest = excluded.value.filter(x => x !== ticker);
-  setExcludedProduction(effectivePlanet.value, picked ? rest : [...rest, ticker]);
+function nextMode(ticker: string) {
+  const mode = modeOf(ticker);
+  const planet = effectivePlanet.value;
+  const notExcluded = excluded.value.filter(x => x !== ticker);
+  const notWarehouse = warehouseOnly.value.filter(x => x !== ticker);
+  if (mode === 'buy') {
+    setWarehouseOnly(planet, [...notWarehouse, ticker]);
+  } else if (mode === 'warehouse') {
+    setWarehouseOnly(planet, notWarehouse);
+    setExcludedProduction(planet, [...notExcluded, ticker]);
+  } else {
+    setExcludedProduction(planet, notExcluded);
+  }
 }
+
+const modeLabel = {
+  buy: t('act.resupply.modeBuy'),
+  warehouse: t('act.resupply.modeWarehouse'),
+  none: t('act.resupply.modeNone'),
+};
 
 const bill = computed(() =>
   computeResupplyBill(
@@ -93,6 +116,7 @@ const bill = computed(() =>
     effectiveDays.value,
     materialFilter.value,
     excluded.value,
+    warehouseOnly.value,
   ),
 );
 
@@ -160,16 +184,17 @@ const shipName = computed(() => {
   <Active
     v-if="materialFilter !== 'Workforce'"
     :label="t('act.resupply.pick')"
-    :tooltip="t('act.resupply.pickTip')">
+    :tooltip="t('act.resupply.pickTip2')">
     <div v-if="productionTickers.length > 0" :class="$style.pick">
-      <RadioItem
+      <PrunButton
         v-for="ticker in productionTickers"
         :key="ticker"
-        :model-value="isPicked(ticker)"
-        horizontal
-        @update:model-value="v => setPicked(ticker, v)">
-        {{ ticker }}
-      </RadioItem>
+        dark
+        inline
+        :class="$style[`mode_${modeOf(ticker)}`]"
+        @click="nextMode(ticker)">
+        {{ ticker }} · {{ modeLabel[modeOf(ticker)] }}
+      </PrunButton>
     </div>
     <span v-else>{{ t('act.resupply.pickNone') }}</span>
   </Active>
@@ -212,6 +237,15 @@ const shipName = computed(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
+}
+
+.mode_warehouse {
+  color: #f7a600;
+}
+
+.mode_none {
+  opacity: 0.45;
+  text-decoration: line-through;
 }
 
 .value {

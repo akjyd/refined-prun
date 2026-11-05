@@ -1388,4 +1388,11 @@ export default {
   'orders.refresh': 'REFRESH',
   'orders.cxpo': 'CXPO',
   'orders.new': 'new',
+
+  // 新功能 —— 补给原料：仓库有就带走、不买
+  'act.resupply.modeBuy': 'buy',
+  'act.resupply.modeWarehouse': 'warehouse',
+  'act.resupply.modeNone': 'skip',
+  'act.resupply.pickTip2':
+    'Click a material to switch: buy = take from the CX warehouse and buy the rest; warehouse = take only what the CX warehouse has; skip = leave it out. Consumables are always bought. The choice is remembered for each planet.',
 };

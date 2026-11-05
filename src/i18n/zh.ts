@@ -1313,6 +1313,13 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'orders.refresh': '刷新',
   'orders.cxpo': '改价',
   'orders.new': '新',
+
+  // 新功能 —— 补给原料：仓库有就带走、不买
+  'act.resupply.modeBuy': '买',
+  'act.resupply.modeWarehouse': '仓库',
+  'act.resupply.modeNone': '不带',
+  'act.resupply.pickTip2':
+    '点物资切换：买 = 先用交易所仓库的，不够的买；仓库 = 只带走交易所仓库里有的，不买；不带 = 不补这种原料。工人消耗品总是会买。每个星球分别记住。',
 };
 
 export default zh;

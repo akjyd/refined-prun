@@ -17,6 +17,8 @@ export function computeResupplyBill(
   materialFilter?: MaterialFilter,
   // Production-only materials to leave out. Consumables are never left out.
   excluded: string[] = [],
+  // Production-only materials to take from the CX warehouse only, without buying.
+  warehouseOnly: string[] = [],
 ): MaterialBill | undefined {
   if (!planet || days === undefined || isNaN(days)) {
     return undefined;
@@ -64,7 +66,9 @@ export function computeResupplyBill(
     const consumed = days * -matBurn.dailyAmount;
     const need = Math.max(0, Math.ceil(consumed - matBurn.inventory + 1));
     if (need > 0) {
-      bill[ticker] = { quantity: need };
+      bill[ticker] = warehouseOnly.includes(ticker)
+        ? { quantity: need, warehouseOnly: true }
+        : { quantity: need };
     }
   }
   return bill;
@@ -108,5 +112,23 @@ export function setExcludedProduction(planet: string | undefined, tickers: strin
     delete userData.settings.burn.resupplyExcluded[key];
   } else {
     userData.settings.burn.resupplyExcluded[key] = tickers;
+  }
+}
+
+// Remembered "take from the warehouse, do not buy" production materials, per planet natural id.
+export function getWarehouseOnly(planet: string | undefined): string[] {
+  const key = planet ? getPlanetKey(planet) : undefined;
+  return key ? (userData.settings.burn.resupplyWarehouseOnly[key] ?? []) : [];
+}
+
+export function setWarehouseOnly(planet: string | undefined, tickers: string[]) {
+  const key = planet ? getPlanetKey(planet) : undefined;
+  if (!key) {
+    return;
+  }
+  if (tickers.length === 0) {
+    delete userData.settings.burn.resupplyWarehouseOnly[key];
+  } else {
+    userData.settings.burn.resupplyWarehouseOnly[key] = tickers;
   }
 }
