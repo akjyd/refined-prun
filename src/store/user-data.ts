@@ -33,6 +33,7 @@ export const initialUserData = deepFreeze({
       // Planet natural id -> production materials the player unticked in ACT resupply.
       resupplyExcluded: {} as Record<string, string[]>,
       resupplyWarehouseOnly: {} as Record<string, string[]>,
+      resupplyWarehouseCx: {} as Record<string, string | undefined>,
     },
     flow: {
       overrides: {} as Record<string, UserData.PriceOverride>,

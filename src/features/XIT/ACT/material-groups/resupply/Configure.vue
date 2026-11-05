@@ -12,6 +12,9 @@ import {
   setExcludedProduction,
   getWarehouseOnly,
   setWarehouseOnly,
+  getWarehouseExchange,
+  setWarehouseExchange,
+  cxWarehouseStock,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';
 import { maxFittingDays } from '@src/features/XIT/ACT/material-groups/resupply/fit-days';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
@@ -103,6 +106,15 @@ function nextMode(ticker: string) {
   }
 }
 
+// The CX warehouse of the warehouse-only materials; its stock limits their amounts, so the
+// totals and FIT use what is really there.
+const exchanges = ['AI1', 'CI1', 'IC1', 'NC1'];
+const warehouseExchange = computed({
+  get: () => getWarehouseExchange(effectivePlanet.value) ?? 'AI1',
+  set: value => setWarehouseExchange(effectivePlanet.value, value),
+});
+const warehouseStock = computed(() => cxWarehouseStock(warehouseExchange.value));
+
 const modeLabel = {
   buy: t('act.resupply.modeBuy'),
   warehouse: t('act.resupply.modeWarehouse'),
@@ -117,6 +129,7 @@ const bill = computed(() =>
     materialFilter.value,
     excluded.value,
     warehouseOnly.value,
+    warehouseStock.value,
   ),
 );
 
@@ -139,7 +152,15 @@ function fitToShip(maxWeight: number, maxVolume: number) {
     return;
   }
   config.days = maxFittingDays(days => {
-    const entries = computeResupplyBill(data, planet, days, materialFilter.value, excluded.value)!;
+    const entries = computeResupplyBill(
+      data,
+      planet,
+      days,
+      materialFilter.value,
+      excluded.value,
+      warehouseOnly.value,
+      warehouseStock.value,
+    )!;
     const t = billTotals(entries);
     return t.weight <= maxWeight && t.volume <= maxVolume;
   });
@@ -197,6 +218,9 @@ const shipName = computed(() => {
       </PrunButton>
     </div>
     <span v-else>{{ t('act.resupply.pickNone') }}</span>
+  </Active>
+  <Active v-if="warehouseOnly.length > 0" :label="t('act.resupply.warehouseCx')">
+    <SelectInput v-model="warehouseExchange" :options="exchanges" />
   </Active>
   <div :class="$style.totals">
     <template v-if="totals">

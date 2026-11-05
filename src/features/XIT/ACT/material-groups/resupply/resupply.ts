@@ -10,6 +10,8 @@ import {
   computeResupplyBill,
   getExcludedProduction,
   getWarehouseOnly,
+  getWarehouseExchange,
+  cxWarehouseStock,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';
 import { watchWhile } from '@src/utils/watch';
 import {
@@ -81,6 +83,7 @@ act.addMaterialGroup<Config>({
       config.materialFilter,
       getExcludedProduction(planet),
       getWarehouseOnly(planet),
+      cxWarehouseStock(getWarehouseExchange(planet)),
     );
   },
 });

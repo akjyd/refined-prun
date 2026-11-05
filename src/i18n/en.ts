@@ -1395,4 +1395,5 @@ export default {
   'act.resupply.modeNone': 'skip',
   'act.resupply.pickTip2':
     'Click a material to switch: buy = take from the CX warehouse and buy the rest; warehouse = take only what the CX warehouse has; skip = leave it out. Consumables are always bought. The choice is remembered for each planet.',
+  'act.resupply.warehouseCx': 'Warehouse at',
 };

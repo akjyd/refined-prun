@@ -24,6 +24,7 @@ const migrations: MigrationEntry[] = [
     '05.11.2026 Add resupply warehouse-only materials',
     userData => {
       userData.settings.burn.resupplyWarehouseOnly ??= {};
+      userData.settings.burn.resupplyWarehouseCx ??= {};
     },
   ],
   [

@@ -12,16 +12,22 @@ E('act.resupply.pickTip2', 'Click a material to switch: buy = take from the CX w
 R(RS, """  getExcludedProduction,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';""", """  getExcludedProduction,
   getWarehouseOnly,
+  getWarehouseExchange,
+  cxWarehouseStock,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';""")
 R(RS, """      getExcludedProduction(planet),
     );""", """      getExcludedProduction(planet),
       getWarehouseOnly(planet),
+      cxWarehouseStock(getWarehouseExchange(planet)),
     );""")
 
 R(CF, """  setExcludedProduction,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';""", """  setExcludedProduction,
   getWarehouseOnly,
   setWarehouseOnly,
+  getWarehouseExchange,
+  setWarehouseExchange,
+  cxWarehouseStock,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';""")
 R(CF, """function isPicked(ticker: string) {
   return !excluded.value.includes(ticker);
@@ -55,6 +61,15 @@ function nextMode(ticker: string) {
   }
 }
 
+// The CX warehouse of the warehouse-only materials; its stock limits their amounts, so the
+// totals and FIT use what is really there.
+const exchanges = ['AI1', 'CI1', 'IC1', 'NC1'];
+const warehouseExchange = computed({
+  get: () => getWarehouseExchange(effectivePlanet.value) ?? 'AI1',
+  set: value => setWarehouseExchange(effectivePlanet.value, value),
+});
+const warehouseStock = computed(() => cxWarehouseStock(warehouseExchange.value));
+
 const modeLabel = {
   buy: t('act.resupply.modeBuy'),
   warehouse: t('act.resupply.modeWarehouse'),
@@ -66,6 +81,7 @@ R(CF, """    materialFilter.value,
 );""", """    materialFilter.value,
     excluded.value,
     warehouseOnly.value,
+    warehouseStock.value,
   ),
 );""")
 R(CF, """:tooltip="t('act.resupply.pickTip')">""", """:tooltip="t('act.resupply.pickTip2')">""")
@@ -114,3 +130,11 @@ R(CB, """    for (const ticker of Object.keys(materials)) {
       }""")
 R(CF, """import RadioItem from '@src/components/forms/RadioItem.vue';
 """, "")
+E('act.resupply.warehouseCx', 'Warehouse at', '仓库所在市场')
+R(CF, "    const entries = computeResupplyBill(data, planet, days, materialFilter.value, excluded.value)!;", "    const entries = computeResupplyBill(\n      data,\n      planet,\n      days,\n      materialFilter.value,\n      excluded.value,\n      warehouseOnly.value,\n      warehouseStock.value,\n    )!;")
+R(CF, """    <span v-else>{{ t('act.resupply.pickNone') }}</span>
+  </Active>""", """    <span v-else>{{ t('act.resupply.pickNone') }}</span>
+  </Active>
+  <Active v-if="warehouseOnly.length > 0" :label="t('act.resupply.warehouseCx')">
+    <SelectInput v-model="warehouseExchange" :options="exchanges" />
+  </Active>""")
