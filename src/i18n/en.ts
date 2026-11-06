@@ -813,6 +813,8 @@ export default {
   'feature.always-visible-tile-controls': 'Makes top-right tile controls always visible.',
   'feature.arb-batch-tracker':
     'XIT ARB: Records each buy placed from XIT ARB as an arbitrage batch and follows its sales.',
+  'feature.arb-watch':
+    'XIT ARBLOG: Records good arbitrage chances without buying and checks later whether they would have made money.',
   'feature.audio-volume-slider':
     'Adds a volume slider to the game settings in the top-right corner of the screen.',
   'feature.auto-resize-buffers': 'Automatically resizes the buffer size on command change.',
@@ -1567,4 +1569,21 @@ export default {
   'arblog.placeAll': 'PLACE {0} ORDERS',
   'arblog.placed': '{0}: {1} at {2}',
   'arblog.placeFailed': '{0}: failed: {1}',
+  'arblog.watch': 'Watched',
+  'arblog.byTrade': 'By trade',
+  'arblog.records': 'Records',
+  'arblog.watchSummary': '{0} recorded, {1} checked, {2} profitable ·',
+  'arblog.estimate': 'Estimate',
+  'arblog.checkNow': 'Check now',
+  'arblog.watchNone':
+    'No checked records yet. Chances are recorded when FIO books load and checked after the flight (to list: after 3 more days).',
+  'arblog.hitRate': 'Profitable',
+  'arblog.estimateProfit': 'Estimated profit',
+  'arblog.recordedAt': 'Recorded',
+  'arblog.sellable': 'Sellable',
+  'arblog.watchChecked': 'Checked',
+  'arblog.watchDue': 'Checking',
+  'arblog.watchWait': 'In {0}h',
+  'arblog.watchStale': 'FIO book older than the arrival',
+  'arblog.watchNoData': 'No daily data',
 };

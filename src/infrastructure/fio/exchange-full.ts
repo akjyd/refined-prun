@@ -34,6 +34,28 @@ function levels(orders: FioOrder[] | null | undefined): BookLevel[] {
   return (orders ?? []).map(x => ({ price: x.ItemCost, amount: x.ItemCount ?? undefined }));
 }
 
+function toBook(x: FioBook): OrderBookData {
+  const time = x.Timestamp ? Date.parse(x.Timestamp) : NaN;
+  return {
+    asks: levels(x.SellingOrders),
+    bids: levels(x.BuyingOrders),
+    time: Number.isFinite(time) ? time : undefined,
+  };
+}
+
+// One book from FIO /exchange/{TICKER.CX}, fresh (not the cached full list).
+export async function loadFioBook(cxTicker: string): Promise<OrderBookData | undefined> {
+  try {
+    const response = await fetch(`https://rest.fnar.net/exchange/${cxTicker}`);
+    if (response.status !== 200) {
+      return undefined;
+    }
+    return toBook((await response.json()) as FioBook);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function loadFioBooks() {
   if (fioBooks.loading) {
     return;
@@ -48,12 +70,7 @@ export async function loadFioBooks() {
     const list = (await response.json()) as FioBook[];
     const books = new Map<string, OrderBookData>();
     for (const x of list) {
-      const time = x.Timestamp ? Date.parse(x.Timestamp) : NaN;
-      books.set(`${x.MaterialTicker}.${x.ExchangeCode}`, {
-        asks: levels(x.SellingOrders),
-        bids: levels(x.BuyingOrders),
-        time: Number.isFinite(time) ? time : undefined,
-      });
+      books.set(`${x.MaterialTicker}.${x.ExchangeCode}`, toBook(x));
     }
     fioBooks.books = books;
     fioBooks.loadedAt = Date.now();

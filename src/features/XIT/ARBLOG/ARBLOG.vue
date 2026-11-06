@@ -6,6 +6,7 @@ import PriceLadder from '@src/features/XIT/CX4/PriceLadder.vue';
 import BatchOrders from '@src/features/XIT/ARBLOG/BatchOrders.vue';
 import BatchPlan from '@src/features/XIT/ARBLOG/BatchPlan.vue';
 import TripSell from '@src/features/XIT/ARBLOG/TripSell.vue';
+import WatchList from '@src/features/XIT/ARBLOG/WatchList.vue';
 import {
   ArbBatch,
   bought,
@@ -27,12 +28,13 @@ import { t } from '@src/i18n';
 
 const $style = useCssModule();
 
-type Filter = 'all' | 'open' | 'done';
+type Filter = 'all' | 'open' | 'done' | 'watch';
 const filter = ref<Filter>('all');
 const filterChips = computed(() => [
   { value: 'all' as const, label: t('arblog.all') },
   { value: 'open' as const, label: t('arblog.open') },
   { value: 'done' as const, label: t('arblog.done') },
+  { value: 'watch' as const, label: t('arblog.watch') },
 ]);
 
 // Open orders of a batch: its buy orders not filled yet, and (method A) every open sell order of
@@ -170,7 +172,7 @@ function time(ms: number) {
     <div :class="$style.bar">
       <ChipGroup v-model="filter" :options="filterChips" />
       <span :class="$style.spacer" />
-      <span :class="$style.muted">
+      <span v-if="filter !== 'watch'" :class="$style.muted">
         {{ t('arblog.summary', summary.count) }}
         {{ formatProfit(summary.plan) }} ·
         {{ t('arblog.actual') }}
@@ -179,140 +181,146 @@ function time(ms: number) {
         }}</span>
       </span>
     </div>
-    <p v-if="rows.length === 0" :class="$style.muted">{{ t('arblog.none') }}</p>
-    <div v-else :class="[$style.row, $style.head]">
-      <span>{{ t('arb.material') }}</span>
-      <span>{{ t('arb.route') }}</span>
-      <span>{{ t('arblog.status') }}</span>
-      <span>{{ t('arblog.progress') }}</span>
-      <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
-      <span :class="$style.num">{{ t('arblog.actualProfit') }}</span>
-      <span :class="$style.num">{{ t('arb.return') }}</span>
-      <span :class="$style.num">{{ t('arblog.days') }}</span>
-      <span :class="$style.num">{{ t('arblog.boughtAt') }}</span>
-    </div>
-    <template v-for="trip in trips" :key="trip.id">
-      <div :class="$style.trip">
-        <span
-          ><b>{{ t('arblog.trip') }}</b> {{ time(trip.first.createdAt) }} · {{ trip.first.from }} →
-          {{ trip.first.to }}
-          <span v-if="trip.first.ship" :class="$style.muted">· {{ trip.first.ship }}</span>
-          <span :class="$style.muted">· {{ t('arblog.batchCount', trip.rows.length) }}</span></span
-        >
-        <span :class="$style.spacer" />
-        <span :class="$style.muted"
-          >{{ t('arblog.plan') }} {{ formatProfit(trip.plan) }} · {{ t('arblog.actual') }}</span
-        >
-        <span :class="trip.actual >= 0 ? C.ColoredValue.positive : C.ColoredValue.negative">{{
-          formatProfit(trip.actual)
-        }}</span>
-        <button
-          v-if="trip.sellable && selling !== trip.id"
-          :class="$style.secondary"
-          @click="selling = trip.id">
-          {{ t('arblog.sellTrip') }}
-        </button>
+    <WatchList v-if="filter === 'watch'" />
+    <template v-else>
+      <p v-if="rows.length === 0" :class="$style.muted">{{ t('arblog.none') }}</p>
+      <div v-else :class="[$style.row, $style.head]">
+        <span>{{ t('arb.material') }}</span>
+        <span>{{ t('arb.route') }}</span>
+        <span>{{ t('arblog.status') }}</span>
+        <span>{{ t('arblog.progress') }}</span>
+        <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
+        <span :class="$style.num">{{ t('arblog.actualProfit') }}</span>
+        <span :class="$style.num">{{ t('arb.return') }}</span>
+        <span :class="$style.num">{{ t('arblog.days') }}</span>
+        <span :class="$style.num">{{ t('arblog.boughtAt') }}</span>
       </div>
-      <TripSell
-        v-if="selling === trip.id"
-        :batches="trip.rows.map(x => x.batch)"
-        @close="selling = undefined" />
-      <template v-for="r in trip.rows" :key="r.batch.id">
-        <div
-          :class="[$style.row, $style.data, opened === r.batch.id ? $style.opened : undefined]"
-          @click="toggle(r.batch.id)">
-          <span :class="$style.icon" @click.stop
-            ><MaterialIcon size="inline-table" :ticker="r.batch.ticker"
-          /></span>
-          <span>{{ r.batch.from }} <span :class="$style.muted">→</span> {{ r.batch.to }}</span>
-          <span :class="r.state === 'done' ? $style.muted : undefined">
-            {{ stateLabel(r.state) }}
-            <span v-if="r.state !== 'done' && beaten(r.batch)" :class="$style.dot" />
-          </span>
-          <span>
-            <span :class="$style.progressText"
-              >{{ fixed0(r.soldUnits) }} / {{ fixed0(r.units) }}</span
-            >
-            <span :class="$style.progress"
-              ><i :style="{ width: `${r.units > 0 ? (r.soldUnits / r.units) * 100 : 0}%` }"
-            /></span>
-          </span>
-          <span :class="$style.num">{{ formatProfit(r.batch.plan.profit) }}</span>
+      <template v-for="trip in trips" :key="trip.id">
+        <div :class="$style.trip">
           <span
-            :class="[
-              $style.num,
-              r.profit === undefined
-                ? $style.muted
-                : r.profit >= 0
-                  ? C.ColoredValue.positive
-                  : C.ColoredValue.negative,
-            ]"
-            >{{ r.profit !== undefined ? formatProfit(r.profit) : '--' }}</span
+            ><b>{{ t('arblog.trip') }}</b> {{ time(trip.first.createdAt) }} ·
+            {{ trip.first.from }} →
+            {{ trip.first.to }}
+            <span v-if="trip.first.ship" :class="$style.muted">· {{ trip.first.ship }}</span>
+            <span :class="$style.muted"
+              >· {{ t('arblog.batchCount', trip.rows.length) }}</span
+            ></span
           >
-          <span :class="$style.num">{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
-          <span :class="$style.num">{{ t('arblog.dayCount', r.days) }}</span>
-          <span :class="[$style.num, $style.muted]">{{ time(r.batch.createdAt) }}</span>
+          <span :class="$style.spacer" />
+          <span :class="$style.muted"
+            >{{ t('arblog.plan') }} {{ formatProfit(trip.plan) }} · {{ t('arblog.actual') }}</span
+          >
+          <span :class="trip.actual >= 0 ? C.ColoredValue.positive : C.ColoredValue.negative">{{
+            formatProfit(trip.actual)
+          }}</span>
+          <button
+            v-if="trip.sellable && selling !== trip.id"
+            :class="$style.secondary"
+            @click="selling = trip.id">
+            {{ t('arblog.sellTrip') }}
+          </button>
         </div>
-        <div v-if="opened === r.batch.id" :class="$style.detail">
-          <div :class="$style.columns">
-            <div>
-              <div :class="$style.title">{{ t('arblog.planVsActual') }}</div>
-              <div :class="$style.compare">
-                <span />
-                <span :class="$style.muted">{{ t('arblog.plan') }}</span>
-                <span :class="$style.muted">{{ t('arblog.actual') }}</span>
-                <span :class="$style.muted">{{ t('arblog.units') }}</span>
-                <span>{{ fixed0(r.batch.plan.units) }}</span>
-                <span>{{ fixed0(r.units) }}</span>
-                <span :class="$style.muted">{{ t('arblog.avgBuy') }}</span>
-                <span>{{ avg(r.batch.plan.cost, r.batch.plan.units) }}</span>
-                <span>{{ avg(buyCost(r.batch), r.units) }}</span>
-                <span :class="$style.muted">{{ t('arblog.avgSell') }}</span>
-                <span>{{ fixed02(r.batch.plan.sellPrice) }}</span>
-                <span>{{ avg(revenue(r.batch), r.soldUnits) }}</span>
-                <span :class="$style.muted">{{ t('arb.return') }}</span>
-                <span>{{ percent1(r.batch.plan.return) }}</span>
-                <span>{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
-                <span :class="$style.muted">{{ t('arb.safety') }}</span>
-                <span>{{
-                  r.batch.plan.safety !== undefined ? fixed01(r.batch.plan.safety) : '--'
-                }}</span>
-                <span />
+        <TripSell
+          v-if="selling === trip.id"
+          :batches="trip.rows.map(x => x.batch)"
+          @close="selling = undefined" />
+        <template v-for="r in trip.rows" :key="r.batch.id">
+          <div
+            :class="[$style.row, $style.data, opened === r.batch.id ? $style.opened : undefined]"
+            @click="toggle(r.batch.id)">
+            <span :class="$style.icon" @click.stop
+              ><MaterialIcon size="inline-table" :ticker="r.batch.ticker"
+            /></span>
+            <span>{{ r.batch.from }} <span :class="$style.muted">→</span> {{ r.batch.to }}</span>
+            <span :class="r.state === 'done' ? $style.muted : undefined">
+              {{ stateLabel(r.state) }}
+              <span v-if="r.state !== 'done' && beaten(r.batch)" :class="$style.dot" />
+            </span>
+            <span>
+              <span :class="$style.progressText"
+                >{{ fixed0(r.soldUnits) }} / {{ fixed0(r.units) }}</span
+              >
+              <span :class="$style.progress"
+                ><i :style="{ width: `${r.units > 0 ? (r.soldUnits / r.units) * 100 : 0}%` }"
+              /></span>
+            </span>
+            <span :class="$style.num">{{ formatProfit(r.batch.plan.profit) }}</span>
+            <span
+              :class="[
+                $style.num,
+                r.profit === undefined
+                  ? $style.muted
+                  : r.profit >= 0
+                    ? C.ColoredValue.positive
+                    : C.ColoredValue.negative,
+              ]"
+              >{{ r.profit !== undefined ? formatProfit(r.profit) : '--' }}</span
+            >
+            <span :class="$style.num">{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
+            <span :class="$style.num">{{ t('arblog.dayCount', r.days) }}</span>
+            <span :class="[$style.num, $style.muted]">{{ time(r.batch.createdAt) }}</span>
+          </div>
+          <div v-if="opened === r.batch.id" :class="$style.detail">
+            <div :class="$style.columns">
+              <div>
+                <div :class="$style.title">{{ t('arblog.planVsActual') }}</div>
+                <div :class="$style.compare">
+                  <span />
+                  <span :class="$style.muted">{{ t('arblog.plan') }}</span>
+                  <span :class="$style.muted">{{ t('arblog.actual') }}</span>
+                  <span :class="$style.muted">{{ t('arblog.units') }}</span>
+                  <span>{{ fixed0(r.batch.plan.units) }}</span>
+                  <span>{{ fixed0(r.units) }}</span>
+                  <span :class="$style.muted">{{ t('arblog.avgBuy') }}</span>
+                  <span>{{ avg(r.batch.plan.cost, r.batch.plan.units) }}</span>
+                  <span>{{ avg(buyCost(r.batch), r.units) }}</span>
+                  <span :class="$style.muted">{{ t('arblog.avgSell') }}</span>
+                  <span>{{ fixed02(r.batch.plan.sellPrice) }}</span>
+                  <span>{{ avg(revenue(r.batch), r.soldUnits) }}</span>
+                  <span :class="$style.muted">{{ t('arb.return') }}</span>
+                  <span>{{ percent1(r.batch.plan.return) }}</span>
+                  <span>{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
+                  <span :class="$style.muted">{{ t('arb.safety') }}</span>
+                  <span>{{
+                    r.batch.plan.safety !== undefined ? fixed01(r.batch.plan.safety) : '--'
+                  }}</span>
+                  <span />
+                </div>
+              </div>
+              <div>
+                <div :class="$style.title">{{ t('arblog.trades') }}</div>
+                <div v-for="(x, i) in r.batch.trades" :key="i" :class="$style.trade">
+                  <span :class="$style.muted">{{ time(x.time) }}</span>
+                  <span
+                    >{{ x.side === 'buy' ? r.batch.from : r.batch.to }}
+                    {{ x.side === 'buy' ? t('arblog.buy') : t('arblog.sell') }}</span
+                  >
+                  <span :class="$style.num">{{ fixed0(x.amount) }}</span>
+                  <span :class="$style.num">{{ fixed02(x.price) }}</span>
+                </div>
               </div>
             </div>
-            <div>
-              <div :class="$style.title">{{ t('arblog.trades') }}</div>
-              <div v-for="(x, i) in r.batch.trades" :key="i" :class="$style.trade">
-                <span :class="$style.muted">{{ time(x.time) }}</span>
-                <span
-                  >{{ x.side === 'buy' ? r.batch.from : r.batch.to }}
-                  {{ x.side === 'buy' ? t('arblog.buy') : t('arblog.sell') }}</span
-                >
-                <span :class="$style.num">{{ fixed0(x.amount) }}</span>
-                <span :class="$style.num">{{ fixed02(x.price) }}</span>
-              </div>
+            <div :class="$style.title">{{ t('arblog.snapshot') }}</div>
+            <BatchPlan :batch="r.batch" />
+            <template v-if="r.open.length > 0">
+              <div :class="$style.title">{{ t('arblog.orders') }}</div>
+              <BatchOrders :batch="r.batch" :orders="r.open" />
+              <PriceLadder
+                :class="$style.ladder"
+                :ticker="r.batch.ticker"
+                traders
+                :height="300"
+                :exchanges="
+                  r.open.some(x => x.type === 'BUYING') ? [r.batch.from, r.batch.to] : [r.batch.to]
+                " />
+            </template>
+            <div :class="$style.footer">
+              <button :class="$style.tertiary" @click="remove(r.batch.id)">
+                {{ t('arblog.remove') }}
+              </button>
             </div>
           </div>
-          <div :class="$style.title">{{ t('arblog.snapshot') }}</div>
-          <BatchPlan :batch="r.batch" />
-          <template v-if="r.open.length > 0">
-            <div :class="$style.title">{{ t('arblog.orders') }}</div>
-            <BatchOrders :batch="r.batch" :orders="r.open" />
-            <PriceLadder
-              :class="$style.ladder"
-              :ticker="r.batch.ticker"
-              traders
-              :height="300"
-              :exchanges="
-                r.open.some(x => x.type === 'BUYING') ? [r.batch.from, r.batch.to] : [r.batch.to]
-              " />
-          </template>
-          <div :class="$style.footer">
-            <button :class="$style.tertiary" @click="remove(r.batch.id)">
-              {{ t('arblog.remove') }}
-            </button>
-          </div>
-        </div>
+        </template>
       </template>
     </template>
   </div>

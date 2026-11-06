@@ -787,6 +787,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.always-visible-tile-controls': '窗口右上角的按钮始终显示（不用鼠标移上去）。',
   'feature.arb-batch-tracker':
     'XIT ARB：从 XIT ARB 下的买单自动记成倒货批次，并跟踪它之后的卖出（XIT ARBLOG）。',
+  'feature.arb-watch': 'XIT ARBLOG：自动记录好的倒货机会（不买），之后估算如果真做了能不能赚钱。',
   'feature.audio-volume-slider': '在右上角的游戏设置里加音量滑块。',
   'feature.auto-resize-buffers': '切换命令时自动调整窗口大小。',
   'feature.bbc-building-count': 'BBC：在建筑图标上显示数量。',
@@ -1488,6 +1489,23 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arblog.placeAll': '下 {0} 张单',
   'arblog.placed': '{0}：{1} 个，价格 {2}',
   'arblog.placeFailed': '{0}：失败：{1}',
+  'arblog.watch': '模拟',
+  'arblog.byTrade': '按交易',
+  'arblog.records': '逐条',
+  'arblog.watchSummary': '已记录 {0} 条，已核对 {1} 条，有利润 {2} 条 ·',
+  'arblog.estimate': '估计',
+  'arblog.checkNow': '立即核对',
+  'arblog.watchNone':
+    '还没有已核对的记录。FIO 订单簿读取时自动记录机会，飞行时间过后核对（挂单再加 3 天）。',
+  'arblog.hitRate': '有利润',
+  'arblog.estimateProfit': '估计利润',
+  'arblog.recordedAt': '记录时间',
+  'arblog.sellable': '可卖出',
+  'arblog.watchChecked': '已核对',
+  'arblog.watchDue': '待核对',
+  'arblog.watchWait': '{0} 小时后',
+  'arblog.watchStale': 'FIO 订单簿早于到达时间',
+  'arblog.watchNoData': '没有日线数据',
 };
 
 export default zh;
