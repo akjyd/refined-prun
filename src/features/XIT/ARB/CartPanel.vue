@@ -151,7 +151,7 @@ async function buyAll() {
         <span :class="$style.num">{{ t('arb.profit') }}</span>
         <span />
       </div>
-      <div v-for="(line, i) in cartLines" :key="line.item.ticker" :class="$style.item">
+      <div v-for="(line, i) in cartLines" :key="line.item.ticker" :class="['rpz-row', $style.item]">
         <span :class="$style.icon"
           ><MaterialIcon size="inline-table" :ticker="line.item.ticker"
         /></span>
@@ -212,7 +212,7 @@ async function buyAll() {
         <span :class="$style.num">{{ t('arb.limit') }}</span>
         <span :class="$style.num">{{ t('arb.amountTotal') }}</span>
       </div>
-      <div v-for="o in orders" :key="o.line.item.ticker" :class="$style.order">
+      <div v-for="o in orders" :key="o.line.item.ticker" :class="['rpz-row', $style.order]">
         <span :class="$style.icon"
           ><MaterialIcon size="inline-table" :ticker="o.line.item.ticker"
         /></span>

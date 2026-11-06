@@ -277,7 +277,11 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
             <span>{{ t('cx4.bids') }} ▼</span>
           </span>
         </div>
-        <div v-for="(row, k) in rows" :key="k" :class="$style.row" :style="columnsStyle">
+        <div
+          v-for="(row, k) in rows"
+          :key="k"
+          :class="['rpz-row', $style.row]"
+          :style="columnsStyle">
           <span
             v-for="(cell, i) in row"
             :key="i"

@@ -114,7 +114,7 @@ function profitClass(value: number | undefined) {
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
         <span :class="$style.num">{{ t('arblog.estimateProfit') }}</span>
       </div>
-      <div v-for="g in groups" :key="g.key" :class="$style.group">
+      <div v-for="g in groups" :key="g.key" :class="['rpz-row', $style.group]">
         <span :class="$style.icon"
           ><MaterialIcon size="inline-table" :ticker="g.first.ticker"
         /></span>
@@ -144,7 +144,7 @@ function profitClass(value: number | undefined) {
         <span :class="$style.num">{{ t('arblog.estimateProfit') }}</span>
         <span />
       </div>
-      <div v-for="r in records" :key="r.id" :class="$style.record">
+      <div v-for="r in records" :key="r.id" :class="['rpz-row', $style.record]">
         <span :class="$style.muted">{{ time(r.at) }}</span>
         <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="r.ticker" /></span>
         <span>{{ cxLabel(r.from) }} <span :class="$style.muted">→</span> {{ cxLabel(r.to) }}</span>

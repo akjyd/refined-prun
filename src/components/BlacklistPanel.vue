@@ -31,7 +31,7 @@ const groups = computed(() =>
 
 <template>
   <div :class="$style.panel">
-    <div v-for="g in groups" :key="g.id" :class="$style.line">
+    <div v-for="g in groups" :key="g.id" :class="['rpz-row', $style.line]">
       <span :class="$style.reason">{{ g.label }}</span>
       <span :class="$style.items">
         <span v-for="ticker in g.tickers" :key="ticker" :class="$style.item">

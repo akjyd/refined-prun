@@ -107,7 +107,7 @@ function recipeText(recipe: Recipe) {
       <span :class="$style.num">{{ t('recipes.price') }}</span>
       <span :class="$style.num">{{ t('recipes.profit') }}</span>
     </div>
-    <div v-for="m in materials" :key="m.ticker" :class="$style.material">
+    <div v-for="m in materials" :key="m.ticker" :class="['rpz-row', $style.material]">
       <div :class="[$style.row, $style.clickable]" @click="toggle(m.ticker)">
         <span :class="$style.icon" @click.stop
           ><MaterialIcon size="inline-table" :ticker="m.ticker"

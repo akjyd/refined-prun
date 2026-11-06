@@ -236,7 +236,7 @@ async function run() {
     <div
       v-for="line in lines"
       :key="line.key"
-      :class="[$style.line, line.ok ? $style.pickable : $style.off]"
+      :class="['rpz-row', $style.line, line.ok ? $style.pickable : $style.off]"
       @click="toggle(line)">
       <span :class="[$style.box, picked.has(line.key) && line.ok ? $style.on : undefined]" />
       <span :class="$style.icon"

@@ -174,7 +174,7 @@ function sparkline(key: string) {
     </div>
     <template v-for="r in rows" :key="r.key">
       <div
-        :class="[$style.row, $style.data, open === r.key ? $style.opened : undefined]"
+        :class="['rpz-row', $style.row, $style.data, open === r.key ? $style.opened : undefined]"
         @click="toggle(r.key)">
         <span :class="$style.icon" @click.stop
           ><MaterialIcon size="inline-table" :ticker="r.ticker"

@@ -179,6 +179,7 @@ watch(
           :draggable="r.own && !r.gone"
           :data-price="drag.newPrice.value !== undefined ? fixed02(drag.newPrice.value) : ''"
           :class="[
+            'rpz-row',
             $style.row,
             r.own ? $style.own : undefined,
             !r.gone && r.change !== undefined ? $style.changed : undefined,

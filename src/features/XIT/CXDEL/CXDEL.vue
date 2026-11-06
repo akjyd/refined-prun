@@ -67,7 +67,7 @@ const records = computed(() => [...cxDeletions.value].reverse().slice(0, 200));
         <span>{{ t('cxdel.most') }}</span>
         <span :class="$style.num">{{ t('cxdel.value') }}</span>
       </div>
-      <div v-for="d in days" :key="d.day" :class="$style.day">
+      <div v-for="d in days" :key="d.day" :class="['rpz-row', $style.day]">
         <span>{{ d.day }}</span>
         <span :class="$style.num">{{ d.count }}</span>
         <span :class="$style.num">{{ d.materials }}</span>
@@ -87,7 +87,7 @@ const records = computed(() => [...cxDeletions.value].reverse().slice(0, 200));
         <span :class="$style.num">{{ t('cx4.price') }}</span>
         <span />
       </div>
-      <div v-for="r in records" :key="`${r.orderId}${r.at}`" :class="$style.record">
+      <div v-for="r in records" :key="`${r.orderId}${r.at}`" :class="['rpz-row', $style.record]">
         <span :class="$style.muted">{{ dayjs(r.at).format('MM-DD HH:mm') }}</span>
         <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="r.ticker" /></span>
         <span>{{ cxLabel(r.exchange) }}</span>

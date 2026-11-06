@@ -342,7 +342,7 @@ function cogcName(cogc: string) {
         >{{ t('extract.headProfit') }}{{ arrow('profit') }}</span
       >
     </div>
-    <div v-for="r in sorted" :key="r.ticker" :class="$style.resource">
+    <div v-for="r in sorted" :key="r.ticker" :class="['rpz-row', $style.resource]">
       <div :class="[$style.top, $style.clickable]" @click="toggle(r.ticker)">
         <span :class="$style.resourceName">
           <span :class="$style.arrow">{{ isOpen(r.ticker) ? '▾' : '▸' }}</span>

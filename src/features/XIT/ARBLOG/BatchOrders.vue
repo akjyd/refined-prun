@@ -64,7 +64,7 @@ async function chase(event: MouseEvent, line: (typeof lines.value)[number]) {
       <span :class="$style.num">{{ t('arblog.othersBest') }}</span>
       <span />
     </div>
-    <div v-for="l in lines" :key="l.order.id" :class="$style.line">
+    <div v-for="l in lines" :key="l.order.id" :class="['rpz-row', $style.line]">
       <span>
         {{ cxLabel(l.order.exchange.code) }}
         {{ l.order.type === 'SELLING' ? t('arblog.sell') : t('arblog.buy') }}

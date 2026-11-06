@@ -364,6 +364,7 @@ function toggleBlacklistMode() {
     <template v-for="r in rows" :key="r.key">
       <div
         :class="[
+          'rpz-row',
           $style.row,
           $style.data,
           open === r.key ? $style.opened : undefined,

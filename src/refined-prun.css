@@ -28,6 +28,7 @@ html {
   --rpz-warn: #f0ad4e;
   --rpz-hover: rgba(255, 255, 255, 0.06);
   --rpz-press: rgba(255, 255, 255, 0.1);
+  --rpz-zebra: rgba(255, 255, 255, 0.035);
   --rpz-space-1: 4px;
   --rpz-space-2: 8px;
   --rpz-space-3: 16px;
@@ -50,4 +51,10 @@ html {
   font-weight: 400;
   font-display: block;
   src: url('./assets/fa-regular-400.woff2') format('woff2');
+}
+
+/* Zebra stripes for the tables of the zh-cn windows: every second row with the class rpz-row
+   among its siblings. Zero specificity, so hover, selected and order states win. */
+:where(.rpz-row:nth-child(even of .rpz-row)) {
+  background-color: var(--rpz-zebra);
 }

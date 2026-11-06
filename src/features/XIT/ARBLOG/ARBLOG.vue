@@ -263,7 +263,12 @@ function time(ms: number) {
           @close="selling = undefined" />
         <template v-for="r in trip.rows" :key="r.batch.id">
           <div
-            :class="[$style.row, $style.data, opened === r.batch.id ? $style.opened : undefined]"
+            :class="[
+              'rpz-row',
+              $style.row,
+              $style.data,
+              opened === r.batch.id ? $style.opened : undefined,
+            ]"
             @click="toggle(r.batch.id)">
             <span :class="$style.icon" @click.stop
               ><MaterialIcon size="inline-table" :ticker="r.batch.ticker"
