@@ -36,8 +36,9 @@ const $style = useCssModule();
 
 const EXCHANGES = ['AI1', 'CI1', 'IC1', 'NC1'];
 const ROUTES = EXCHANGES.flatMap(a => EXCHANGES.filter(b => b !== a).map(b => `${a}>${b}`));
-// Trades that make less than this do not pay for the flight (player, 2026-11-05).
-const MIN_PROFIT = 30_000;
+// Trades that make less than this per day are not shown (player, 2026-11-05; per day since
+// 2026-11-06).
+const MIN_PROFIT_PER_DAY = 30_000;
 
 const exchangeChips = EXCHANGES.map(x => ({ value: x, label: cxLabel(x) }));
 
@@ -115,7 +116,12 @@ const allRows = computed(() => {
         continue;
       }
       const result = trade.result;
-      if (!line && (result.units <= 0 || result.profit < MIN_PROFIT)) {
+      const daily = dailyTrade(ticker, to);
+      const days = tradeDays(from, to, mode.value === 'listed', result.units, daily);
+      if (
+        !line &&
+        (result.units <= 0 || days === undefined || result.profit / days < MIN_PROFIT_PER_DAY)
+      ) {
         continue;
       }
       rows.push({
@@ -127,7 +133,7 @@ const allRows = computed(() => {
         cost: result.cost,
         profit: result.profit,
         return: result.cost > 0 ? result.profit / result.cost : 0,
-        daily: dailyTrade(ticker, to),
+        daily,
         live: trade.live,
         time: trade.time,
       });
