@@ -13,6 +13,7 @@ import {
   storageSort,
 } from '@src/features/XIT/ACT/actions/utils';
 import { configurableValue } from '@src/features/XIT/ACT/shared-types';
+import { cxWarehouseName, sharedExchange } from '@src/features/XIT/ACT/shared-exchange';
 
 const { data, config } = defineProps<{ data: UserData.ActionData; config: Config }>();
 
@@ -68,6 +69,21 @@ if (
 ) {
   config.destination = serializeStorage(destinationStorages.value[0]);
 }
+
+// The origin follows the exchange chosen in this configure window: your warehouse there.
+watch(
+  sharedExchange,
+  code => {
+    if (data.origin !== configurableValue || code === undefined) {
+      return;
+    }
+    const name = cxWarehouseName(code);
+    if (name !== undefined && originStorages.value.some(x => serializeStorage(x) === name)) {
+      config.origin = name;
+    }
+  },
+  { immediate: true },
+);
 
 // Autofill and autofix selections on storage list change.
 watchEffect(() => {

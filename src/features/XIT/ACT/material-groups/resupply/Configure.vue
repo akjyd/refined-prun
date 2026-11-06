@@ -17,6 +17,7 @@ import {
   cxWarehouseStock,
 } from '@src/features/XIT/ACT/material-groups/resupply/bill';
 import { maxFittingDays } from '@src/features/XIT/ACT/material-groups/resupply/fit-days';
+import { linkExchange, sharedExchange } from '@src/features/XIT/ACT/shared-exchange';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import {
   getEntityNameFromAddress,
@@ -114,6 +115,13 @@ const warehouseExchange = computed({
   set: value => setWarehouseExchange(effectivePlanet.value, value),
 });
 const warehouseStock = computed(() => cxWarehouseStock(warehouseExchange.value));
+// The warehouse exchange is the exchange for the whole window (CX Buy, MTRA origin).
+sharedExchange.value = warehouseExchange.value;
+linkExchange(
+  () => warehouseExchange.value,
+  value => (warehouseExchange.value = value),
+  exchanges,
+);
 
 const modeLabel = {
   buy: t('act.resupply.modeBuy'),
