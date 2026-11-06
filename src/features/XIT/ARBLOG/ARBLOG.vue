@@ -15,6 +15,7 @@ import {
   revenue,
   sold,
   status,
+  plannedDays,
 } from '@src/core/arb-batches';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
@@ -67,6 +68,14 @@ function beaten(batch: ArbBatch) {
   });
 }
 
+// Profit over days, for the actual run (realized profit over days so far) and the plan.
+function perDayText(profit: number | undefined, days: number | undefined) {
+  if (profit === undefined || days === undefined || days < 0.05) {
+    return '--';
+  }
+  return formatProfit(profit / days);
+}
+
 const rows = computed(() =>
   [...userData.arbBatches]
     .sort((a, b) => b.createdAt - a.createdAt)
@@ -87,7 +96,8 @@ const rows = computed(() =>
         soldUnits,
         profit,
         ret: profit !== undefined && cost > 0 ? profit / cost : undefined,
-        days: Math.max(0, Math.floor((end - batch.createdAt) / 86_400_000)),
+        days: Math.max(0, (end - batch.createdAt) / 86_400_000),
+        plannedDays: plannedDays(batch),
       };
     })
     .filter(x =>
@@ -230,7 +240,8 @@ function time(ms: number) {
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
         <span :class="$style.num">{{ t('arblog.actualProfit') }}</span>
         <span :class="$style.num">{{ t('arb.return') }}</span>
-        <span :class="$style.num">{{ t('arblog.days') }}</span>
+        <span :class="$style.num">{{ t('arblog.perDay') }}</span>
+        <span :class="$style.num">{{ t('arblog.daysVsPlan') }}</span>
       </div>
       <template v-for="trip in trips" :key="trip.id">
         <div :class="$style.trip">
@@ -307,7 +318,25 @@ function time(ms: number) {
               >{{ r.profit !== undefined ? formatProfit(r.profit) : '--' }}</span
             >
             <span :class="$style.num">{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
-            <span :class="[$style.num, $style.muted]">{{ t('arblog.dayCount', r.days) }}</span>
+            <span :class="$style.num"
+              >{{ perDayText(r.profit, r.days) }}
+              <span :class="$style.muted"
+                >/ {{ perDayText(r.batch.plan.profit, r.plannedDays) }}</span
+              ></span
+            >
+            <span
+              :class="[
+                $style.num,
+                r.plannedDays !== undefined && r.days > r.plannedDays ? $style.warn : undefined,
+              ]"
+              >{{ fixed01(r.days) }}
+              <span :class="$style.muted"
+                >/
+                {{
+                  r.plannedDays !== undefined ? t('arblog.dayCount', fixed01(r.plannedDays)) : '--'
+                }}</span
+              ></span
+            >
           </div>
           <div v-if="opened === r.batch.id" :class="$style.detail">
             <!-- Four figures, plan against actual where both exist. -->
@@ -393,7 +422,7 @@ function time(ms: number) {
 }
 
 .root {
-  min-width: 900px;
+  min-width: 1040px;
   padding: 6px 8px;
   color: var(--rpz-text);
   font-size: var(--rpz-fs-body);
@@ -413,7 +442,7 @@ function time(ms: number) {
 
 .row {
   display: grid;
-  grid-template-columns: 56px 90px 44px 80px 110px 90px 90px 70px minmax(50px, 1fr);
+  grid-template-columns: 56px 90px 44px 80px 110px 80px 90px 70px 130px minmax(90px, 1fr);
   gap: 0 10px;
   align-items: center;
   padding: var(--rpz-space-1) var(--rpz-space-2);
@@ -451,6 +480,12 @@ function time(ms: number) {
 
 .muted {
   color: var(--rpz-text-weak);
+}
+
+/* Over the expected days. A warning is red (player, 2026-11-05). */
+.warn,
+.warn .muted {
+  color: var(--rpz-neg);
 }
 
 /* The one value of a row that the decision is made on (docs/ui-rules.md 3.5). */

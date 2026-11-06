@@ -3,6 +3,8 @@
 // Its sales are the sell trades of the material on the end exchange after the batch started,
 // oldest batch first, up to what the batch bought (player, 2026-11-05: method A).
 
+import { flightDays } from '@src/core/volatility';
+
 export interface ArbTrade {
   // Game trade id. A trade split between two batches has the same id in both.
   id: string;
@@ -19,6 +21,8 @@ export interface ArbPlan {
   profit: number;
   return: number;
   safety?: number;
+  // Expected days: flight, plus units / daily trade for a listed sale. Not kept before 2026-11-06.
+  days?: number;
 }
 
 // The orders the plan was going to take when you bought, for comparing later.
@@ -166,4 +170,13 @@ export function syncBatches(batches: ArbBatch[], orders: OrderTrades[]) {
     }
   }
   return changed;
+}
+
+// Expected days of a batch: the plan's, or for an older fill the flight days. An older listed
+// batch did not keep the trade it would wait for, so it has none.
+export function plannedDays(batch: ArbBatch) {
+  if (batch.plan.days !== undefined) {
+    return batch.plan.days;
+  }
+  return batch.mode === 'now' ? flightDays(batch.from, batch.to) : undefined;
 }

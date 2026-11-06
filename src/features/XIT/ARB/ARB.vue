@@ -230,6 +230,16 @@ function cartSafety(ticker: string) {
   return row ? safetyOf(row) : undefined;
 }
 
+// Expected days of a cart line at the units you buy; kept in the batch plan for ARBLOG.
+function cartDays(ticker: string, units: number) {
+  const route = cartRoute.value;
+  if (!route) {
+    return undefined;
+  }
+  const daily = dailyTrade(ticker, route.to);
+  return tradeDays(route.from, route.to, mode.value === 'listed', units, daily);
+}
+
 // Daily prices of the end exchanges in the list, for the safety multiple.
 watchEffect(() => requestCloses([...new Set(rows.value.map(x => `${x.ticker}.${x.to}`))]));
 
@@ -337,7 +347,7 @@ function toggleBlacklistMode() {
         <span v-if="!editingBlacklist" :class="$style.muted">{{ blacklistCount }}</span>
       </PrunButton>
     </div>
-    <CartPanel v-if="cartRoute && !editingBlacklist" :safety-of="cartSafety" />
+    <CartPanel v-if="cartRoute && !editingBlacklist" :safety-of="cartSafety" :days-of="cartDays" />
     <div
       v-if="routeMode === 'custom' && !cartRoute && !editingBlacklist"
       :class="[$style.bar, $style.sub]">

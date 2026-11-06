@@ -22,7 +22,10 @@ import { t } from '@src/i18n';
 
 // The cart: goods for one flight, each with a slider and a number field. A good cannot take
 // more than its order books allow or than the ship has left.
-const { safetyOf } = defineProps<{ safetyOf: (ticker: string) => number | undefined }>();
+const { safetyOf, daysOf } = defineProps<{
+  safetyOf: (ticker: string) => number | undefined;
+  daysOf: (ticker: string, units: number) => number | undefined;
+}>();
 
 const $style = useCssModule();
 
@@ -85,6 +88,7 @@ async function buyAll() {
           profit: result.profit,
           return: result.cost > 0 ? result.profit / result.cost : 0,
           safety: safetyOf(line.item.ticker),
+          days: daysOf(line.item.ticker, result.units),
         },
       });
       const error = await placeCxOrder(

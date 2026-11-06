@@ -15,6 +15,7 @@ import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format'
 import { fixed0, fixed02, percent1 } from '@src/utils/format';
 import { t } from '@src/i18n';
 import link from '@src/infrastructure/prun-ui/css/link.module.css';
+import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 
 // The order books of the four exchanges side by side. Only the best offers and the best
 // requests are placed by price: the exchange with the higher best offer has it one row higher,
@@ -59,6 +60,7 @@ interface Cell {
   own: boolean;
   mark?: string;
   trader?: string;
+  traderCode?: string;
   taken?: boolean;
   ghost?: boolean;
 }
@@ -124,6 +126,7 @@ const columns = computed(() => {
         profit: profitAt(order.limit.amount),
         own: order.trader.id === ownId,
         trader: order.trader.name,
+        traderCode: order.trader.code,
         change: ownChange(order),
         taken: take > 0,
       };
@@ -305,7 +308,12 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
             @dragend="drag.end"
             @drop="drag.drop">
             <template v-if="cell">
-              <span v-if="traders" :class="$style.trader">{{ cell.ghost ? '' : cell.trader }}</span>
+              <span
+                v-if="traders"
+                :class="[$style.trader, !cell.ghost && cell.traderCode ? link.link : undefined]"
+                @click.stop="!cell.ghost && cell.traderCode && showBuffer(`CO ${cell.traderCode}`)"
+                >{{ cell.ghost ? '' : cell.trader }}</span
+              >
               <span v-else :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
               <span :class="[$style.num, $style.amount, cell.own ? link.link : undefined]">
                 <DeleteExchangeOrderButton
@@ -485,6 +493,11 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .cell:not(.own) .amount,
 .cell:not(.own) .trader {
   color: var(--rpz-text-weak);
+}
+
+/* A trader name opens the company (CO), as in the game; it keeps the ink tone until hovered. */
+.cell .trader:hover {
+  color: var(--rpz-brand);
 }
 
 .num {
