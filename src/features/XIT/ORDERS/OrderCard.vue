@@ -243,7 +243,7 @@ watch(
 .columns,
 .row {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 62px 86px 70px;
+  grid-template-columns: minmax(0, 1fr) 58px 78px 72px;
   align-items: baseline;
   gap: 0 6px;
   padding: 1px 8px;
