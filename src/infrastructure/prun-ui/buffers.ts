@@ -102,10 +102,9 @@ async function processWindow(window: HTMLDivElement, command: string, options?: 
   window.classList.add(css.hidden);
   const tile = _$(window, C.Tile.tile);
   const id = getPrunId(tile!);
-  let dockTab: Element | undefined;
   if (options?.autoClose) {
     const dockLabel = id?.padStart(2, '0');
-    dockTab = _$$(document, C.Dock.buffer).find(
+    const dockTab = _$$(document, C.Dock.buffer).find(
       x => _$(x, C.Dock.title)?.textContent === dockLabel,
     );
     if (dockTab) {
@@ -124,61 +123,14 @@ async function processWindow(window: HTMLDivElement, command: string, options?: 
     window.classList.remove(css.hidden);
     return;
   }
-  if (options.closeWhen && id !== null) {
-    revealWhenFocused(window, id, dockTab);
-  }
   void closeWhenDone(window, options);
 }
 
-// Hidden windows that the game focused and RP showed: the player asked for them, so RP no longer
-// reuses or closes them. Ids of their tiles.
+// Windows RP keeps hidden stay hidden. Tying "the game focused it" to the z-index went wrong
+// twice: a window RP has just opened is the top one already, and the game renumbers every
+// window when one opens, when one closes and when the player changes screen, so hidden books
+// kept showing up (player, 2026-11-06). Nothing reveals them now.
 export const revealedTiles = new Set<string>();
-
-// The game focuses an open window when the player opens a buffer with the same command (for
-// example "订单" in CXM opens CXOB of a book that XIT ARB keeps hidden). Focus puts the window on
-// top, which is a higher z-index than every other window (seen in the game, 2026-11-06). The
-// game also renumbers the z-index of all windows when a window opens or closes, so a higher
-// number alone is not focus: the window must become the top one (player, 2026-11-06: hidden
-// windows showed up on any action).
-function revealWhenFocused(window: HTMLDivElement, id: string, dockTab: Element | undefined) {
-  const zIndexOf = (element: Element) => {
-    const value = Number((element as HTMLElement).style.zIndex);
-    return Number.isFinite(value) ? value : 0;
-  };
-  const isTop = () => {
-    const windows = Array.from(document.getElementsByClassName(C.Window.window));
-    if (windows.length < 2) {
-      return true;
-    }
-    const top = Math.max(...windows.map(zIndexOf));
-    return zIndexOf(window) >= top;
-  };
-  // A window RP has just opened is the top one already, and the game renumbers every window
-  // whenever one opens or closes. Only going from not on top to on top is a focus (player,
-  // 2026-11-06: hidden windows showed up on any action).
-  let wasTop = true;
-  const observer = new MutationObserver(() => {
-    const top = isTop();
-    if (!top || wasTop) {
-      wasTop = top;
-      return;
-    }
-    observer.disconnect();
-    revealedTiles.add(id);
-    window.classList.remove(css.hidden);
-    dockTab?.classList.remove(css.hidden);
-  });
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['style'],
-    subtree: true,
-  });
-  void (async () => {
-    await waitNodeDisconnected(window);
-    observer.disconnect();
-    revealedTiles.delete(id);
-  })();
-}
 
 async function closeWhenDone(window: HTMLDivElement, options?: ShowBufferOptions) {
   await sleep(0);

@@ -63,19 +63,26 @@ function linksOf(tile: PrunTile): Link[] {
 function onTileReady(tile: PrunTile) {
   subscribe($$(tile.anchor, C.StoreView.column), column => {
     const links = computed(() => linksOf(tile));
-    createFragmentApp(() => (
+    const app = createFragmentApp(() => (
       <span class={$style.links}>
         {links.value.map(link => (
-          <PrunButton
-            key={link.command}
-            neutral
-            inline
-            onClick={() => void showBuffer(link.command)}>
+          <PrunButton key={link.command} dark onClick={() => void showBuffer(link.command)}>
             {link.label}
           </PrunButton>
         ))}
       </span>
-    )).prependTo(column);
+    ));
+    // The unload button of the game, when this store has one.
+    const unload = _$(column, C.Button.btn);
+    const anchor = unload?.closest(`.${C.StoreView.column} > *`);
+    if (anchor) {
+      const slot = document.createElement('span');
+      slot.className = $style.slot;
+      column.insertBefore(slot, anchor);
+      app.appendTo(slot);
+      return;
+    }
+    app.appendTo(column);
   });
 }
 

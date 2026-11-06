@@ -1,8 +1,14 @@
+.slot {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
 .links {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
   gap: var(--rpz-space-1);
-  margin-right: var(--rpz-space-2);
+  margin-right: var(--rpz-space-1);
   white-space: nowrap;
 }
