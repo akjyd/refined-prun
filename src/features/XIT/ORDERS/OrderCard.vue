@@ -243,7 +243,11 @@ watch(
 .columns,
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 58px 78px 72px;
+  /* All four columns are numbers of a known width, so they are fixed: that keeps them aligned
+     from row to row. Space left over in a wide card is spread between the columns instead of
+     piling up in front of the first one (player, 2026-11-06). */
+  grid-template-columns: 62px 58px 78px 72px;
+  justify-content: space-between;
   align-items: baseline;
   gap: 0 6px;
   padding: 1px 8px;

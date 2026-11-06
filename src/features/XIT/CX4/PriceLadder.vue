@@ -259,7 +259,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
             ><CxpoButton :cx-ticker="`${ticker}.${code}`"
           /></span>
         </span>
-        <span :class="$style.columns">
+        <span :class="[$style.columns, traders ? undefined : $style.numbersOnly]">
           <span :class="traders ? undefined : $style.profitCell">{{
             traders ? t('cx4.trader') : t('cxob.profitHead')
           }}</span>
@@ -296,6 +296,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
               cell
                 ? [
                     $style.cell,
+                    traders ? undefined : $style.numbersOnly,
                     cell.own ? $style.own : undefined,
                     cell.taken ? $style.taken : undefined,
                     cell.ghost ? $style.ghost : undefined,
@@ -414,6 +415,13 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .columns {
   color: var(--rpz-text-weak);
   font-size: 11px;
+}
+
+/* Without trader names the first column is a number too, so the columns are fixed and the
+   space left over is spread between them (player, 2026-11-06). */
+.numbersOnly {
+  grid-template-columns: 62px 58px 78px 72px;
+  justify-content: space-between;
 }
 
 .cell {
