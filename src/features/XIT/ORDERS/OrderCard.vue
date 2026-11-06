@@ -164,6 +164,7 @@ watch(
     </div>
     <div :class="$style.columns">
       <span>{{ t('cxob.profitHead') }}</span>
+      <span />
       <span :class="$style.num">{{ t('cx4.amount') }}</span>
       <span :class="$style.num">{{ t('cx4.price') }}</span>
     </div>
@@ -192,12 +193,13 @@ watch(
           @dragend="drag.end"
           @drop="drag.drop">
           <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
+          <span class="rpz-mark">{{ r.change && !r.gone ? r.change : '' }}</span>
           <span :class="[$style.num, $style.amount]">
             <DeleteExchangeOrderButton
               v-if="r.own && !r.gone"
               :order-id="r.id"
               screen-command="CXOS" />
-            <span v-if="r.change && !r.gone" :class="$style.change">{{ r.change }}</span>
+
             <span
               :class="r.own && !r.gone ? $style.clickable : undefined"
               @click.stop="r.own && !r.gone && showBuffer(`CXO ${r.id.substring(0, 8)}`)"
@@ -240,7 +242,8 @@ watch(
 .columns,
 .row {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 130px 70px;
+  grid-template-columns: minmax(44px, 1fr) 40px 90px 70px;
+  align-items: baseline;
   gap: 0 6px;
   padding: 1px 8px;
 }
@@ -283,13 +286,7 @@ watch(
 }
 
 .changed {
-  background-color: rgba(247, 166, 0, 0.12);
-}
-
-.change {
-  margin-right: 4px;
-  color: var(--rpz-brand);
-  font-size: 11px;
+  background-color: var(--rpz-mark-fill);
 }
 
 .gone {

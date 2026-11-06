@@ -103,7 +103,7 @@ const ghost = computed(() => {
 .depth {
   display: grid;
   gap: var(--rpz-space-2);
-  padding: 8px 8px 12px 64px;
+  padding: 8px 8px 12px 102px;
   background-color: var(--rpz-bg-raised);
   border-top: 1px solid var(--rpz-stroke-weak);
 }

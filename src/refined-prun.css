@@ -27,8 +27,11 @@ html {
   --rpz-brand-fill: rgba(247, 166, 0, 0.2);
   --rpz-on-brand: #1f1f1e;
   --rpz-pos: #6fae6f;
-  --rpz-neg: #c96a66;
+  --rpz-neg: #d0524c;
   --rpz-warn: #f0ad4e;
+  /* Marks for what is new or changed (player, 2026-11-06: the gold of the order marks). */
+  --rpz-mark: #f7a600;
+  --rpz-mark-fill: rgba(247, 166, 0, 0.12);
   --rpz-hover: rgba(255, 255, 255, 0.06);
   --rpz-hover-mark: inset 2px 0 0 var(--rpz-text-weak);
   --rpz-press: rgba(255, 255, 255, 0.1);
@@ -62,6 +65,22 @@ html {
    among its siblings. Zero specificity, so hover, selected and order states win. */
 :where(.rpz-row:nth-child(even of .rpz-row)) {
   background-color: var(--rpz-zebra);
+}
+
+/* A row with something new or changed. After the stripes, before hover. */
+:where(.rpz-marked) {
+  background-color: var(--rpz-mark-fill);
+}
+
+/* The mark itself: in its own column of fixed width, right-aligned, on the text baseline of the
+   row, so that marks and numbers line up (player, 2026-11-06). */
+:where(.rpz-mark) {
+  color: var(--rpz-mark);
+  font-size: var(--rpz-fs-label);
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
 }
 
 /* Hover on a row: a stronger fill and a mark on the left, so that it is not taken for a stripe. */

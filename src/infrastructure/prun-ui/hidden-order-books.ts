@@ -1,4 +1,4 @@
-import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
+import { revealedTiles, showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { dispatchClientPrunMessage } from '@src/infrastructure/prun-api/prun-api-listener';
 import { UI_TILES_CHANGE_COMMAND } from '@src/infrastructure/prun-api/client-messages';
 import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
@@ -30,7 +30,13 @@ export class HiddenOrderBooks {
   }
 
   private async apply(cxTickers: string[]) {
-    const active = new Set(tiles.snapshotMetadata().map(x => x.id));
+    // A window the player opened from the game (see revealWhenFocused) is theirs now.
+    const active = new Set(
+      tiles
+        .snapshotMetadata()
+        .map(x => x.id)
+        .filter(x => !revealedTiles.has(x)),
+    );
     this.tileIds = this.tileIds.filter(x => active.has(x));
     for (const [id] of this.shown) {
       if (!active.has(id)) {

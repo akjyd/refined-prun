@@ -102,9 +102,10 @@ async function processWindow(window: HTMLDivElement, command: string, options?: 
   window.classList.add(css.hidden);
   const tile = _$(window, C.Tile.tile);
   const id = getPrunId(tile!);
+  let dockTab: Element | undefined;
   if (options?.autoClose) {
     const dockLabel = id?.padStart(2, '0');
-    const dockTab = _$$(document, C.Dock.buffer).find(
+    dockTab = _$$(document, C.Dock.buffer).find(
       x => _$(x, C.Dock.title)?.textContent === dockLabel,
     );
     if (dockTab) {
@@ -123,7 +124,42 @@ async function processWindow(window: HTMLDivElement, command: string, options?: 
     window.classList.remove(css.hidden);
     return;
   }
+  if (options.closeWhen && id !== null) {
+    revealWhenFocused(window, id, dockTab);
+  }
   void closeWhenDone(window, options);
+}
+
+// Hidden windows that the game focused and RP showed: the player asked for them, so RP no longer
+// reuses or closes them. Ids of their tiles.
+export const revealedTiles = new Set<string>();
+
+// The game focuses an open window when the player opens a buffer with the same command (for
+// example "订单" in CXM opens CXOB of a book that XIT ARB keeps hidden). Focus raises the window's
+// z-index (seen in the game, 2026-11-06). Then the hidden window is shown instead of nothing.
+function revealWhenFocused(window: HTMLDivElement, id: string, dockTab: Element | undefined) {
+  const zIndex = () => {
+    const value = Number(window.style.zIndex);
+    return Number.isFinite(value) ? value : 0;
+  };
+  let last = zIndex();
+  const observer = new MutationObserver(() => {
+    const now = zIndex();
+    if (now <= last) {
+      last = now;
+      return;
+    }
+    observer.disconnect();
+    revealedTiles.add(id);
+    window.classList.remove(css.hidden);
+    dockTab?.classList.remove(css.hidden);
+  });
+  observer.observe(window, { attributes: true, attributeFilter: ['style'] });
+  void (async () => {
+    await waitNodeDisconnected(window);
+    observer.disconnect();
+    revealedTiles.delete(id);
+  })();
 }
 
 async function closeWhenDone(window: HTMLDivElement, options?: ShowBufferOptions) {
@@ -131,6 +167,11 @@ async function closeWhenDone(window: HTMLDivElement, options?: ShowBufferOptions
   const closeWhen = options?.closeWhen;
   if (closeWhen) {
     await watchUntil(closeWhen);
+  }
+  const tile = _$(window, C.Tile.tile);
+  const id = tile ? getPrunId(tile) : null;
+  if (id !== null && revealedTiles.has(id)) {
+    return;
   }
   closePrunWindow(window);
   await waitNodeDisconnected(window);

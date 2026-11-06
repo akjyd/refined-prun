@@ -6,14 +6,20 @@
 
 .changed {
   > td {
-    background-color: rgba(247, 166, 0, 0.25);
+    background-color: rgba(247, 166, 0, 0.12);
   }
 }
 
+/* The same mark as in the zh order views: fixed width, right-aligned, so amounts line up. */
 .change {
+  display: inline-block;
+  min-width: 40px;
   margin-right: 4px;
   color: #f7a600;
   font-size: 11px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 .clickable {

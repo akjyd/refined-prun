@@ -48,8 +48,8 @@ function pick(value: T) {
 .alert {
   margin-left: var(--rpz-space-1);
   padding: 0 4px;
-  background-color: var(--rpz-neg);
-  color: var(--rpz-text-strong);
+  background-color: var(--rpz-mark);
+  color: var(--rpz-on-brand);
   font-size: var(--rpz-fs-label);
   font-weight: bold;
 }

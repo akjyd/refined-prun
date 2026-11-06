@@ -407,6 +407,7 @@ function toggleBlacklistMode() {
     </template>
     <p v-if="fioBooks.error" :class="$style.muted">{{ t('arb.error', fioBooks.error) }}</p>
     <div :class="[$style.row, $style.head]">
+      <span />
       <span :class="$style.sort" @click="sortBy('ticker')"
         >{{ t('arb.material') }}{{ arrow('ticker') }}</span
       >
@@ -439,15 +440,13 @@ function toggleBlacklistMode() {
           $style.data,
           open === r.key ? $style.opened : undefined,
           editingBlacklist && r.ticker in userData.arbBlacklist ? $style.struck : undefined,
+          unread.has(hKey(r)) ? 'rpz-marked' : undefined,
         ]"
         @click="onRowClick(r)">
+        <span class="rpz-mark">{{ unread.has(hKey(r)) ? t('arb.new') : '' }}</span>
         <span :class="$style.icon" @click.stop
-          ><MaterialIcon size="inline-table" :ticker="r.ticker" /><span
-            v-if="unread.has(hKey(r))"
-            :class="$style.new"
-            >{{ t('arb.new') }}</span
-          ></span
-        >
+          ><MaterialIcon size="inline-table" :ticker="r.ticker"
+        /></span>
         <span :class="$style.name"
           >{{ cxLabel(r.from) }} <span :class="$style.muted">→</span> {{ cxLabel(r.to) }}
           <span v-if="cartRoute" :class="$style.age">{{
@@ -553,9 +552,10 @@ function toggleBlacklistMode() {
 
 .row {
   display: grid;
-  grid-template-columns: 56px minmax(100px, 1fr) 150px 80px 80px 80px 64px 64px 60px;
+  grid-template-columns: 22px 56px minmax(100px, 1fr) 150px 80px 80px 80px 64px 64px 60px;
   gap: 0 16px;
-  align-items: center;
+  /* On the text baseline, so the small new mark lines up with the numbers. */
+  align-items: baseline;
   padding: 4px 8px;
   border-top: 1px solid var(--rpz-stroke-weak);
 }
@@ -587,22 +587,8 @@ function toggleBlacklistMode() {
 }
 
 .icon {
-  position: relative;
   display: inline-flex;
-}
-
-/* New chance: ink, not the brand orange (only for what you can click) or red (warnings). */
-.new {
-  position: absolute;
-  top: -4px;
-  left: -6px;
-  padding: 0 2px;
-  border: 1px solid var(--rpz-text-strong);
-  background-color: var(--rpz-bg-base);
-  color: var(--rpz-text-strong);
-  font-size: 10px;
-  line-height: 12px;
-  pointer-events: none;
+  align-self: center;
 }
 
 .name {
@@ -682,7 +668,7 @@ function toggleBlacklistMode() {
   display: flex;
   align-items: center;
   gap: var(--rpz-space-2);
-  padding: var(--rpz-space-2) var(--rpz-space-2) 0 64px;
+  padding: var(--rpz-space-2) var(--rpz-space-2) 0 102px;
   background-color: var(--rpz-bg-raised);
 }
 

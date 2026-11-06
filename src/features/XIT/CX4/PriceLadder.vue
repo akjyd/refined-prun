@@ -206,7 +206,7 @@ function bookOf(cell: Cell) {
 
 // One column per exchange.
 const columnsStyle = computed(() => ({
-  gridTemplateColumns: `repeat(${exchanges.length}, minmax(210px, 360px))`,
+  gridTemplateColumns: `repeat(${exchanges.length}, minmax(280px, 400px))`,
 }));
 
 // Scroll to the spread (between offers and requests) once the books arrive.
@@ -261,6 +261,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
         </span>
         <span :class="$style.columns">
           <span>{{ traders ? t('cx4.trader') : t('cxob.profitHead') }}</span>
+          <span />
           <span :class="$style.num">{{ t('cx4.amount') }}</span>
           <span :class="$style.num">{{ t('cx4.price') }}</span>
         </span>
@@ -317,12 +318,13 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
                 >{{ cell.ghost ? '' : cell.trader }}</span
               >
               <span v-else :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
+              <span class="rpz-mark">{{ cell.change ? cell.change : '' }}</span>
               <span :class="[$style.num, $style.amount]">
                 <DeleteExchangeOrderButton
                   v-if="cell.own"
                   :order-id="cell.id"
                   screen-command="CXOS" />
-                <span v-if="cell.change" :class="$style.change">{{ cell.change }}</span>
+
                 <span
                   :class="cell.own ? $style.clickable : undefined"
                   @click.stop="cell.own && showBuffer(`CXO ${cell.id.substring(0, 8)}`)"
@@ -366,7 +368,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 .row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(210px, 1fr));
+  grid-template-columns: repeat(4, minmax(280px, 1fr));
   gap: 0 4px;
 }
 
@@ -399,7 +401,8 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .columns,
 .cell {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 130px 70px;
+  grid-template-columns: minmax(44px, 1fr) 40px 90px 70px;
+  align-items: baseline;
   gap: 0 6px;
 }
 
@@ -444,13 +447,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 /* Your own orders are bold, as in CXOB; the del button sits before the amount. */
 .changed {
-  background-color: rgba(247, 166, 0, 0.12);
-}
-
-.change {
-  margin-right: 4px;
-  color: var(--rpz-brand);
-  font-size: 11px;
+  background-color: var(--rpz-mark-fill);
 }
 
 .own {

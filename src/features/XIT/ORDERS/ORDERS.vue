@@ -127,7 +127,7 @@ const stopVisit = watchEffect(() => {
   padding: var(--rpz-space-2);
   margin-bottom: var(--rpz-space-2);
   background-color: var(--rpz-bg-raised);
-  box-shadow: inset 2px 0 0 var(--rpz-neg);
+  box-shadow: inset 2px 0 0 var(--rpz-mark);
 }
 
 .fillsTitle {
@@ -151,8 +151,9 @@ const stopVisit = watchEffect(() => {
   background-color: var(--rpz-hover);
 }
 
+/* A fill is something new, not a warning: the gold of the change marks (player, 2026-11-06). */
 .minus {
-  color: var(--rpz-neg);
+  color: var(--rpz-mark);
   font-weight: bold;
 }
 
@@ -164,7 +165,7 @@ const stopVisit = watchEffect(() => {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 8px;
 }
 
