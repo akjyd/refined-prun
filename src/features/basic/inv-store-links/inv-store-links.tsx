@@ -12,7 +12,9 @@ import { t } from '@src/i18n';
 
 // A store and the other store at the same place are one click apart (player, 2026-11-06).
 // The context buttons in the window header do the same, but the player wants a button they can
-// see in the window itself, next to the game's own unload button.
+// see in the window itself. The buttons go at the end of the sort row, which has free space:
+// in the capacity row they squeezed the game's own unload button out of shape (player,
+// 2026-11-06).
 
 // Where the window's store is: the planet or station natural id.
 function placeOf(tile: PrunTile) {
@@ -59,12 +61,16 @@ function linksOf(tile: PrunTile): Link[] {
 }
 
 function onTileReady(tile: PrunTile) {
-  subscribe($$(tile.anchor, C.StoreView.column), column => {
+  subscribe($$(tile.anchor, C.InventorySortControls.controls), column => {
     const links = computed(() => linksOf(tile));
     createFragmentApp(() => (
       <span class={$style.links}>
         {links.value.map(link => (
-          <PrunButton key={link.command} dark inline onClick={() => void showBuffer(link.command)}>
+          <PrunButton
+            key={link.command}
+            neutral
+            inline
+            onClick={() => void showBuffer(link.command)}>
             {link.label}
           </PrunButton>
         ))}

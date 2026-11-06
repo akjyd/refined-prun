@@ -1,7 +1,8 @@
 .links {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: var(--rpz-space-1);
-  margin-left: auto;
-  padding-left: var(--rpz-space-2);
+  margin-left: var(--rpz-space-3);
+  white-space: nowrap;
 }
