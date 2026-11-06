@@ -1572,7 +1572,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'burn.group.addButton': '添加',
 
   // INV/SHPI：同地点的另一个库存按钮
-  'inv.baseStore': '基地库存',
+  'inv.baseStore': '库存',
   'inv.warehouse': '仓库',
 
   // ARB：按翻车率解算
