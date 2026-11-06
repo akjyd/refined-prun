@@ -209,8 +209,8 @@ function avg(total: number, units: number) {
   return units > 0 ? fixed02(total / units) : '--';
 }
 
-function time(ms: number) {
-  return dayjs(ms).format('MM-DD HH:mm');
+function date(ms: number) {
+  return dayjs(ms).format('MM-DD');
 }
 </script>
 
@@ -246,13 +246,8 @@ function time(ms: number) {
       <template v-for="trip in trips" :key="trip.id">
         <div :class="$style.trip">
           <span
-            ><b>{{ t('arblog.trip') }}</b> {{ time(trip.first.createdAt) }} ·
-            {{ cxLabel(trip.first.from) }} →
-            {{ cxLabel(trip.first.to) }}
-            <span v-if="trip.first.ship" :class="$style.muted">· {{ trip.first.ship }}</span>
-            <span :class="$style.muted"
-              >· {{ t('arblog.batchCount', trip.rows.length) }}</span
-            ></span
+            ><b>{{ t('arblog.trip') }}</b> {{ date(trip.first.createdAt) }} ·
+            {{ cxLabel(trip.first.from) }} → {{ cxLabel(trip.first.to) }}</span
           >
           <span :class="$style.spacer" />
           <span :class="$style.muted"
