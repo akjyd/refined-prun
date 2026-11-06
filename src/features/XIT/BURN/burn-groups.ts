@@ -18,21 +18,22 @@ const FACTION_LABELS: Record<string, string> = {
   NC: 'MOR',
 };
 
-// No official faction colors were found in the game data, in FIO or in the handbook, so these
-// are chosen here: four hues apart from gold (new or changed), red (warning) and green
-// (profit), and the name is always written out, so the color is never the only signal.
-const FACTION_COLORS: Record<string, string> = {
-  ANT: '#6f9fd8',
-  BEN: '#a98ad2',
-  HRT: '#58a79c',
-  MOR: '#c98f5e',
+// Faction colors, picked from the faction emblems the player sent (2026-11-06):
+// Insitor #009920, Castillo-Ito #e10909, NEO Charter #f4c626, Antares #fb5318. The dot uses the
+// emblem color; the name uses it too, except the two that are too dark to read on the window
+// background, which keep their hue at a higher lightness (WCAG 4.6:1 on #1f1f1e).
+const FACTION_COLORS: Record<string, { dot: string; text: string }> = {
+  ANT: { dot: '#fb5318', text: '#fb5318' },
+  BEN: { dot: '#e10909', text: '#f84444' },
+  HRT: { dot: '#009920', text: '#009e21' },
+  MOR: { dot: '#f4c626', text: '#f4c626' },
 };
 
 export interface BurnGroup<T> {
   // Undefined for the group that gets no header: the planets before any faction is known, and
   // the overall section.
   name?: string;
-  color?: string;
+  color?: { dot: string; text: string };
   planets: T[];
 }
 

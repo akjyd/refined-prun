@@ -62,7 +62,7 @@ function addGroup() {
         <span v-for="g in groups" :key="g" :class="$style.legendItem">
           <span
             :class="$style.dot"
-            :style="{ backgroundColor: groupColor(g) ?? 'var(--rpz-text-off)' }" />
+            :style="{ backgroundColor: groupColor(g)?.dot ?? 'var(--rpz-text-off)' }" />
           {{ g }}
         </span>
       </span>

@@ -1,15 +1,18 @@
 .handle {
   display: inline-block;
-  min-width: 10px;
-  margin-right: 6px;
-  color: var(--rpz-text-weak);
-  font-size: 11px;
+  width: 7px;
+  height: 11px;
+  margin-right: 7px;
+  vertical-align: middle;
+  background-image: radial-gradient(circle, var(--rpz-text-weak) 42%, transparent 46%);
+  background-size: 4px 4px;
+  background-position: 0 0;
   cursor: grab;
   user-select: none;
 }
 
 .handle:hover {
-  color: var(--rpz-text);
+  background-image: radial-gradient(circle, var(--rpz-text-strong) 42%, transparent 46%);
 }
 
 .dragging {

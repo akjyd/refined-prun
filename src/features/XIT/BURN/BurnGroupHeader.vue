@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // The group a run of planets belongs to: a divider line with the name, no numbers (player,
 // 2026-11-06).
-const { color } = defineProps<{ name: string; color?: string }>();
+const { color } = defineProps<{ name: string; color?: { dot: string; text: string } }>();
 
 const $style = useCssModule();
 </script>
@@ -10,8 +10,10 @@ const $style = useCssModule();
   <tbody>
     <tr>
       <td colspan="8" :class="$style.cell">
-        <span :class="$style.dot" :style="{ backgroundColor: color ?? 'var(--rpz-text-off)' }" />
-        <span :style="{ color: color ?? 'var(--rpz-text-weak)' }">{{ name }}</span>
+        <span
+          :class="$style.dot"
+          :style="{ backgroundColor: color?.dot ?? 'var(--rpz-text-off)' }" />
+        <span :style="{ color: color?.text ?? 'var(--rpz-text-weak)' }">{{ name }}</span>
       </td>
     </tr>
   </tbody>

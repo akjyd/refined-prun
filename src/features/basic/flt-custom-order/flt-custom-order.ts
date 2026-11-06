@@ -1,5 +1,4 @@
 import $style from './flt-custom-order.module.css';
-import fa from '@src/utils/font-awesome.module.css';
 import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
 import { userData } from '@src/store/user-data';
 
@@ -34,9 +33,9 @@ function applyOrder(tbody: HTMLTableSectionElement) {
 }
 
 // A drag handle at the start of the row: only the handle starts a drag, so the pointer does not
-// flicker over the whole table (player, 2026-11-06). The same Font Awesome grip character the
-// rest of RP uses (components/grip/GripChar.vue); two '⋮' with negative letter spacing were
-// almost invisible (player, 2026-11-06).
+// flicker over the whole table (player, 2026-11-06). The grip is drawn in CSS, not with a
+// character: two '⋮' with negative letter spacing were almost invisible, and the Font Awesome
+// grip measured 0 x 0 in the game (player, 2026-11-06).
 function addHandle(
   row: HTMLTableRowElement,
   drag: { id?: string },
@@ -47,8 +46,8 @@ function addHandle(
     return;
   }
   const handle = document.createElement('span');
-  handle.className = `${$style.handle} ${fa.solid}`;
-  handle.textContent = '\uf58e';
+  handle.className = $style.handle;
+  handle.title = 'drag';
   handle.draggable = true;
   handle.addEventListener('click', e => e.stopPropagation());
   handle.addEventListener('dragstart', e => {
