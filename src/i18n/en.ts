@@ -1592,4 +1592,5 @@ export default {
   'arblog.loc.loaded': 'Loaded',
   'arblog.loc.atStart': 'At start',
   'arblog.destBook': '{0} live orders',
+  'orders.filledSince': '{0} orders filled since last visit:',
 };

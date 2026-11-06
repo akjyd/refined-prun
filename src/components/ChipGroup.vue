@@ -3,7 +3,7 @@
 // chip is on. With `multiple`, each chip turns on and off by itself.
 const { options, multiple = false } = defineProps<{
   // `count` shows after the label, weak (tabs with a number of items).
-  options: { value: T; label: string; count?: number }[];
+  options: { value: T; label: string; count?: number; alert?: number }[];
   multiple?: boolean;
 }>();
 
@@ -32,7 +32,8 @@ function pick(value: T) {
       :key="o.value"
       :class="[$style.chip, isOn(o.value) ? $style.on : undefined]"
       @click="pick(o.value)">
-      {{ o.label }}<span v-if="o.count !== undefined" :class="$style.count">{{ o.count }}</span>
+      {{ o.label }}<span v-if="o.count !== undefined" :class="$style.count">{{ o.count }}</span
+      ><span v-if="(o.alert ?? 0) > 0" :class="$style.alert">{{ o.alert }}</span>
     </span>
   </span>
 </template>
@@ -42,6 +43,15 @@ function pick(value: T) {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 2px;
+}
+
+.alert {
+  margin-left: var(--rpz-space-1);
+  padding: 0 4px;
+  background-color: var(--rpz-neg);
+  color: var(--rpz-text);
+  font-size: var(--rpz-fs-label);
+  font-weight: bold;
 }
 
 .count {

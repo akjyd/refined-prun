@@ -7,7 +7,9 @@ import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { compareMaterials } from '@src/core/sort-materials';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import { userData } from '@src/store/user-data';
-import { startOrdersVisit } from '@src/core/order-seen';
+import { filledOrders, startOrdersVisit } from '@src/core/order-seen';
+import MaterialIcon from '@src/components/MaterialIcon.vue';
+import { fixed0 } from '@src/utils/format';
 import { t } from '@src/i18n';
 
 const $style = useCssModule();
@@ -47,9 +49,22 @@ const exchangeTabs = computed(() =>
   EXCHANGES.map(code => ({
     value: code,
     label: cxLabel(code),
+    alert: filled.value.filter(x => x.exchange === code).length,
     count: byExchange.value.get(code)?.size ?? 0,
   })),
 );
+
+// Orders with units filled since the previous visit: a bar on top and a red number on each
+// exchange tab, so a fill is not missed (player, 2026-11-06).
+const filled = computed(() => filledOrders());
+
+async function showFill(order: { ticker: string; exchange: string }) {
+  exchange.value = order.exchange;
+  await nextTick();
+  document
+    .querySelector(`[data-order-card="${order.ticker}.${order.exchange}"]`)
+    ?.scrollIntoView({ block: 'nearest' });
+}
 
 const tickers = computed(() =>
   [...(kept.value.get(exchange.value) ?? [])].sort((a, b) =>
@@ -74,6 +89,14 @@ const stopVisit = watchEffect(() => {
 
 <template>
   <div :class="$style.root">
+    <div v-if="filled.length > 0" :class="$style.fills">
+      <span :class="$style.fillsTitle">{{ t('orders.filledSince', filled.length) }}</span>
+      <button v-for="f in filled" :key="f.id" :class="$style.fill" @click="showFill(f)">
+        <MaterialIcon size="inline-table" :ticker="f.ticker" />
+        {{ cxLabel(f.exchange) }}
+        <span :class="$style.minus">−{{ fixed0(f.filled) }}</span>
+      </button>
+    </div>
     <div :class="$style.tabs">
       <ChipGroup v-model="exchange" :options="exchangeTabs" />
     </div>
@@ -81,6 +104,7 @@ const stopVisit = watchEffect(() => {
     <div :class="$style.cards">
       <OrderCard
         v-for="ticker in tickers"
+        :data-order-card="`${ticker}.${exchange}`"
         :key="`${ticker}.${exchange}`"
         :ticker="ticker"
         :exchange="exchange"
@@ -92,6 +116,43 @@ const stopVisit = watchEffect(() => {
 <style module>
 .root {
   padding: 6px 8px;
+}
+
+.fills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rpz-space-1) var(--rpz-space-2);
+  padding: var(--rpz-space-2);
+  margin-bottom: var(--rpz-space-2);
+  background-color: var(--rpz-bg-raised);
+  box-shadow: inset 2px 0 0 var(--rpz-neg);
+}
+
+.fillsTitle {
+  color: var(--rpz-text);
+  font-weight: bold;
+}
+
+.fill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rpz-space-1);
+  padding: 2px 6px;
+  border: 1px solid var(--rpz-stroke);
+  background: none;
+  color: var(--rpz-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.fill:hover {
+  background-color: var(--rpz-hover);
+}
+
+.minus {
+  color: var(--rpz-neg);
+  font-weight: bold;
 }
 
 .tabs {

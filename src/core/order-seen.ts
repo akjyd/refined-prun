@@ -29,6 +29,52 @@ export function orderChange(orderId: string, amount: number) {
     : undefined;
 }
 
+export interface FilledOrder {
+  id: string;
+  ticker: string;
+  exchange: string;
+  // Units filled since the previous visit.
+  filled: number;
+}
+
+// Your orders with units filled since the previous visit to XIT ORDERS, including orders that
+// filled completely (no longer active). New orders are not counted.
+export function filledOrders(): FilledOrder[] {
+  const seen = compareWith();
+  if (Object.keys(seen).length === 0) {
+    return [];
+  }
+  const result: FilledOrder[] = [];
+  const active = new Set<string>();
+  for (const order of cxosStore.active.value ?? []) {
+    active.add(order.id);
+    const before = seen[order.id];
+    if (before !== undefined && order.amount < before) {
+      result.push({
+        id: order.id,
+        ticker: order.material.ticker,
+        exchange: order.exchange.code,
+        filled: before - order.amount,
+      });
+    }
+  }
+  for (const [id, before] of Object.entries(seen)) {
+    if (active.has(id) || before === undefined) {
+      continue;
+    }
+    const order = cxosStore.getById(id);
+    if (order?.status === 'FILLED') {
+      result.push({
+        id,
+        ticker: order.material.ticker,
+        exchange: order.exchange.code,
+        filled: before,
+      });
+    }
+  }
+  return result;
+}
+
 function currentAmounts() {
   const seen: Record<string, number> = {};
   for (const order of cxosStore.active.value ?? []) {
