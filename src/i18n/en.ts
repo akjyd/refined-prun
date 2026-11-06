@@ -1655,4 +1655,17 @@ export default {
   // INV/SHPI：同地点的另一个库存按钮
   'inv.baseStore': 'Base',
   'inv.warehouse': 'Warehouse',
+
+  // ARB：按翻车率解算
+  'arb.failureLabel': 'Risk',
+  'arb.failure': 'Risk',
+  'arb.perDayReturn': 'Return/day',
+  'arb.unitsFill': 'Units now/total',
+  'arb.tipFailure':
+    'How often a trade like this loses money, measured from past prices. Set what you accept in XIT SET; the size of every trade follows from it.',
+  'set.arb.title': 'Arbitrage',
+  'set.arb.failure': 'Acceptable risk',
+  'set.arb.failureHint': '0-100. Lower is stricter and shows fewer chances.',
+  'set.arb.minDaily': 'Least profit a day',
+  'set.arb.minDailyHint': 'Trades under this are not shown.',
 };

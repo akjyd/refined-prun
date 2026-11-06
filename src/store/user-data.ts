@@ -38,6 +38,12 @@ export const initialUserData = deepFreeze({
       // (player, 2026-11-06). Without an entry the planet follows its faction.
       group: {} as Record<string, string>,
     },
+    // XIT ARB (player, 2026-11-06): you set how often a trade may lose money, and the size of
+    // every trade follows from it.
+    arb: {
+      failurePercent: 10,
+      minDailyProfit: 30_000,
+    },
     flow: {
       overrides: {} as Record<string, UserData.PriceOverride>,
     },

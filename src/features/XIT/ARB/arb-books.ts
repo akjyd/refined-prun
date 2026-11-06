@@ -1,13 +1,11 @@
-import { arbitrageAtHurdle, ArbitrageMode, BookLevel } from '@src/core/arbitrage';
-import { dailyVolatility, hurdleRate, tradeDays } from '@src/core/volatility';
+import { BookLevel } from '@src/core/arbitrage';
+import { planTrade } from '@src/core/arb-plan';
+import { dailyVolatility, flightDays } from '@src/core/volatility';
+import { userData } from '@src/store/user-data';
 import { dailyCloses } from '@src/infrastructure/fio/cxpc';
 import { cxStore } from '@src/infrastructure/fio/cx';
 import { fioBooks, OrderBookData } from '@src/infrastructure/fio/exchange-full';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
-
-// How much each order taken must make by itself, as a multiple of one usual price move over
-// the days held (player, 2026-11-06: try it). 0 takes every order that makes anything.
-export const arbHurdle = ref<'0' | '0.5' | '1' | '2'>('1');
 
 // Average units traded per day on an exchange (7-day trade / 7).
 export function dailyTrade(ticker: string, code: string) {
@@ -34,32 +32,31 @@ export function bookData(cxTicker: string): { book: OrderBookData; live: boolean
   return fio ? { book: fio, live: false } : undefined;
 }
 
-export function tradeOf(
-  ticker: string,
-  from: string,
-  to: string,
-  mode: ArbitrageMode,
-  maxUnits: number,
-) {
+// The trade this material and route allows at the failure rate you set, as two parts.
+export function planOf(ticker: string, from: string, to: string, maxUnits: number) {
   const a = bookData(`${ticker}.${from}`);
   const b = bookData(`${ticker}.${to}`);
   if (!a || !b) {
     return undefined;
   }
   const closes = dailyCloses.get(`${ticker}.${to}`);
-  const volatility = closes ? dailyVolatility(closes) : undefined;
-  const daily = dailyTrade(ticker, to);
-  const multiple = Number(arbHurdle.value);
-  const result = arbitrageAtHurdle(a.book.asks, b.book.bids, b.book.asks, mode, maxUnits, units =>
-    hurdleRate(volatility, tradeDays(from, to, mode === 'listed', units, daily), multiple),
-  );
-  if (!result) {
+  const plan = planTrade({
+    asksA: a.book.asks,
+    bidsB: b.book.bids,
+    asksB: b.book.asks,
+    flightDays: flightDays(from, to),
+    dailyTrade: dailyTrade(ticker, to),
+    volatility: closes ? dailyVolatility(closes) : undefined,
+    failurePercent: userData.settings.arb.failurePercent,
+    maxUnits,
+  });
+  if (!plan) {
     return undefined;
   }
   // The older of the two FIO copies, when either is not live.
   const times = [a, b].filter(x => !x.live).map(x => x.book.time ?? 0);
   return {
-    result,
+    plan,
     live: a.live && b.live,
     time: times.length > 0 ? Math.min(...times) : undefined,
   };

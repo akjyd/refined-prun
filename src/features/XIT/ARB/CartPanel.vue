@@ -22,10 +22,6 @@ import { t } from '@src/i18n';
 
 // The cart: goods for one flight, each with a slider and a number field. A good cannot take
 // more than its order books allow or than the ship has left.
-const { safetyOf, daysOf } = defineProps<{
-  safetyOf: (ticker: string) => number | undefined;
-  daysOf: (ticker: string, units: number) => number | undefined;
-}>();
 
 const $style = useCssModule();
 
@@ -46,14 +42,14 @@ function onInput(index: number, event: Event) {
 
 // The highest offer the buy takes: the limit price of the buy order.
 function limitOf(line: (typeof cartLines.value)[number]) {
-  const taken = line.trade?.result.fillsA.filter(x => x.take > 0) ?? [];
+  const taken = line.plan?.fillsA.filter(x => x.take > 0) ?? [];
   return taken.length > 0 ? Math.max(...taken.map(x => x.price)) : undefined;
 }
 
 const orders = computed(() =>
   cartLines.value
     .map(line => ({ line, limit: limitOf(line) }))
-    .filter(x => x.line.units > 0 && x.limit !== undefined && x.line.trade !== undefined),
+    .filter(x => x.line.units > 0 && x.limit !== undefined && x.line.plan !== undefined),
 );
 
 // Buy all: first a list of the orders to confirm, then one buy order per good.
@@ -72,7 +68,7 @@ async function buyAll() {
   const bought: string[] = [];
   try {
     for (const { line, limit } of orders.value) {
-      const result = line.trade!.result;
+      const result = line.plan!;
       startArbBatch({
         ticker: line.item.ticker,
         from: route.from,
@@ -84,11 +80,11 @@ async function buyAll() {
         plan: {
           units: result.units,
           cost: result.cost,
-          sellPrice: result.sell,
+          sellPrice: result.listPrice ?? result.revenue / Math.max(result.units, 1),
           profit: result.profit,
-          return: result.cost > 0 ? result.profit / result.cost : 0,
-          safety: safetyOf(line.item.ticker),
-          days: daysOf(line.item.ticker, result.units),
+          return: result.margin,
+          safety: undefined,
+          days: result.days,
         },
       });
       const error = await placeCxOrder(
@@ -179,9 +175,9 @@ async function buyAll() {
           >{{ fixed01(line.units * line.weight) }}t ·
           {{ fixed01(line.units * line.volume) }}m³</span
         >
-        <span :class="$style.num">{{ formatProfit(line.trade?.result.cost ?? 0) }}</span>
+        <span :class="$style.num">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
         <span :class="[$style.num, C.ColoredValue.positive]">{{
-          formatProfit(line.trade?.result.profit ?? 0)
+          formatProfit(line.plan?.profit ?? 0)
         }}</span>
         <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
       </div>
@@ -223,9 +219,9 @@ async function buyAll() {
         <span :class="$style.muted">{{
           o.line.item.mode === 'now' ? t('arb.fill') : t('arb.list')
         }}</span>
-        <span :class="$style.num">{{ fixed0(o.line.trade!.result.units) }}</span>
+        <span :class="$style.num">{{ fixed0(o.line.plan!.units) }}</span>
         <span :class="$style.num">{{ fixed02(o.limit!) }}</span>
-        <span :class="$style.num">{{ formatProfit(o.line.trade!.result.cost) }}</span>
+        <span :class="$style.num">{{ formatProfit(o.line.plan!.cost) }}</span>
       </div>
       <div :class="$style.bar">
         <span :class="$style.spacer" />

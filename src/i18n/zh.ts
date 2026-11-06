@@ -1574,6 +1574,19 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   // INV/SHPI：同地点的另一个库存按钮
   'inv.baseStore': '基地库存',
   'inv.warehouse': '仓库',
+
+  // ARB：按翻车率解算
+  'arb.failureLabel': '翻车率',
+  'arb.failure': '翻车率',
+  'arb.perDayReturn': '天利润率',
+  'arb.unitsFill': '数量 立即/总',
+  'arb.tipFailure':
+    '这一单亏钱的概率，用历史价格实测出来的。你能接受多少在 XIT SET 里设，每一单的数量由它推出来。',
+  'set.arb.title': '倒货',
+  'set.arb.failure': '可接受翻车率',
+  'set.arb.failureHint': '0–100。越低越严，机会越少。',
+  'set.arb.minDaily': '最低天利润',
+  'set.arb.minDailyHint': '低于这个数的不显示。',
 };
 
 export default zh;

@@ -58,6 +58,12 @@ const migrations: MigrationEntry[] = [
     },
   ],
   [
+    '06.11.2026 Add arbitrage risk settings',
+    userData => {
+      userData.settings.arb ??= { failurePercent: 10, minDailyProfit: 30_000 };
+    },
+  ],
+  [
     '06.11.2026 Add planet groups for BURN',
     userData => {
       userData.settings.burn.group ??= {};

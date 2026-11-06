@@ -3,18 +3,17 @@ import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
-import { ArbitrageMode } from '@src/core/arbitrage';
 import { fioBooks, loadFioBooks } from '@src/infrastructure/fio/exchange-full';
 import { cxStore } from '@src/infrastructure/fio/cx';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import ArbDepth from '@src/features/XIT/ARB/ArbDepth.vue';
 import CartPanel from '@src/features/XIT/ARB/CartPanel.vue';
-import { arbHurdle, tradeOf } from '@src/features/XIT/ARB/arb-books';
+import { planOf } from '@src/features/XIT/ARB/arb-books';
+import { ArbPlanResult } from '@src/core/arb-plan';
 import { shipSizes } from '@src/core/ship-sizes';
 import {
   addToCart,
-  arbDays,
   cartLines,
   cartRoute,
   dailyTrade,
@@ -25,12 +24,12 @@ import { ageText } from '@src/features/XIT/ARB/age';
 import BlacklistPanel from '@src/components/BlacklistPanel.vue';
 import { arbReasons } from '@src/core/blacklist-reasons';
 import { userData } from '@src/store/user-data';
-import { percent1 } from '@src/utils/format';
+import { percent0, percent1 } from '@src/utils/format';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
-import { dailyVolatility, safetyMultiple, tradeDays } from '@src/core/volatility';
-import { dailyCloses, requestCloses } from '@src/infrastructure/fio/cxpc';
+import { requestCloses } from '@src/infrastructure/fio/cxpc';
 import { fixed0, fixed01 } from '@src/utils/format';
 import { t } from '@src/i18n';
+import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { historyKey } from '@src/core/arb-history';
 import {
   arbHistory,
@@ -43,23 +42,8 @@ const $style = useCssModule();
 
 const EXCHANGES = ['AI1', 'CI1', 'IC1', 'NC1'];
 const ROUTES = EXCHANGES.flatMap(a => EXCHANGES.filter(b => b !== a).map(b => `${a}>${b}`));
-// Trades that make less than this per day are not shown (player, 2026-11-05; per day since
-// 2026-11-06).
-const MIN_PROFIT_PER_DAY = 30_000;
 
 const exchangeChips = EXCHANGES.map(x => ({ value: x, label: cxLabel(x) }));
-const hurdleChips = computed(() => [
-  { value: '0' as const, label: t('arb.hurdleOff') },
-  { value: '0.5' as const, label: '0.5' },
-  { value: '1' as const, label: '1' },
-  { value: '2' as const, label: '2' },
-]);
-
-const mode = ref<ArbitrageMode>('now');
-const modeChips = computed(() => [
-  { value: 'now' as const, label: t('arb.now') },
-  { value: 'listed' as const, label: t('arb.listed') },
-]);
 
 // Route: all, or the start and end exchanges you pick (several of each). No pick on a side
 // means any exchange on that side.
@@ -71,12 +55,9 @@ const routeChips = computed(() => [
 const starts = ref<string[]>([]);
 const ends = ref<string[]>([]);
 
-// Days of end-exchange trade the units are compared with (player, 2026-11-05: 3 by default).
-const days = arbDays;
 const shipChips = shipSizes.map(x => ({ value: x.id, label: x.label }));
-const dayChips = computed(() =>
-  (['1', '3', '7'] as const).map(x => ({ value: x, label: t('arb.days', x) })),
-);
+// What you set in XIT SET: how often a trade may lose money.
+const target = computed(() => userData.settings.arb.failurePercent);
 
 onMounted(() => {
   if (Date.now() - fioBooks.loadedAt > 5 * 60_000) {
@@ -94,23 +75,20 @@ interface Row {
   ticker: string;
   from: string;
   to: string;
-  units: number;
-  cost: number;
-  profit: number;
-  // Profit / what you pay.
-  return: number;
+  plan: ArbPlanResult;
   // Average units traded per day on the end exchange (7-day trade / 7).
   daily: number;
   live: boolean;
   time?: number;
 }
 
-// Every route of every material: units up to what the ship holds and the end exchange trades in
-// the chosen days. With goods in the cart, only the cart's route shows.
+// Every route of every material, at the size the failure rate you set allows. With goods in the
+// cart, only the cart's route shows.
 const allRows = computed(() => {
   const rows: Row[] = [];
   const route = cartRoute.value;
   const routes = route ? [`${route.from}>${route.to}`] : ROUTES;
+  const minDaily = userData.settings.arb.minDailyProfit;
   for (const material of materialsStore.all.value ?? []) {
     const ticker = material.ticker;
     for (const r of routes) {
@@ -118,35 +96,28 @@ const allRows = computed(() => {
       if (!tradedOn(ticker, from) || !tradedOn(ticker, to)) {
         continue;
       }
-      const key = `${ticker}.${r}`;
       const line = cartLines.value.find(x => x.item.ticker === ticker);
-      const cap = unitCap(ticker, to);
+      const cap = unitCap(ticker);
       if (!line && cap <= 0) {
         continue;
       }
-      const trade = line?.trade ?? tradeOf(ticker, from, to, mode.value, cap);
+      const trade = line?.plan
+        ? { plan: line.plan, live: true, time: undefined }
+        : planOf(ticker, from, to, cap);
       if (!trade) {
         continue;
       }
-      const result = trade.result;
-      const daily = dailyTrade(ticker, to);
-      const days = tradeDays(from, to, mode.value === 'listed', result.units, daily);
-      if (
-        !line &&
-        (result.units <= 0 || days === undefined || result.profit / days < MIN_PROFIT_PER_DAY)
-      ) {
+      const plan = trade.plan;
+      if (!line && (plan.units <= 0 || plan.profit / plan.days < minDaily)) {
         continue;
       }
       rows.push({
-        key,
+        key: `${ticker}.${r}`,
         ticker,
         from,
         to,
-        units: result.units,
-        cost: result.cost,
-        profit: result.profit,
-        return: result.cost > 0 ? result.profit / result.cost : 0,
-        daily,
+        plan,
+        daily: dailyTrade(ticker, to),
         live: trade.live,
         time: trade.time,
       });
@@ -155,33 +126,15 @@ const allRows = computed(() => {
   return rows;
 });
 
-// Units over the end exchange's trade in the chosen days.
-function shareOf(row: Row) {
-  const trade = row.daily * Number(days.value);
-  return trade > 0 ? row.units / trade : Infinity;
-}
-
-// Return / (daily volatility of the end exchange × √flight days); undefined until FIO sends the
-// daily prices.
-// Flight days, plus the days a listed sale waits (units / daily trade). Profit per day and the
-// safety multiple both use these days (player, 2026-11-06).
-function daysOf(row: Row) {
-  return tradeDays(row.from, row.to, mode.value === 'listed', row.units, row.daily);
-}
-
 function perDayOf(row: Row) {
-  const days = daysOf(row);
-  return days !== undefined ? row.profit / days : undefined;
+  return row.plan.profit / row.plan.days;
 }
 
-function safetyOf(row: Row) {
-  const closes = dailyCloses.get(`${row.ticker}.${row.to}`);
-  const volatility = closes ? dailyVolatility(closes) : undefined;
-  const days = daysOf(row);
-  return days !== undefined ? safetyMultiple(row.return, volatility, days) : undefined;
+function perDayReturnOf(row: Row) {
+  return row.plan.cost > 0 ? row.plan.margin / row.plan.days : 0;
 }
 
-type SortKey = 'ticker' | 'share' | 'cost' | 'days' | 'perDay' | 'return' | 'safety';
+type SortKey = 'ticker' | 'units' | 'cost' | 'days' | 'perDay' | 'perDayReturn' | 'failure';
 const sortKey = ref<SortKey>('perDay');
 const sortDown = ref(true);
 
@@ -217,19 +170,22 @@ const rows = computed(() => {
   );
   const sign = sortDown.value ? -1 : 1;
   const value = (x: Row) => {
-    if (sortKey.value === 'safety') {
-      return safetyOf(x) ?? -Infinity;
+    switch (sortKey.value) {
+      case 'perDay':
+        return perDayOf(x);
+      case 'perDayReturn':
+        return perDayReturnOf(x);
+      case 'days':
+        return x.plan.days;
+      case 'units':
+        return x.plan.units;
+      case 'cost':
+        return x.plan.cost;
+      case 'failure':
+        return x.plan.failure;
+      default:
+        return 0;
     }
-    if (sortKey.value === 'perDay') {
-      return perDayOf(x) ?? -Infinity;
-    }
-    if (sortKey.value === 'days') {
-      return daysOf(x) ?? Infinity;
-    }
-    if (sortKey.value === 'share') {
-      return shareOf(x);
-    }
-    return sortKey.value === 'ticker' ? 0 : x[sortKey.value];
   };
   return list.sort((a, b) =>
     sortKey.value === 'ticker'
@@ -238,22 +194,7 @@ const rows = computed(() => {
   );
 });
 
-function cartSafety(ticker: string) {
-  const row = allRows.value.find(x => x.ticker === ticker);
-  return row ? safetyOf(row) : undefined;
-}
-
-// Expected days of a cart line at the units you buy; kept in the batch plan for ARBLOG.
-function cartDays(ticker: string, units: number) {
-  const route = cartRoute.value;
-  if (!route) {
-    return undefined;
-  }
-  const daily = dailyTrade(ticker, route.to);
-  return tradeDays(route.from, route.to, mode.value === 'listed', units, daily);
-}
-
-// Daily prices of the end exchanges in the list, for the safety multiple.
+// Daily prices of the end exchanges in the list, for the volatility.
 watchEffect(() => requestCloses([...new Set(rows.value.map(x => `${x.ticker}.${x.to}`))]));
 
 // Blacklist: one button. In blacklist mode you pick a reason, then click rows to add them.
@@ -301,7 +242,15 @@ watch(
 onUnmounted(() => books.close());
 
 function add(row: Row) {
-  addToCart({ ticker: row.ticker, from: row.from, to: row.to, mode: mode.value }, row.units);
+  addToCart(
+    {
+      ticker: row.ticker,
+      from: row.from,
+      to: row.to,
+      mode: row.plan.listUnits > 0 ? 'listed' : 'now',
+    },
+    row.plan.units,
+  );
 }
 
 function onRowClick(row: Row) {
@@ -320,7 +269,7 @@ function onRowClick(row: Row) {
 // New chances (player, 2026-11-06): a chance not in the list for a day gets a mark until you
 // open its row or mark all read.
 function hKey(row: Row) {
-  return historyKey(mode.value, row.ticker, row.from, row.to);
+  return historyKey(row.plan.listUnits > 0 ? 'listed' : 'now', row.ticker, row.from, row.to);
 }
 
 const unread = computed(() => new Set(arbHistory.value.unread));
@@ -345,32 +294,24 @@ function toggleBlacklistMode() {
 <template>
   <div :class="$style.root">
     <div :class="$style.bar">
-      <ChipGroup v-model="mode" :options="modeChips" />
       <template v-if="!editingBlacklist">
         <span v-if="!cartRoute" :class="$style.group">
           <span :class="$style.muted">{{ t('arb.route') }}</span>
           <ChipGroup v-model="routeMode" :options="routeChips" />
         </span>
         <span :class="$style.group">
-          <span :class="$style.muted">{{ t('arb.daysLabel') }}</span>
-          <ChipGroup v-model="days" :options="dayChips" />
-        </span>
-        <span :class="$style.group">
           <span :class="$style.muted">{{ t('arb.ship') }}</span>
           <ChipGroup v-model="userData.arbCart.ship" :options="shipChips" />
-        </span>
-        <span :class="$style.group">
-          <span
-            :class="[$style.muted, C.Tooltip.container]"
-            :data-tooltip="t('arb.tipHurdle')"
-            data-tooltip-position="bottom"
-            >{{ t('arb.hurdle') }}</span
-          >
-          <ChipGroup v-model="arbHurdle" :options="hurdleChips" />
         </span>
       </template>
       <span :class="$style.spacer" />
       <template v-if="!editingBlacklist">
+        <span :class="$style.muted"
+          >{{ t('arb.failureLabel') }}
+          <span :class="$style.reload" @click="showBuffer('XIT SET ARB')">{{
+            percent0(target / 100)
+          }}</span></span
+        >
         <span :class="$style.muted">
           {{
             fioBooks.loading
@@ -395,7 +336,7 @@ function toggleBlacklistMode() {
         <span v-if="!editingBlacklist" :class="$style.muted">{{ blacklistCount }}</span>
       </PrunButton>
     </div>
-    <CartPanel v-if="cartRoute && !editingBlacklist" :safety-of="cartSafety" :days-of="cartDays" />
+    <CartPanel v-if="cartRoute && !editingBlacklist" />
     <div
       v-if="routeMode === 'custom' && !cartRoute && !editingBlacklist"
       :class="[$style.bar, $style.sub]">
@@ -431,8 +372,8 @@ function toggleBlacklistMode() {
         :class="[$style.num, $style.sort, C.Tooltip.container]"
         :data-tooltip="t('arb.tipUnits')"
         data-tooltip-position="bottom"
-        @click="sortBy('share')"
-        >{{ t('arb.unitsTrade', days) }}{{ arrow('share') }}</span
+        @click="sortBy('units')"
+        >{{ t('arb.unitsFill') }}{{ arrow('units') }}</span
       >
       <span
         :class="[$style.num, $style.sort, C.Tooltip.container]"
@@ -459,15 +400,15 @@ function toggleBlacklistMode() {
         :class="[$style.num, $style.sort, C.Tooltip.container]"
         :data-tooltip="t('arb.tipReturn')"
         data-tooltip-position="bottom"
-        @click="sortBy('return')"
-        >{{ t('arb.return') }}{{ arrow('return') }}</span
+        @click="sortBy('perDayReturn')"
+        >{{ t('arb.perDayReturn') }}{{ arrow('perDayReturn') }}</span
       >
       <span
         :class="[$style.num, $style.sort, C.Tooltip.container]"
-        :data-tooltip="t('arb.tipSafety')"
+        :data-tooltip="t('arb.tipFailure')"
         data-tooltip-position="bottom"
-        @click="sortBy('safety')"
-        >{{ t('arb.safety') }}{{ arrow('safety') }}</span
+        @click="sortBy('failure')"
+        >{{ t('arb.failure') }}{{ arrow('failure') }}</span
       >
       <span />
     </div>
@@ -492,32 +433,39 @@ function toggleBlacklistMode() {
             r.live ? t('arb.live') : t('arb.fioAgo', ageText(r.time))
           }}</span></span
         >
-        <span :class="[$style.share, shareOf(r) > 1 ? $style.over : undefined]">
+        <span :class="$style.share">
           <span :class="$style.shareText"
-            >{{ fixed0(r.units) }}
-            <span :class="$style.muted">/ {{ fixed0(r.daily * Number(days)) }}</span></span
+            >{{ fixed0(r.plan.fillUnits) }}
+            <span :class="$style.muted">/ {{ fixed0(r.plan.units) }}</span></span
           >
           <span :class="$style.shareBar"
-            ><i :style="{ width: `${Math.min(1, shareOf(r)) * 100}%` }"
-          /></span>
-        </span>
-        <span :class="[$style.num, $style.muted]">{{ formatProfit(r.cost) }}</span>
-        <span :class="[$style.num, $style.muted]">{{
-          daysOf(r) !== undefined ? t('arb.days', fixed01(daysOf(r)!)) : '--'
-        }}</span>
-        <span :class="[$style.num, $style.key]">{{
-          perDayOf(r) !== undefined ? formatProfit(perDayOf(r)!) : '--'
-        }}</span>
+            ><i
+              :class="$style.fill"
+              :style="{
+                width: `${r.plan.units > 0 ? (r.plan.fillUnits / r.plan.units) * 100 : 0}%`,
+              }" /></span
+        ></span>
+        <span :class="[$style.num, $style.muted]">{{ formatProfit(r.plan.cost) }}</span>
+        <span :class="[$style.num, $style.muted]">{{ t('arb.days', fixed01(r.plan.days)) }}</span>
+        <span :class="[$style.num, $style.key]">{{ formatProfit(perDayOf(r)) }}</span>
         <span :class="$style.num">
           {{
             editingBlacklist && r.ticker in userData.arbBlacklist
               ? reasonLabel(r.ticker)
-              : percent1(r.return)
+              : percent1(perDayReturnOf(r))
           }}
         </span>
-        <span :class="[$style.num, (safetyOf(r) ?? Infinity) < 1 ? $style.warn : $style.muted]">{{
-          safetyOf(r) !== undefined ? fixed01(safetyOf(r)!) : '--'
-        }}</span>
+        <span
+          :class="[
+            $style.num,
+            r.plan.failure > target
+              ? $style.warn
+              : r.plan.failure < target - 1
+                ? $style.good
+                : $style.muted,
+          ]"
+          >{{ percent0(r.plan.failure / 100) }}</span
+        >
         <span :class="$style.action">
           <span v-if="inCart(r.ticker)" :class="$style.muted">{{ t('arb.inCart') }}</span>
           <button
@@ -531,14 +479,7 @@ function toggleBlacklistMode() {
           </button>
         </span>
       </div>
-      <ArbDepth
-        v-if="open === r.key"
-        :ticker="r.ticker"
-        :from="r.from"
-        :to="r.to"
-        :mode="mode"
-        :capacity="cartLines.find(x => x.item.ticker === r.ticker)?.units ?? r.units"
-        :safety="safetyOf(r)" />
+      <ArbDepth v-if="open === r.key" :ticker="r.ticker" :from="r.from" :to="r.to" :plan="r.plan" />
     </template>
   </div>
 </template>
@@ -591,7 +532,7 @@ function toggleBlacklistMode() {
 
 .row {
   display: grid;
-  grid-template-columns: 22px 56px minmax(100px, 1fr) 150px 80px 80px 80px 64px 64px 60px;
+  grid-template-columns: 22px 56px minmax(100px, 1fr) 130px 80px 68px 80px 72px 56px 60px;
   gap: 0 16px;
   /* On the text baseline, so the small new mark lines up with the numbers. */
   align-items: baseline;
@@ -690,13 +631,12 @@ function toggleBlacklistMode() {
   background-color: var(--rpz-text-weak);
 }
 
-.over .shareText,
-.over .shareText .muted {
-  color: var(--rpz-neg);
+.shareBar .fill {
+  background-color: var(--rpz-pos);
 }
 
-.over .shareBar i {
-  background-color: var(--rpz-neg);
+.good {
+  color: var(--rpz-pos);
 }
 
 .action {
