@@ -107,29 +107,44 @@ function setupRow(tbody: HTMLTableSectionElement, row: HTMLTableRowElement, drag
   });
 }
 
-async function onTileReady(tile: PrunTile) {
-  const tbody = await $(tile.anchor, 'tbody');
+// Rows are found as they appear, like the other FLT features (the table and its body may come
+// later than the tile, and the game can draw them again).
+function onTileReady(tile: PrunTile) {
   const drag: { id?: string } = {};
-  const refresh = () => {
-    for (const row of rowsOf(tbody)) {
-      setupRow(tbody, row, drag);
-    }
-    applyOrder(tbody);
-  };
-  refresh();
-  let queued = false;
-  const observer = new MutationObserver(() => {
-    if (queued) {
+  const queued = new Set<HTMLTableSectionElement>();
+  const observed = new WeakSet<HTMLTableRowElement>();
+  const refresh = (tbody: HTMLTableSectionElement) => {
+    if (queued.has(tbody)) {
       return;
     }
-    queued = true;
+    queued.add(tbody);
     queueMicrotask(() => {
-      queued = false;
-      refresh();
+      queued.delete(tbody);
+      for (const row of rowsOf(tbody)) {
+        setupRow(tbody, row, drag);
+      }
+      applyOrder(tbody);
+    });
+  };
+  subscribe($$(tile.anchor, 'tr'), row => {
+    const tbody = row.parentElement;
+    if (!(tbody instanceof HTMLTableSectionElement) || tbody.tagName !== 'TBODY') {
+      return;
+    }
+    refresh(tbody);
+    if (observed.has(row)) {
+      return;
+    }
+    observed.add(row);
+    // The game may draw the row's cells again (dropping the handle) or give the row another
+    // ship.
+    new MutationObserver(() => refresh(tbody)).observe(row, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-prun-id'],
     });
   });
-  // Subtree too: the game may draw a row's first cell again, which drops the handle.
-  observer.observe(tbody, { childList: true, subtree: true });
 }
 
 function init() {
