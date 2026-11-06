@@ -41,8 +41,13 @@ function addHandle(
   drag: { id?: string },
   tbody: HTMLTableSectionElement,
 ) {
-  const cell = row.cells.item(0);
-  if (cell === null || cell.querySelector(`.${$style.handle}`)) {
+  if (row.querySelector(`.${$style.handle}`)) {
+    return;
+  }
+  // The first cell is the transponder, which flt-hide-transponder hides, so the handle goes in
+  // the first cell that is not hidden (player, 2026-11-06: the handle was there but invisible).
+  const cell = Array.from(row.cells).find(x => getComputedStyle(x).display !== 'none');
+  if (cell === undefined) {
     return;
   }
   const handle = document.createElement('span');
