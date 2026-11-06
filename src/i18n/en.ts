@@ -1642,4 +1642,7 @@ export default {
     'Realized profit over the days so far, against the plan: planned profit over the expected days.',
   'arblog.tipDays':
     'Days from the buy until now, or until the last sale; against the days expected when you bought. Red when it is over.',
+
+  // BURN 按派系分组
+  'burn.noFaction': 'No faction',
 };

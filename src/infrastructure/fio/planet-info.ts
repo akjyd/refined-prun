@@ -1,5 +1,6 @@
-// Current COGC program of planets, from FIO /planet/{id}. One request per planet, once per session.
-// The embedded snapshot is used until the answer arrives or when FIO cannot be reached.
+// Planet data from FIO /planet/{id}: the current COGC program and the faction the planet
+// belongs to. One request per planet, once per session. Until the answer arrives, or when FIO
+// cannot be reached, the COGC falls back to the embedded snapshot and the faction is unknown.
 
 interface FioCogcProgram {
   ProgramType: string | null;
@@ -8,6 +9,8 @@ interface FioCogcProgram {
 }
 
 const cogcs = shallowReactive(new Map<string, string>());
+// 'AI', 'CI', 'IC', 'NC', or '' for a planet outside the factions.
+const factions = shallowReactive(new Map<string, { code: string; name: string }>());
 const requested = new Set<string>();
 const queue: string[] = [];
 let running = 0;
@@ -16,6 +19,10 @@ const maxRunning = 4;
 // 'RESOURCE_EXTRACTION', 'WORKFORCE_PIONEERS', ... or '' when there is no program now.
 export function getLiveCogc(naturalId: string) {
   return cogcs.get(naturalId);
+}
+
+export function getPlanetFaction(naturalId: string) {
+  return factions.get(naturalId);
 }
 
 export function requestLiveCogc(naturalIds: string[]) {
@@ -45,7 +52,15 @@ async function fetchCogc(naturalId: string) {
     if (!response.ok) {
       return;
     }
-    const planet = (await response.json()) as { COGCPrograms?: FioCogcProgram[] | null };
+    const planet = (await response.json()) as {
+      COGCPrograms?: FioCogcProgram[] | null;
+      FactionCode?: string | null;
+      FactionName?: string | null;
+    };
+    factions.set(naturalId, {
+      code: planet.FactionCode ?? '',
+      name: planet.FactionName ?? '',
+    });
     const now = Date.now();
     const current = (planet.COGCPrograms ?? []).find(
       x => x.StartEpochMs <= now && now < x.EndEpochMs,

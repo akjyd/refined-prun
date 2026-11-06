@@ -17,7 +17,7 @@ import { exchangePrice, withPrice } from '@src/core/daily-profit/recipe-choice';
 import { layoutText } from '@src/core/daily-profit/daily-profit';
 import { formatProfit, profitClass } from '@src/core/daily-profit/profit-format';
 import { useProfitData } from '@src/infrastructure/prunplanner/profit-data';
-import { getLiveCogc, requestLiveCogc } from '@src/infrastructure/fio/planet-cogc';
+import { getLiveCogc, requestLiveCogc } from '@src/infrastructure/fio/planet-info';
 import { cxStore } from '@src/infrastructure/fio/cx';
 import { starsStore } from '@src/infrastructure/prun-api/data/stars';
 import { stationsStore } from '@src/infrastructure/prun-api/data/stations';

@@ -7,7 +7,7 @@ import {
 import { extractionProfit, PlanetInfo, ResourceSite } from '@src/core/extraction/extraction';
 import { watchedPlanetsOf } from '@src/core/extraction/watched-planets';
 import { useProfitData } from '@src/infrastructure/prunplanner/profit-data';
-import { getLiveCogc, requestLiveCogc } from '@src/infrastructure/fio/planet-cogc';
+import { getLiveCogc, requestLiveCogc } from '@src/infrastructure/fio/planet-info';
 import { userData } from '@src/store/user-data';
 
 // The daily profit at an order price, the same way in CXOB, XIT CX4 and XIT ORDERS.

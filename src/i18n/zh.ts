@@ -1561,6 +1561,9 @@ const zh: Partial<Record<keyof typeof en, string>> = {
     '左：已实现利润 ÷ 已用天数。右：买入时的计划利润 ÷ 预计天数。两者对比，看这一批走得比计划快还是慢。',
   'arblog.tipDays':
     '从买入到现在（卖完的批次算到最后一笔卖出）的天数，和买入时的预计天数对比。超过预计时变红。',
+
+  // BURN 按派系分组
+  'burn.noFaction': '无派系',
 };
 
 export default zh;
