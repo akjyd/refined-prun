@@ -32,19 +32,46 @@ function applyOrder(tbody: HTMLTableSectionElement) {
   }
 }
 
+// A drag handle at the start of the row: only the handle starts a drag, so the pointer does not
+// flicker over the whole table (player, 2026-11-06).
+function addHandle(
+  row: HTMLTableRowElement,
+  drag: { id?: string },
+  tbody: HTMLTableSectionElement,
+) {
+  const cell = row.cells.item(0);
+  if (cell === null || cell.querySelector(`.${$style.handle}`)) {
+    return;
+  }
+  const handle = document.createElement('span');
+  handle.className = $style.handle;
+  handle.textContent = '⋮⋮';
+  handle.draggable = true;
+  handle.addEventListener('click', e => e.stopPropagation());
+  handle.addEventListener('dragstart', e => {
+    e.stopPropagation();
+    drag.id = getPrunId(row) ?? undefined;
+    row.classList.add($style.dragging);
+    e.dataTransfer?.setData('text/plain', drag.id ?? '');
+    e.dataTransfer?.setDragImage(row, 8, row.offsetHeight / 2);
+  });
+  handle.addEventListener('dragend', () => {
+    drag.id = undefined;
+    row.classList.remove($style.dragging);
+    for (const x of rowsOf(tbody)) {
+      x.classList.remove($style.dropAbove, $style.dropBelow);
+    }
+  });
+  cell.prepend(handle);
+}
+
 function setupRow(tbody: HTMLTableSectionElement, row: HTMLTableRowElement, drag: { id?: string }) {
+  addHandle(row, drag, tbody);
   if (row.dataset.rpzOrder !== undefined) {
     return;
   }
   row.dataset.rpzOrder = '';
-  row.draggable = true;
-  row.classList.add($style.row);
   const clearLine = () => row.classList.remove($style.dropAbove, $style.dropBelow);
-  row.addEventListener('dragstart', e => {
-    drag.id = getPrunId(row) ?? undefined;
-    row.classList.add($style.dragging);
-    e.dataTransfer?.setData('text/plain', drag.id ?? '');
-  });
   row.addEventListener('dragend', () => {
     drag.id = undefined;
     row.classList.remove($style.dragging);
@@ -101,7 +128,8 @@ async function onTileReady(tile: PrunTile) {
       refresh();
     });
   });
-  observer.observe(tbody, { childList: true });
+  // Subtree too: the game may draw a row's first cell again, which drops the handle.
+  observer.observe(tbody, { childList: true, subtree: true });
 }
 
 function init() {
