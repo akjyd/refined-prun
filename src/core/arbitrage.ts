@@ -38,12 +38,17 @@ export interface Fill extends BookLevel {
 // offer and buy on A everything cheaper than that.
 export type ArbitrageMode = 'now' | 'listed';
 
+// Each order taken must make at least `minMargin` by itself: (sell - price) / price. Without
+// it, an offer one price step under the sell price is bought too, although it makes almost
+// nothing while taking the same days of price risk (player, 2026-11-06). The margin a level
+// must make is the hurdle rate; see hurdleRate in volatility.ts.
 export function arbitrage(
   asksA: BookLevel[],
   bidsB: BookLevel[],
   asksB: BookLevel[],
   mode: ArbitrageMode,
   maxUnits: number,
+  minMargin = 0,
 ): ArbitrageResult | undefined {
   const asks = [...asksA].sort((a, b) => a.price - b.price);
   if (asks.length === 0) {
@@ -66,7 +71,7 @@ export function arbitrage(
         limit = 'ship';
         break;
       }
-      if (fill.price >= sell) {
+      if (fill.price <= 0 || (sell - fill.price) / fill.price < minMargin) {
         limit = 'price';
         break;
       }
@@ -105,7 +110,7 @@ export function arbitrage(
       limit = 'ship';
       break;
     }
-    if (asks[i].price >= bids[j].price) {
+    if (asks[i].price <= 0 || (bids[j].price - asks[i].price) / asks[i].price < minMargin) {
       limit = 'price';
       break;
     }
@@ -130,6 +135,27 @@ export function arbitrage(
     limit = 'ship';
   }
   return { buy, sell, spread: (sell - buy) / buy, units, profit, cost, fillsA, fillsB, limit };
+}
+
+// The hurdle depends on the days, and the days on the units, so the walk runs twice: once
+// without a hurdle to get the units, then with the hurdle those units give.
+export function arbitrageAtHurdle(
+  asksA: BookLevel[],
+  bidsB: BookLevel[],
+  asksB: BookLevel[],
+  mode: ArbitrageMode,
+  maxUnits: number,
+  hurdleAt: (units: number) => number,
+): ArbitrageResult | undefined {
+  const first = arbitrage(asksA, bidsB, asksB, mode, maxUnits);
+  if (!first) {
+    return undefined;
+  }
+  const minMargin = hurdleAt(first.units);
+  if (minMargin <= 0) {
+    return first;
+  }
+  return arbitrage(asksA, bidsB, asksB, mode, maxUnits, minMargin);
 }
 
 // Units of a material that fit a cargo hold.

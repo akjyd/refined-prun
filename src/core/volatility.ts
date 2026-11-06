@@ -49,3 +49,22 @@ export function safetyMultiple(ret: number, volatility: number | undefined, days
   }
   return ret / (volatility * Math.sqrt(days));
 }
+
+// How much an order must make by itself to be worth taking: one usual price move over the days
+// the goods are held, times `multiple` (player, 2026-11-06). Without a volatility (a material
+// that hardly trades) a flat rate stands in.
+export const NO_VOLATILITY_HURDLE = 0.05;
+
+export function hurdleRate(
+  volatility: number | undefined,
+  days: number | undefined,
+  multiple: number,
+) {
+  if (multiple <= 0) {
+    return 0;
+  }
+  if (volatility === undefined || volatility <= 0) {
+    return NO_VOLATILITY_HURDLE * multiple;
+  }
+  return volatility * Math.sqrt(Math.max(days ?? 1, 1)) * multiple;
+}

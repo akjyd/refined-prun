@@ -4,8 +4,7 @@ import { ArbSnapshot } from '@src/core/arb-batches';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { userData } from '@src/store/user-data';
 import { unitsPerShip } from '@src/core/arbitrage';
-import { cxStore } from '@src/infrastructure/fio/cx';
-import { tradeOf } from '@src/features/XIT/ARB/arb-books';
+import { dailyTrade, tradeOf } from '@src/features/XIT/ARB/arb-books';
 
 // The XIT ARB cart: goods for one flight on one route. The route is the route of the first
 // good; the ship limits the units.
@@ -15,10 +14,7 @@ export type CartItem = (typeof userData.arbCart.items)[number];
 // Days of end-exchange trade a good may take at most (player, 2026-11-05: 3 by default).
 export const arbDays = ref<'1' | '3' | '7'>('3');
 
-// Average units traded per day on an exchange (7-day trade / 7).
-export function dailyTrade(ticker: string, code: string) {
-  return (cxStore.prices.get(code)?.get(ticker)?.Traded7D ?? 0) / 7;
-}
+export { dailyTrade };
 
 // The most units a trade may take, before the books: what the ship holds and what the end
 // exchange trades in the chosen days, whichever is less (player, 2026-11-06).

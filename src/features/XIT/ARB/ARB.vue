@@ -10,7 +10,7 @@ import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import ArbDepth from '@src/features/XIT/ARB/ArbDepth.vue';
 import CartPanel from '@src/features/XIT/ARB/CartPanel.vue';
-import { tradeOf } from '@src/features/XIT/ARB/arb-books';
+import { arbHurdle, tradeOf } from '@src/features/XIT/ARB/arb-books';
 import { shipSizes } from '@src/core/ship-sizes';
 import {
   addToCart,
@@ -48,6 +48,12 @@ const ROUTES = EXCHANGES.flatMap(a => EXCHANGES.filter(b => b !== a).map(b => `$
 const MIN_PROFIT_PER_DAY = 30_000;
 
 const exchangeChips = EXCHANGES.map(x => ({ value: x, label: cxLabel(x) }));
+const hurdleChips = computed(() => [
+  { value: '0' as const, label: t('arb.hurdleOff') },
+  { value: '0.5' as const, label: '0.5' },
+  { value: '1' as const, label: '1' },
+  { value: '2' as const, label: '2' },
+]);
 
 const mode = ref<ArbitrageMode>('now');
 const modeChips = computed(() => [
@@ -353,6 +359,15 @@ function toggleBlacklistMode() {
           <span :class="$style.muted">{{ t('arb.ship') }}</span>
           <ChipGroup v-model="userData.arbCart.ship" :options="shipChips" />
         </span>
+        <span :class="$style.group">
+          <span
+            :class="[$style.muted, C.Tooltip.container]"
+            :data-tooltip="t('arb.tipHurdle')"
+            data-tooltip-position="bottom"
+            >{{ t('arb.hurdle') }}</span
+          >
+          <ChipGroup v-model="arbHurdle" :options="hurdleChips" />
+        </span>
       </template>
       <span :class="$style.spacer" />
       <template v-if="!editingBlacklist">
@@ -412,22 +427,46 @@ function toggleBlacklistMode() {
         >{{ t('arb.material') }}{{ arrow('ticker') }}</span
       >
       <span>{{ t('arb.route') }}</span>
-      <span :class="[$style.num, $style.sort]" @click="sortBy('share')"
+      <span
+        :class="[$style.num, $style.sort, C.Tooltip.container]"
+        :data-tooltip="t('arb.tipUnits')"
+        data-tooltip-position="bottom"
+        @click="sortBy('share')"
         >{{ t('arb.unitsTrade', days) }}{{ arrow('share') }}</span
       >
-      <span :class="[$style.num, $style.sort]" @click="sortBy('cost')"
+      <span
+        :class="[$style.num, $style.sort, C.Tooltip.container]"
+        :data-tooltip="t('arb.tipCost')"
+        data-tooltip-position="bottom"
+        @click="sortBy('cost')"
         >{{ t('arb.cost') }}{{ arrow('cost') }}</span
       >
-      <span :class="[$style.num, $style.sort]" @click="sortBy('days')"
+      <span
+        :class="[$style.num, $style.sort, C.Tooltip.container]"
+        :data-tooltip="t('arb.tipDays')"
+        data-tooltip-position="bottom"
+        @click="sortBy('days')"
         >{{ t('arb.tradeDays') }}{{ arrow('days') }}</span
       >
-      <span :class="[$style.num, $style.sort]" @click="sortBy('perDay')"
+      <span
+        :class="[$style.num, $style.sort, C.Tooltip.container]"
+        :data-tooltip="t('arb.tipPerDay')"
+        data-tooltip-position="bottom"
+        @click="sortBy('perDay')"
         >{{ t('arb.perDay') }}{{ arrow('perDay') }}</span
       >
-      <span :class="[$style.num, $style.sort]" @click="sortBy('return')"
+      <span
+        :class="[$style.num, $style.sort, C.Tooltip.container]"
+        :data-tooltip="t('arb.tipReturn')"
+        data-tooltip-position="bottom"
+        @click="sortBy('return')"
         >{{ t('arb.return') }}{{ arrow('return') }}</span
       >
-      <span :class="[$style.num, $style.sort]" @click="sortBy('safety')"
+      <span
+        :class="[$style.num, $style.sort, C.Tooltip.container]"
+        :data-tooltip="t('arb.tipSafety')"
+        data-tooltip-position="bottom"
+        @click="sortBy('safety')"
         >{{ t('arb.safety') }}{{ arrow('safety') }}</span
       >
       <span />

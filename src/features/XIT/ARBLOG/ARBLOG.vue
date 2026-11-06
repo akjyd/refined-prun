@@ -240,8 +240,18 @@ function date(ms: number) {
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
         <span :class="$style.num">{{ t('arblog.actualProfit') }}</span>
         <span :class="$style.num">{{ t('arb.return') }}</span>
-        <span :class="$style.num">{{ t('arblog.perDay') }}</span>
-        <span :class="$style.num">{{ t('arblog.daysVsPlan') }}</span>
+        <span
+          :class="[$style.num, C.Tooltip.container]"
+          :data-tooltip="t('arblog.tipPerDay')"
+          data-tooltip-position="bottom"
+          >{{ t('arblog.perDay') }}</span
+        >
+        <span
+          :class="[$style.num, C.Tooltip.container]"
+          :data-tooltip="t('arblog.tipDays')"
+          data-tooltip-position="bottom"
+          >{{ t('arblog.daysVsPlan') }}</span
+        >
       </div>
       <template v-for="trip in trips" :key="trip.id">
         <div :class="$style.trip">

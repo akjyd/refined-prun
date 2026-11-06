@@ -1623,4 +1623,23 @@ export default {
   'arb.allRead': 'Mark all read',
   'arb.chartTitle': 'Profit/day · {0} ship, {1} days of trade',
   'arb.chartEmpty': 'No history yet',
+  'arb.hurdle': 'Hurdle',
+  'arb.hurdleOff': 'Off',
+  'arb.tipUnits':
+    'Units this trade buys, against what the end exchange trades in the chosen days. Red when the units are more than the trade: you may not sell them all.',
+  'arb.tipCost': 'What you pay for the goods on the start exchange.',
+  'arb.tipDays':
+    'Flight days plus the days a listed sale waits. Flight: 1 day between neighbour exchanges, 2 otherwise. Listed days = units / daily trade of the end exchange. A fill sells at once, so 0 days. The return trip is not counted.',
+  'arb.tipPerDay':
+    'Profit over the expected days: what this trade makes for each day it holds your ship and your money. Use it to compare a slow big trade with a fast small one.',
+  'arb.tipReturn':
+    'Profit / what you pay. Use it to compare trades of different size; 5% means 50,000 on a million.',
+  'arb.tipSafety':
+    'Return / the usual price move over the expected days. Over 1: one usual drop still leaves a profit. Under 1: one usual drop can turn the trade into a loss.',
+  'arb.tipHurdle':
+    'How much each order taken must make by itself, as a multiple of one usual price move over the expected days. Off buys any order that is cheaper than the sell price, even by one step.',
+  'arblog.tipPerDay':
+    'Realized profit over the days so far, against the plan: planned profit over the expected days.',
+  'arblog.tipDays':
+    'Days from the buy until now, or until the last sale; against the days expected when you bought. Red when it is over.',
 };

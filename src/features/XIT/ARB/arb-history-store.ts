@@ -1,4 +1,4 @@
-import { arbitrage, unitsPerShip } from '@src/core/arbitrage';
+import { arbitrageAtHurdle, unitsPerShip } from '@src/core/arbitrage';
 import {
   addPoints,
   emptyHistory,
@@ -7,10 +7,11 @@ import {
   markPresent,
 } from '@src/core/arb-history';
 import { getShipSize } from '@src/core/ship-sizes';
-import { tradeDays } from '@src/core/volatility';
+import { dailyVolatility, hurdleRate, tradeDays } from '@src/core/volatility';
+import { dailyCloses } from '@src/infrastructure/fio/cxpc';
 import { fioBooks } from '@src/infrastructure/fio/exchange-full';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
-import { dailyTrade } from '@src/features/XIT/ARB/cart';
+import { dailyTrade } from '@src/features/XIT/ARB/arb-books';
 
 // Profit per day of each chance over time, and new chances (player, 2026-11-06). A point is
 // added each time the FIO books load (XIT ARB loads them, and the ARBLOG watch every 3 hours).
@@ -21,6 +22,8 @@ import { dailyTrade } from '@src/features/XIT/ARB/cart';
 const KEY = 'refined-prun-arbhistory';
 export const HISTORY_SHIP = '2k/2k';
 export const HISTORY_DAYS = 3;
+// A fixed hurdle, like the fixed ship, so that the points can be compared.
+const HISTORY_HURDLE = 1;
 // The same limit as the XIT ARB list.
 const MIN_PROFIT_PER_DAY = 30_000;
 const EXCHANGES = ['AI1', 'CI1', 'IC1', 'NC1'];
@@ -73,7 +76,15 @@ export function recordHistory() {
         }
         for (const mode of ['now', 'listed'] as const) {
           const key = historyKey(mode, ticker, from, to);
-          const r = arbitrage(a.asks, b.bids, b.asks, mode, cap);
+          const closes = dailyCloses.get(`${ticker}.${to}`);
+          const volatility = closes ? dailyVolatility(closes) : undefined;
+          const r = arbitrageAtHurdle(a.asks, b.bids, b.asks, mode, cap, units =>
+            hurdleRate(
+              volatility,
+              tradeDays(from, to, mode === 'listed', units, daily),
+              HISTORY_HURDLE,
+            ),
+          );
           const days = r ? tradeDays(from, to, mode === 'listed', r.units, daily) : undefined;
           const perDay = r && r.units > 0 && days !== undefined ? r.profit / days : undefined;
           if (perDay !== undefined && perDay >= MIN_PROFIT_PER_DAY) {

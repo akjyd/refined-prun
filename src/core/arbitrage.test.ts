@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arbitrage, unitsPerShip } from '@src/core/arbitrage';
+import { arbitrage, arbitrageAtHurdle, unitsPerShip } from '@src/core/arbitrage';
 
 describe('arbitrage', () => {
   const asksA = [
@@ -43,5 +43,42 @@ describe('arbitrage', () => {
 
   it('fits a ship', () => {
     expect(unitsPerShip(2, 1, { weight: 500, volume: 500 })).toBe(250);
+  });
+});
+
+describe('the hurdle', () => {
+  // The 99 offer makes 1% against the 100 request: not worth a day of price risk.
+  const asksA = [
+    { price: 90, amount: 10 },
+    { price: 99, amount: 10 },
+  ];
+  const bidsB = [{ price: 100, amount: 100 }];
+  const asksB = [{ price: 120, amount: 10 }];
+
+  it('takes every cheaper offer without a hurdle', () => {
+    expect(arbitrage(asksA, bidsB, asksB, 'now', 100)?.units).toBe(20);
+  });
+
+  it('leaves the offer that makes less than the hurdle', () => {
+    const r = arbitrage(asksA, bidsB, asksB, 'now', 100, 0.05);
+    expect(r?.units).toBe(10);
+    expect(r?.limit).toBe('price');
+  });
+
+  it('applies the same rule to a listed sale', () => {
+    // Listed at one step under 120.
+    const all = arbitrage(asksA, bidsB, asksB, 'listed', 100);
+    expect(all?.units).toBe(20);
+    expect(arbitrage(asksA, bidsB, asksB, 'listed', 100, 0.25)?.units).toBe(10);
+  });
+
+  it('asks the hurdle for the units of the first walk', () => {
+    const seen: number[] = [];
+    const r = arbitrageAtHurdle(asksA, bidsB, asksB, 'now', 100, units => {
+      seen.push(units);
+      return 0.05;
+    });
+    expect(seen).toEqual([20]);
+    expect(r?.units).toBe(10);
   });
 });

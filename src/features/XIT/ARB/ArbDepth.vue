@@ -5,8 +5,8 @@ import { historyKey } from '@src/core/arb-history';
 import { arbHistory, HISTORY_DAYS, HISTORY_SHIP } from '@src/features/XIT/ARB/arb-history-store';
 import { getShipSize } from '@src/core/ship-sizes';
 import { t } from '@src/i18n';
-import { arbitrage, ArbitrageMode, BookLevel } from '@src/core/arbitrage';
-import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
+import { ArbitrageMode } from '@src/core/arbitrage';
+import { tradeOf } from '@src/features/XIT/ARB/arb-books';
 import { startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
 
 // The two live order books of a trade, as in XIT CX4. The orders the trade takes are gold; a
@@ -48,24 +48,8 @@ const $style = useCssModule();
 const history = computed(() => arbHistory.value.series[historyKey(mode, ticker, from, to)] ?? []);
 const shipLabel = getShipSize(HISTORY_SHIP)?.label ?? HISTORY_SHIP;
 
-function levels(orders: PrunApi.CXBrokerOrder[]): BookLevel[] {
-  return orders.map(x => ({ price: x.limit.amount, amount: x.amount ?? undefined, id: x.id }));
-}
-
-const result = computed(() => {
-  const a = cxobStore.getByTicker(`${ticker}.${from}`);
-  const b = cxobStore.getByTicker(`${ticker}.${to}`);
-  if (!a || !b) {
-    return undefined;
-  }
-  return arbitrage(
-    levels(a.sellingOrders),
-    levels(b.buyingOrders),
-    levels(b.sellingOrders),
-    mode,
-    capacity,
-  );
-});
+// The same trade the list shows, with the same hurdle (arb-books.ts).
+const result = computed(() => tradeOf(ticker, from, to, mode, capacity)?.result);
 
 const takes = computed(() => {
   const map = new Map<string, number>();
