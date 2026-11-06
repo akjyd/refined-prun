@@ -162,7 +162,7 @@ function safetyOf(row: Row) {
   return days !== undefined ? safetyMultiple(row.return, volatility, days) : undefined;
 }
 
-type SortKey = 'ticker' | 'share' | 'cost' | 'profit' | 'perDay' | 'return' | 'safety';
+type SortKey = 'ticker' | 'share' | 'cost' | 'days' | 'perDay' | 'return' | 'safety';
 const sortKey = ref<SortKey>('perDay');
 const sortDown = ref(true);
 
@@ -203,6 +203,9 @@ const rows = computed(() => {
     }
     if (sortKey.value === 'perDay') {
       return perDayOf(x) ?? -Infinity;
+    }
+    if (sortKey.value === 'days') {
+      return daysOf(x) ?? Infinity;
     }
     if (sortKey.value === 'share') {
       return shareOf(x);
@@ -365,8 +368,8 @@ function toggleBlacklistMode() {
       <span :class="[$style.num, $style.sort]" @click="sortBy('cost')"
         >{{ t('arb.cost') }}{{ arrow('cost') }}</span
       >
-      <span :class="[$style.num, $style.sort]" @click="sortBy('profit')"
-        >{{ t('arb.profit') }}{{ arrow('profit') }}</span
+      <span :class="[$style.num, $style.sort]" @click="sortBy('days')"
+        >{{ t('arb.tradeDays') }}{{ arrow('days') }}</span
       >
       <span :class="[$style.num, $style.sort]" @click="sortBy('perDay')"
         >{{ t('arb.perDay') }}{{ arrow('perDay') }}</span
@@ -408,7 +411,9 @@ function toggleBlacklistMode() {
           /></span>
         </span>
         <span :class="[$style.num, $style.muted]">{{ formatProfit(r.cost) }}</span>
-        <span :class="$style.num">{{ formatProfit(r.profit) }}</span>
+        <span :class="[$style.num, $style.muted]">{{
+          daysOf(r) !== undefined ? t('arb.days', fixed01(daysOf(r)!)) : '--'
+        }}</span>
         <span :class="[$style.num, $style.key]">{{
           perDayOf(r) !== undefined ? formatProfit(perDayOf(r)!) : '--'
         }}</span>

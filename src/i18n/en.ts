@@ -1616,4 +1616,5 @@ export default {
 
   // ARB：利润/天
   'arb.perDay': 'Profit/day',
+  'arb.tradeDays': 'Days',
 };
