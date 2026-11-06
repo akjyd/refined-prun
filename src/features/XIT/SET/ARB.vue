@@ -7,6 +7,9 @@ import { t } from '@src/i18n';
 const $style = useCssModule();
 
 const arb = userData.settings.arb;
+arb.failurePercent ??= 10;
+arb.minDailyProfit ??= 30_000;
+arb.maxDays ??= 7;
 
 function setFailure(value: string) {
   const n = Number(value);

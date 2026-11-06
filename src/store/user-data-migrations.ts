@@ -58,10 +58,15 @@ const migrations: MigrationEntry[] = [
     },
   ],
   [
+    '06.11.2026 Add the longest wait of an arbitrage trade',
+    userData => {
+      userData.settings.arb.maxDays ??= 7;
+    },
+  ],
+  [
     '06.11.2026 Add arbitrage risk settings',
     userData => {
       userData.settings.arb ??= { failurePercent: 10, minDailyProfit: 30_000, maxDays: 7 };
-      userData.settings.arb.maxDays ??= 7;
     },
   ],
   [
