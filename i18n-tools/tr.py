@@ -31,7 +31,7 @@ def R(file, old, new, count=1):
 def _add_import(path, src):
     if "from '@src/i18n'" in src:
         return src
-    names = [n for n in ('t', 'tType', 'tValue', 'tOptions') if re.search(r'\b' + n + r'\(', src)]
+    names = [n for n in ('t', 'tType', 'tValue', 'tOptions', 'tFeature') if re.search(r'\b' + n + r'\(', src)]
     imp = "import { " + ', '.join(names) + " } from '@src/i18n';"
     if path.endswith('.vue'):
         m = re.search(r'<script setup lang="ts">\n', src)
