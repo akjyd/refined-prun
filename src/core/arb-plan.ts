@@ -29,7 +29,7 @@ export interface ArbPlanResult {
   cost: number;
   revenue: number;
   profit: number;
-  // profit / cost.
+  // Daily trade of the end exchange in units; 0 means an offer there would never sell.
   margin: number;
   // Days the money is tied up, weighted by how much of it each part holds.
   days: number;
