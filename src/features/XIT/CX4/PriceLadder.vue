@@ -13,7 +13,6 @@ import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { useOrderDrag } from '@src/hooks/use-order-drag';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02 } from '@src/utils/format';
-import { requestCompanyUsers, traderName } from '@src/infrastructure/fio/company-users';
 import { t } from '@src/i18n';
 import link from '@src/infrastructure/prun-ui/css/link.module.css';
 
@@ -124,7 +123,7 @@ const columns = computed(() => {
         amount: partial ? `${fixed0(take)}/${fixed0(order.amount!)}` : amount,
         profit: profitAt(order.limit.amount),
         own: order.trader.id === ownId,
-        trader: traderName(order.trader),
+        trader: order.trader.name,
         change: ownChange(order),
         taken: take > 0,
       };
@@ -207,17 +206,6 @@ function bookOf(cell: Cell) {
 const columnsStyle = computed(() => ({
   gridTemplateColumns: `repeat(${exchanges.length}, minmax(210px, 1fr))`,
 }));
-
-// User names of the traders in the books (XIT ARB, ARBLOG).
-watchEffect(() => {
-  if (traders) {
-    requestCompanyUsers(
-      books.value.flatMap(book =>
-        [...(book?.sellingOrders ?? []), ...(book?.buyingOrders ?? [])].map(x => x.trader.code),
-      ),
-    );
-  }
-});
 
 // Scroll to the spread (between offers and requests) once the books arrive.
 const body = ref<HTMLElement>();

@@ -104,8 +104,8 @@ const stopVisit = watchEffect(() => {
     <div :class="$style.cards">
       <OrderCard
         v-for="ticker in tickers"
-        :data-order-card="`${ticker}.${exchange}`"
         :key="`${ticker}.${exchange}`"
+        :data-order-card="`${ticker}.${exchange}`"
         :ticker="ticker"
         :exchange="exchange"
         :refresh-key="refreshKey" />
