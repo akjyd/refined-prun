@@ -830,6 +830,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.contribution-bulk-controls': '在 COGC 和人口维护窗口的捐献菜单里加「全部 / 清零」按钮。',
   'feature.correct-commands': '自动纠正窗口命令。',
   'feature.custom-left-sidebar': '左侧边栏可以在设置里自定义。',
+  'feature.cx-delete-log':
+    'XIT CXDEL：记录每一次删除未成交挂单（改价也算），用来统计每天能删多少张。',
   'feature.cx-search-bar': 'CX：添加物资搜索框。',
   'feature.cxm-reorder': 'CXM：可以拖动调整交易所顺序。',
   'feature.cxo-delete-order-button': 'CXO / FXO：添加删除订单按钮。',
@@ -1515,6 +1517,21 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'orders.filledSince': '上次查看后 {0} 张单有成交：',
   'cx4.asks': '卖单',
   'cx4.bids': '买单',
+  'cxdel.title': '删单记录',
+  'cxdel.description': '每一次删除未成交挂单（改价也算），按天、按物资统计。',
+  'cxdel.last24': '最近 24 小时删单 {0} 张',
+  'cxdel.none': '还没有删单记录。',
+  'cxdel.byDay': '按天',
+  'cxdel.date': '日期',
+  'cxdel.count': '删单数',
+  'cxdel.materials': '物资数',
+  'cxdel.most': '最多',
+  'cxdel.value': '剩余价值',
+  'cxdel.records': '逐条',
+  'cxdel.time': '时间',
+  'cxdel.side': '方向',
+  'cxdel.left': '剩余数量',
+  'cxdel.partly': '部分成交',
 };
 
 export default zh;
