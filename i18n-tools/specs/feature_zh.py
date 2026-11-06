@@ -160,7 +160,7 @@ ZH = {
  'arb-batch-tracker': 'XIT ARB：从 XIT ARB 下的买单自动记成倒货批次，并跟踪它之后的卖出（XIT ARBLOG）。',
  'flt-custom-order': 'FLT：拖动飞船行，按你定的顺序排列，不再只能按名字排。',
  'cx-delete-log': 'XIT CXDEL：记录每一次删除未成交挂单（改价也算），用来统计每天能删多少张。',
- 'arb-watch': 'XIT ARBLOG：自动记录好的倒货机会（不买），之后估算如果真做了能不能赚钱。',
+ 'arb-watch': 'XIT ARB、ARBLOG：自动记录倒货机会的利润走势和新机会；记录好的机会（不买），之后估算如果真做了能不能赚钱。',
  'inv-arb-badge': 'INV/SHPI：在有倒货批次未卖完的物资上加「倒」标记和数量。',
  'cxob-daily-profit': 'CXOB：挂单公司名换成「按这一行的价格卖出，一个基地每天的利润」（配方在 XIT RECIPES 里选）。',
 }

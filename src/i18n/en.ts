@@ -814,7 +814,7 @@ export default {
   'feature.arb-batch-tracker':
     'XIT ARB: Records each buy placed from XIT ARB as an arbitrage batch and follows its sales.',
   'feature.arb-watch':
-    'XIT ARBLOG: Records good arbitrage chances without buying and checks later whether they would have made money.',
+    'XIT ARB, ARBLOG: Records good arbitrage chances and their profit over time, and checks later whether they would have made money.',
   'feature.audio-volume-slider':
     'Adds a volume slider to the game settings in the top-right corner of the screen.',
   'feature.auto-resize-buffers': 'Automatically resizes the buffer size on command change.',
@@ -1619,4 +1619,8 @@ export default {
   'arb.tradeDays': 'Days',
   'arblog.daysVsPlan': 'Days / expected',
   'arblog.perDay': 'Profit/day / plan',
+  'arb.new': 'New',
+  'arb.allRead': 'Mark all read',
+  'arb.chartTitle': 'Profit/day · {0} ship, {1} days of trade',
+  'arb.chartEmpty': 'No history yet',
 };

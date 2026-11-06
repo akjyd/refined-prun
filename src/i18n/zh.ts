@@ -787,7 +787,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.always-visible-tile-controls': '窗口右上角的按钮始终显示（不用鼠标移上去）。',
   'feature.arb-batch-tracker':
     'XIT ARB：从 XIT ARB 下的买单自动记成倒货批次，并跟踪它之后的卖出（XIT ARBLOG）。',
-  'feature.arb-watch': 'XIT ARBLOG：自动记录好的倒货机会（不买），之后估算如果真做了能不能赚钱。',
+  'feature.arb-watch':
+    'XIT ARB、ARBLOG：自动记录倒货机会的利润走势和新机会；记录好的机会（不买），之后估算如果真做了能不能赚钱。',
   'feature.audio-volume-slider': '在右上角的游戏设置里加音量滑块。',
   'feature.auto-resize-buffers': '切换命令时自动调整窗口大小。',
   'feature.bbc-building-count': 'BBC：在建筑图标上显示数量。',
@@ -1538,6 +1539,10 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.tradeDays': '预计天数',
   'arblog.daysVsPlan': '用时 / 预计',
   'arblog.perDay': '利润/天 / 计划',
+  'arb.new': '新',
+  'arb.allRead': '全部已读',
+  'arb.chartTitle': '利润/天 · 按 {0} 船、{1} 日成交计算',
+  'arb.chartEmpty': '还没有记录',
 };
 
 export default zh;

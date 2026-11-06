@@ -31,6 +31,13 @@ import { dailyVolatility, safetyMultiple, tradeDays } from '@src/core/volatility
 import { dailyCloses, requestCloses } from '@src/infrastructure/fio/cxpc';
 import { fixed0, fixed01 } from '@src/utils/format';
 import { t } from '@src/i18n';
+import { historyKey } from '@src/core/arb-history';
+import {
+  arbHistory,
+  markAllRead,
+  markListed,
+  markRead,
+} from '@src/features/XIT/ARB/arb-history-store';
 
 const $style = useCssModule();
 
@@ -300,8 +307,28 @@ function onRowClick(row: Row) {
     }
     return;
   }
+  markRead(hKey(row));
   open.value = open.value === row.key ? undefined : row.key;
 }
+
+// New chances (player, 2026-11-06): a chance not in the list for a day gets a mark until you
+// open its row or mark all read.
+function hKey(row: Row) {
+  return historyKey(mode.value, row.ticker, row.from, row.to);
+}
+
+const unread = computed(() => new Set(arbHistory.value.unread));
+const unreadCount = computed(() => rows.value.filter(x => unread.value.has(hKey(x))).length);
+
+watch(
+  () => rows.value.map(hKey).join(','),
+  keys => {
+    if (keys !== '') {
+      markListed(keys.split(','));
+    }
+  },
+  { immediate: true },
+);
 
 function toggleBlacklistMode() {
   editingBlacklist.value = !editingBlacklist.value;
@@ -342,6 +369,12 @@ function toggleBlacklistMode() {
           >↻</span
         >
       </template>
+      <button
+        v-if="!editingBlacklist && unreadCount > 0"
+        :class="$style.button"
+        @click="markAllRead">
+        {{ t('arb.allRead') }} <span :class="$style.muted">{{ unreadCount }}</span>
+      </button>
       <PrunButton dark inline @click="toggleBlacklistMode">
         {{ editingBlacklist ? t('bl.done') : t('bl.title') }}
         <span v-if="!editingBlacklist" :class="$style.muted">{{ blacklistCount }}</span>
@@ -409,8 +442,12 @@ function toggleBlacklistMode() {
         ]"
         @click="onRowClick(r)">
         <span :class="$style.icon" @click.stop
-          ><MaterialIcon size="inline-table" :ticker="r.ticker"
-        /></span>
+          ><MaterialIcon size="inline-table" :ticker="r.ticker" /><span
+            v-if="unread.has(hKey(r))"
+            :class="$style.new"
+            >{{ t('arb.new') }}</span
+          ></span
+        >
         <span :class="$style.name"
           >{{ cxLabel(r.from) }} <span :class="$style.muted">→</span> {{ cxLabel(r.to) }}
           <span v-if="cartRoute" :class="$style.age">{{
@@ -550,7 +587,22 @@ function toggleBlacklistMode() {
 }
 
 .icon {
+  position: relative;
   display: inline-flex;
+}
+
+/* New chance: ink, not the brand orange (only for what you can click) or red (warnings). */
+.new {
+  position: absolute;
+  top: -4px;
+  left: -6px;
+  padding: 0 2px;
+  border: 1px solid var(--rpz-text-strong);
+  background-color: var(--rpz-bg-base);
+  color: var(--rpz-text-strong);
+  font-size: 10px;
+  line-height: 12px;
+  pointer-events: none;
 }
 
 .name {

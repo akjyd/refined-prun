@@ -1,5 +1,6 @@
 import { fioBooks, loadFioBooks } from '@src/infrastructure/fio/exchange-full';
 import { recordChances, runChecks } from '@src/features/XIT/ARBLOG/arb-watch-store';
+import { recordHistory } from '@src/features/XIT/ARB/arb-history-store';
 
 // Watched arbitrage chances: record good chances each time FIO books load (XIT ARB loads them,
 // and this feature every 3 hours), and check the due records every 30 minutes.
@@ -9,6 +10,7 @@ function init() {
     loadedAt => {
       if (loadedAt > 0) {
         recordChances();
+        recordHistory();
       }
     },
   );
@@ -25,5 +27,5 @@ function init() {
 features.add(
   import.meta.url,
   init,
-  'XIT ARBLOG: Records good arbitrage chances without buying and checks later whether they would have made money.',
+  'XIT ARB, ARBLOG: Records good arbitrage chances and their profit over time, and checks later whether they would have made money.',
 );
