@@ -1507,6 +1507,11 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arblog.watchWait': '{0} 小时后',
   'arblog.watchStale': 'FIO 订单簿早于到达时间',
   'arblog.watchNoData': '没有日线数据',
+  'arblog.loc.arrived': '已到达',
+  'arblog.loc.flying': '运输中',
+  'arblog.loc.loaded': '已装船',
+  'arblog.loc.atStart': '待装船',
+  'arblog.destBook': '{0} 实时订单',
 };
 
 export default zh;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
@@ -38,7 +39,7 @@ const ROUTES = EXCHANGES.flatMap(a => EXCHANGES.filter(b => b !== a).map(b => `$
 // Trades that make less than this do not pay for the flight (player, 2026-11-05).
 const MIN_PROFIT = 30_000;
 
-const exchangeChips = EXCHANGES.map(x => ({ value: x, label: x }));
+const exchangeChips = EXCHANGES.map(x => ({ value: x, label: cxLabel(x) }));
 
 const mode = ref<ArbitrageMode>('now');
 const modeChips = computed(() => [
@@ -373,7 +374,7 @@ function toggleBlacklistMode() {
           ><MaterialIcon size="inline-table" :ticker="r.ticker"
         /></span>
         <span :class="$style.name"
-          >{{ r.from }} <span :class="$style.muted">→</span> {{ r.to }}
+          >{{ cxLabel(r.from) }} <span :class="$style.muted">→</span> {{ cxLabel(r.to) }}
           <span v-if="cartRoute" :class="$style.age">{{
             r.live ? t('arb.live') : t('arb.fioAgo', ageText(r.time))
           }}</span></span

@@ -1587,4 +1587,9 @@ export default {
   'arblog.watchWait': 'In {0}h',
   'arblog.watchStale': 'FIO book older than the arrival',
   'arblog.watchNoData': 'No daily data',
+  'arblog.loc.arrived': 'Arrived',
+  'arblog.loc.flying': 'In transit',
+  'arblog.loc.loaded': 'Loaded',
+  'arblog.loc.atStart': 'At start',
+  'arblog.destBook': '{0} live orders',
 };

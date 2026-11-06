@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import RangeInput from '@src/components/forms/RangeInput.vue';
 import { userData } from '@src/store/user-data';
@@ -117,7 +118,8 @@ async function buyAll() {
   <div :class="$style.cart">
     <div :class="$style.bar">
       <span
-        ><b>{{ t('arb.cart') }}</b> {{ cartRoute?.from }} → {{ cartRoute?.to }}</span
+        ><b>{{ t('arb.cart') }}</b> {{ cxLabel(cartRoute?.from) }} →
+        {{ cxLabel(cartRoute?.to) }}</span
       >
       <span :class="$style.spacer" />
       <button :class="$style.tertiary" @click="clearCart">{{ t('arb.clearCart') }}</button>

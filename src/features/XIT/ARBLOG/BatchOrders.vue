@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import { ArbBatch } from '@src/core/arb-batches';
 import { dropPrice } from '@src/core/price-step';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
@@ -65,7 +66,7 @@ async function chase(event: MouseEvent, line: (typeof lines.value)[number]) {
     </div>
     <div v-for="l in lines" :key="l.order.id" :class="$style.line">
       <span>
-        {{ l.order.exchange.code }}
+        {{ cxLabel(l.order.exchange.code) }}
         {{ l.order.type === 'SELLING' ? t('arblog.sell') : t('arblog.buy') }}
       </span>
       <span :class="[$style.num, $style.own]"

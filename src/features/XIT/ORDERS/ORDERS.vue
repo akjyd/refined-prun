@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import OrderCard from '@src/features/XIT/ORDERS/OrderCard.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
@@ -45,7 +46,7 @@ const refreshKey = ref(0);
 const exchangeTabs = computed(() =>
   EXCHANGES.map(code => ({
     value: code,
-    label: code,
+    label: cxLabel(code),
     count: byExchange.value.get(code)?.size ?? 0,
   })),
 );

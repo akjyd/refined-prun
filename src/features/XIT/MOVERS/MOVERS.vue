@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
 import { cxStore } from '@src/infrastructure/fio/cx';
@@ -13,7 +14,7 @@ import { t } from '@src/i18n';
 const $style = useCssModule();
 
 const EXCHANGES = ['AI1', 'CI1', 'IC1', 'NC1'];
-const exchangeChips = EXCHANGES.map(x => ({ value: x, label: x }));
+const exchangeChips = EXCHANGES.map(x => ({ value: x, label: cxLabel(x) }));
 const exchanges = ref<string[]>([]);
 
 // Rows shown; the daily candles are loaded only for these.
@@ -178,7 +179,7 @@ function sparkline(key: string) {
         <span :class="$style.icon" @click.stop
           ><MaterialIcon size="inline-table" :ticker="r.ticker"
         /></span>
-        <span>{{ r.code }}</span>
+        <span>{{ cxLabel(r.code) }}</span>
         <span :class="$style.num">{{ fixed02(r.vwap7) }}</span>
         <span :class="[$style.num, moveClass(r.trend)]">{{ signed(r.trend) }}</span>
         <span :class="[$style.num, moveClass(r.askGap)]">{{ signed(r.askGap) }}</span>

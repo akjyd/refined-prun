@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
 import CxpoButton from '@src/components/CxpoButton.vue';
 import { getOwnCxOrder, orderChange } from '@src/core/order-seen';
@@ -246,7 +247,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
       <span v-for="(code, i) in exchanges" :key="code" :class="$style.headCell">
         <span :class="$style.title">
           <span :class="$style.code"
-            >{{ code }} <PlanetPicker v-if="!traders" :ticker="ticker" :exchange="code"
+            >{{ cxLabel(code) }} <PlanetPicker v-if="!traders" :ticker="ticker" :exchange="code"
           /></span>
           <span :class="$style.stock">
             {{ t('cx4.stock') }} {{ stock[i] !== undefined ? fixed0(stock[i]) : '--' }}

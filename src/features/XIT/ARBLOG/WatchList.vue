@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import dayjs from 'dayjs';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
@@ -117,7 +118,10 @@ function profitClass(value: number | undefined) {
         <span :class="$style.icon"
           ><MaterialIcon size="inline-table" :ticker="g.first.ticker"
         /></span>
-        <span>{{ g.first.from }} <span :class="$style.muted">→</span> {{ g.first.to }}</span>
+        <span
+          >{{ cxLabel(g.first.from) }} <span :class="$style.muted">→</span>
+          {{ cxLabel(g.first.to) }}</span
+        >
         <span :class="$style.muted">{{ modeLabel(g.first.mode) }}</span>
         <span :class="$style.num"
           >{{ g.hits }}/{{ g.count }}
@@ -143,7 +147,7 @@ function profitClass(value: number | undefined) {
       <div v-for="r in records" :key="r.id" :class="$style.record">
         <span :class="$style.muted">{{ time(r.at) }}</span>
         <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="r.ticker" /></span>
-        <span>{{ r.from }} <span :class="$style.muted">→</span> {{ r.to }}</span>
+        <span>{{ cxLabel(r.from) }} <span :class="$style.muted">→</span> {{ cxLabel(r.to) }}</span>
         <span :class="$style.muted">{{ modeLabel(r.mode) }}</span>
         <span :class="$style.num">{{ fixed0(r.units) }}</span>
         <span :class="$style.num">{{ formatProfit(r.profit) }}</span>

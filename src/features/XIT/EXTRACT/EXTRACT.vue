@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
@@ -374,7 +375,7 @@ function cogcName(cogc: string) {
             </span>
           </span>
           <span :class="$style.cell">
-            <span :class="$style.muted">{{ r.top.cell.code }}</span>
+            <span :class="$style.muted">{{ cxLabel(r.top.cell.code) }}</span>
             <span :class="profitClass(r.top.cell.profit)">{{
               formatProfit(r.top.cell.profit)
             }}</span>
@@ -409,7 +410,7 @@ function cogcName(cogc: string) {
             </span>
           </span>
           <span v-for="c in p.cells" :key="c.code" :class="$style.cell">
-            <span :class="$style.muted">{{ c.code }}</span>
+            <span :class="$style.muted">{{ cxLabel(c.code) }}</span>
             <span :class="profitClass(c.profit)">{{ formatProfit(c.profit) }}</span>
             <span :class="$style.muted">
               · {{ c.jumps !== undefined ? t('extract.jumps', c.jumps) : '--' }}

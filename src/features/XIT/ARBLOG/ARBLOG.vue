@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { cxLabel } from '@src/core/exchange-label';
 import dayjs from 'dayjs';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
 import PriceLadder from '@src/features/XIT/CX4/PriceLadder.vue';
 import BatchOrders from '@src/features/XIT/ARBLOG/BatchOrders.vue';
-import BatchPlan from '@src/features/XIT/ARBLOG/BatchPlan.vue';
 import TripSell from '@src/features/XIT/ARBLOG/TripSell.vue';
 import WatchList from '@src/features/XIT/ARBLOG/WatchList.vue';
 import {
@@ -17,6 +17,10 @@ import {
   status,
 } from '@src/core/arb-batches';
 import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
+import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
+import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
+import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
+import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
@@ -125,6 +129,39 @@ const summary = computed(() => {
   };
 });
 
+function storeHas(store: PrunApi.Store | undefined, ticker: string) {
+  return (store?.items ?? []).some(
+    x => x.quantity?.material.ticker === ticker && x.quantity.amount > 0,
+  );
+}
+
+function warehouseOf(code: string) {
+  const warehouse = warehousesStore.getByEntityNaturalId(exchangesStore.getNaturalIdFromCode(code));
+  return storagesStore.getById(warehouse?.storeId);
+}
+
+// Where the goods of a bought batch are, from where the material is now: in the end warehouse
+// (arrived), on a flying ship (in transit), on a docked ship (loaded), in the start warehouse.
+// The material is not marked unit by unit, so this is a best guess.
+function locationLabel(batch: ArbBatch) {
+  if (storeHas(warehouseOf(batch.to), batch.ticker)) {
+    return t('arblog.loc.arrived');
+  }
+  const ships = (shipsStore.all.value ?? []).filter(x =>
+    storeHas(storagesStore.getById(x.idShipStore), batch.ticker),
+  );
+  if (ships.some(x => x.flightId !== null)) {
+    return t('arblog.loc.flying');
+  }
+  if (ships.length > 0) {
+    return t('arblog.loc.loaded');
+  }
+  if (storeHas(warehouseOf(batch.from), batch.ticker)) {
+    return t('arblog.loc.atStart');
+  }
+  return t('arblog.state.holding');
+}
+
 function stateLabel(state: string) {
   return t(`arblog.state.${state}` as 'arblog.state.done');
 }
@@ -187,20 +224,20 @@ function time(ms: number) {
       <div v-else :class="[$style.row, $style.head]">
         <span>{{ t('arb.material') }}</span>
         <span>{{ t('arb.route') }}</span>
+        <span>{{ t('arb.mode') }}</span>
         <span>{{ t('arblog.status') }}</span>
         <span>{{ t('arblog.progress') }}</span>
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
         <span :class="$style.num">{{ t('arblog.actualProfit') }}</span>
         <span :class="$style.num">{{ t('arb.return') }}</span>
         <span :class="$style.num">{{ t('arblog.days') }}</span>
-        <span :class="$style.num">{{ t('arblog.boughtAt') }}</span>
       </div>
       <template v-for="trip in trips" :key="trip.id">
         <div :class="$style.trip">
           <span
             ><b>{{ t('arblog.trip') }}</b> {{ time(trip.first.createdAt) }} ·
-            {{ trip.first.from }} →
-            {{ trip.first.to }}
+            {{ cxLabel(trip.first.from) }} →
+            {{ cxLabel(trip.first.to) }}
             <span v-if="trip.first.ship" :class="$style.muted">· {{ trip.first.ship }}</span>
             <span :class="$style.muted"
               >· {{ t('arblog.batchCount', trip.rows.length) }}</span
@@ -231,9 +268,15 @@ function time(ms: number) {
             <span :class="$style.icon" @click.stop
               ><MaterialIcon size="inline-table" :ticker="r.batch.ticker"
             /></span>
-            <span>{{ r.batch.from }} <span :class="$style.muted">→</span> {{ r.batch.to }}</span>
+            <span
+              >{{ cxLabel(r.batch.from) }} <span :class="$style.muted">→</span>
+              {{ cxLabel(r.batch.to) }}</span
+            >
+            <span :class="$style.muted">{{
+              r.batch.mode === 'now' ? t('arb.fill') : t('arb.list')
+            }}</span>
             <span :class="r.state === 'done' ? $style.muted : undefined">
-              {{ stateLabel(r.state) }}
+              {{ r.state === 'holding' ? locationLabel(r.batch) : stateLabel(r.state) }}
               <span v-if="r.state !== 'done' && beaten(r.batch)" :class="$style.dot" />
             </span>
             <span>
@@ -258,62 +301,51 @@ function time(ms: number) {
             >
             <span :class="$style.num">{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
             <span :class="$style.num">{{ t('arblog.dayCount', r.days) }}</span>
-            <span :class="[$style.num, $style.muted]">{{ time(r.batch.createdAt) }}</span>
           </div>
           <div v-if="opened === r.batch.id" :class="$style.detail">
-            <div :class="$style.columns">
-              <div>
-                <div :class="$style.title">{{ t('arblog.planVsActual') }}</div>
-                <div :class="$style.compare">
-                  <span />
-                  <span :class="$style.muted">{{ t('arblog.plan') }}</span>
-                  <span :class="$style.muted">{{ t('arblog.actual') }}</span>
-                  <span :class="$style.muted">{{ t('arblog.units') }}</span>
-                  <span>{{ fixed0(r.batch.plan.units) }}</span>
-                  <span>{{ fixed0(r.units) }}</span>
-                  <span :class="$style.muted">{{ t('arblog.avgBuy') }}</span>
-                  <span>{{ avg(r.batch.plan.cost, r.batch.plan.units) }}</span>
-                  <span>{{ avg(buyCost(r.batch), r.units) }}</span>
-                  <span :class="$style.muted">{{ t('arblog.avgSell') }}</span>
-                  <span>{{ fixed02(r.batch.plan.sellPrice) }}</span>
-                  <span>{{ avg(revenue(r.batch), r.soldUnits) }}</span>
-                  <span :class="$style.muted">{{ t('arb.return') }}</span>
-                  <span>{{ percent1(r.batch.plan.return) }}</span>
-                  <span>{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
-                  <span :class="$style.muted">{{ t('arb.safety') }}</span>
-                  <span>{{
-                    r.batch.plan.safety !== undefined ? fixed01(r.batch.plan.safety) : '--'
-                  }}</span>
-                  <span />
-                </div>
-              </div>
-              <div>
-                <div :class="$style.title">{{ t('arblog.trades') }}</div>
-                <div v-for="(x, i) in r.batch.trades" :key="i" :class="$style.trade">
-                  <span :class="$style.muted">{{ time(x.time) }}</span>
-                  <span
-                    >{{ x.side === 'buy' ? r.batch.from : r.batch.to }}
-                    {{ x.side === 'buy' ? t('arblog.buy') : t('arblog.sell') }}</span
-                  >
-                  <span :class="$style.num">{{ fixed0(x.amount) }}</span>
-                  <span :class="$style.num">{{ fixed02(x.price) }}</span>
-                </div>
-              </div>
+            <!-- Four figures, plan against actual where both exist. -->
+            <div :class="$style.stats">
+              <span :class="$style.stat">
+                <span :class="$style.label">{{ t('arblog.buy') }}</span>
+                <span>{{ fixed0(r.units) }} × {{ avg(buyCost(r.batch), r.units) }}</span>
+              </span>
+              <span :class="$style.stat">
+                <span :class="$style.label">{{ t('arblog.sell') }}</span>
+                <span
+                  >{{ fixed0(r.soldUnits) }} × {{ avg(revenue(r.batch), r.soldUnits) }}
+                  <span :class="$style.muted"
+                    >/ {{ t('arblog.plan') }} {{ fixed02(r.batch.plan.sellPrice) }}</span
+                  ></span
+                >
+              </span>
+              <span :class="$style.stat">
+                <span :class="$style.label">{{ t('arb.return') }}</span>
+                <span
+                  >{{ r.ret !== undefined ? percent1(r.ret) : '--' }}
+                  <span :class="$style.muted"
+                    >/ {{ t('arblog.plan') }} {{ percent1(r.batch.plan.return) }}</span
+                  ></span
+                >
+              </span>
+              <span :class="$style.stat">
+                <span :class="$style.label">{{ t('arb.safety') }}</span>
+                <span>{{
+                  r.batch.plan.safety !== undefined ? fixed01(r.batch.plan.safety) : '--'
+                }}</span>
+              </span>
             </div>
-            <div :class="$style.title">{{ t('arblog.snapshot') }}</div>
-            <BatchPlan :batch="r.batch" />
             <template v-if="r.open.length > 0">
               <div :class="$style.title">{{ t('arblog.orders') }}</div>
               <BatchOrders :batch="r.batch" :orders="r.open" />
-              <PriceLadder
-                :class="$style.ladder"
-                :ticker="r.batch.ticker"
-                traders
-                :height="300"
-                :exchanges="
-                  r.open.some(x => x.type === 'BUYING') ? [r.batch.from, r.batch.to] : [r.batch.to]
-                " />
             </template>
+            <!-- The live book of the end exchange, to watch the market you sell in. -->
+            <div :class="$style.title">{{ t('arblog.destBook', cxLabel(r.batch.to)) }}</div>
+            <PriceLadder
+              :class="$style.ladder"
+              :ticker="r.batch.ticker"
+              traders
+              :height="300"
+              :exchanges="[r.batch.to]" />
             <div :class="$style.footer">
               <button :class="$style.tertiary" @click="remove(r.batch.id)">
                 {{ t('arblog.remove') }}
@@ -374,7 +406,7 @@ function time(ms: number) {
 
 .row {
   display: grid;
-  grid-template-columns: 56px 90px 80px 110px 90px 90px 70px 50px minmax(0, 1fr);
+  grid-template-columns: 56px 90px 44px 80px 110px 90px 90px 70px minmax(50px, 1fr);
   gap: 0 10px;
   align-items: center;
   padding: var(--rpz-space-1) var(--rpz-space-2);
@@ -451,6 +483,22 @@ function time(ms: number) {
   padding: var(--rpz-space-2) var(--rpz-space-2) var(--rpz-space-3) 74px;
   background-color: var(--rpz-bg-raised);
   border-top: 1px solid var(--rpz-stroke-weak);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--rpz-space-3);
+}
+
+.stat {
+  display: grid;
+  gap: 2px;
+}
+
+.label {
+  color: var(--rpz-text-weak);
+  font-size: var(--rpz-fs-label);
 }
 
 .columns {
