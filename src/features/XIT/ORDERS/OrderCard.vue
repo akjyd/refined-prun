@@ -163,7 +163,7 @@ watch(
       <CxpoButton :cx-ticker="`${ticker}.${exchange}`" />
     </div>
     <div :class="$style.columns">
-      <span>{{ t('cxob.profitHead') }}</span>
+      <span :class="$style.profitCell">{{ t('cxob.profitHead') }}</span>
       <span />
       <span :class="$style.num">{{ t('cx4.amount') }}</span>
       <span :class="$style.num">{{ t('cx4.price') }}</span>
@@ -192,14 +192,15 @@ watch(
           @dragover="!r.gone && drag.over($event, live, live.indexOf(r))"
           @dragend="drag.end"
           @drop="drag.drop">
-          <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
-          <span class="rpz-mark">{{ r.change && !r.gone ? r.change : '' }}</span>
-          <span :class="[$style.num, $style.amount]">
+          <span :class="[$style.profitCell, r.mark]">{{ formatProfit(r.profit) }}</span>
+          <span :class="$style.markCell">
             <DeleteExchangeOrderButton
               v-if="r.own && !r.gone"
               :order-id="r.id"
               screen-command="CXOS" />
-
+            <span class="rpz-mark">{{ r.change && !r.gone ? r.change : '' }}</span>
+          </span>
+          <span :class="[$style.num, $style.amount]">
             <span
               :class="r.own && !r.gone ? $style.clickable : undefined"
               @click.stop="r.own && !r.gone && showBuffer(`CXO ${r.id.substring(0, 8)}`)"
@@ -242,7 +243,7 @@ watch(
 .columns,
 .row {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 40px 90px 70px;
+  grid-template-columns: minmax(44px, 1fr) 62px 86px 70px;
   align-items: baseline;
   gap: 0 6px;
   padding: 1px 8px;
@@ -333,7 +334,19 @@ watch(
 
 .amount {
   position: relative;
-  padding-left: 22px;
+}
+
+/* The daily profit is a number, so it is right-aligned like the others; a trader name is not
+   (docs/ui-rules.md 4.4). */
+.profitCell {
+  text-align: right;
+}
+
+.markCell {
+  position: relative;
+  display: block;
+  padding-left: 20px;
+  text-align: right;
 }
 
 /* Tone order in a book: your own orders, then prices, then amounts. */

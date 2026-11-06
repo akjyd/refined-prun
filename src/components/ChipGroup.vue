@@ -45,24 +45,26 @@ function pick(value: T) {
   gap: 2px;
 }
 
+/* How many are new: gold text, no box (player, 2026-11-06: the box was ugly). */
 .alert {
   margin-left: var(--rpz-space-1);
-  padding: 0 4px;
-  background-color: var(--rpz-mark);
-  color: var(--rpz-on-brand);
+  color: var(--rpz-mark);
   font-size: var(--rpz-fs-label);
   font-weight: bold;
+  font-variant-numeric: tabular-nums;
 }
 
 .count {
   margin-left: var(--rpz-space-1);
-  color: var(--rpz-text-weak);
+  color: var(--rpz-text-off);
+  font-size: var(--rpz-fs-label);
+  font-variant-numeric: tabular-nums;
 }
 
 .chip {
   position: relative;
-  min-width: 36px;
-  padding: 6px 7px 3px;
+  min-width: 40px;
+  padding: 6px 9px 4px;
   background-color: var(--rpz-bg-raised);
   color: var(--rpz-text-weak);
   text-align: center;

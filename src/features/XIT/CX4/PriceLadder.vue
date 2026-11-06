@@ -260,7 +260,9 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
           /></span>
         </span>
         <span :class="$style.columns">
-          <span>{{ traders ? t('cx4.trader') : t('cxob.profitHead') }}</span>
+          <span :class="traders ? undefined : $style.profitCell">{{
+            traders ? t('cx4.trader') : t('cxob.profitHead')
+          }}</span>
           <span />
           <span :class="$style.num">{{ t('cx4.amount') }}</span>
           <span :class="$style.num">{{ t('cx4.price') }}</span>
@@ -317,14 +319,17 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
                 @click.stop="!cell.ghost && cell.traderCode && showBuffer(`CO ${cell.traderCode}`)"
                 >{{ cell.ghost ? '' : cell.trader }}</span
               >
-              <span v-else :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
-              <span class="rpz-mark">{{ cell.change ? cell.change : '' }}</span>
-              <span :class="[$style.num, $style.amount]">
+              <span v-else :class="[$style.profitCell, cell.mark]">{{
+                formatProfit(cell.profit)
+              }}</span>
+              <span :class="$style.markCell">
                 <DeleteExchangeOrderButton
                   v-if="cell.own"
                   :order-id="cell.id"
                   screen-command="CXOS" />
-
+                <span class="rpz-mark">{{ cell.change ? cell.change : '' }}</span>
+              </span>
+              <span :class="[$style.num, $style.amount]">
                 <span
                   :class="cell.own ? $style.clickable : undefined"
                   @click.stop="cell.own && showBuffer(`CXO ${cell.id.substring(0, 8)}`)"
@@ -401,7 +406,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .columns,
 .cell {
   display: grid;
-  grid-template-columns: minmax(44px, 1fr) 40px 90px 70px;
+  grid-template-columns: minmax(44px, 1fr) 62px 86px 70px;
   align-items: baseline;
   gap: 0 6px;
 }
@@ -489,7 +494,19 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 .amount {
   position: relative;
-  padding-left: 22px;
+}
+
+/* The daily profit is a number, so it is right-aligned like the others; a trader name is not
+   (docs/ui-rules.md 4.4). */
+.profitCell {
+  text-align: right;
+}
+
+.markCell {
+  position: relative;
+  display: block;
+  padding-left: 20px;
+  text-align: right;
 }
 
 /* Tone order in a book: your own orders, then prices, then amounts and traders. */

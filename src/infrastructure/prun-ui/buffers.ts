@@ -135,18 +135,21 @@ async function processWindow(window: HTMLDivElement, command: string, options?: 
 export const revealedTiles = new Set<string>();
 
 // The game focuses an open window when the player opens a buffer with the same command (for
-// example "订单" in CXM opens CXOB of a book that XIT ARB keeps hidden). Focus raises the window's
-// z-index (seen in the game, 2026-11-06). Then the hidden window is shown instead of nothing.
+// example "订单" in CXM opens CXOB of a book that XIT ARB keeps hidden). Focus puts the window on
+// top, which is a higher z-index than every other window (seen in the game, 2026-11-06). The
+// game also renumbers the z-index of all windows when a window opens or closes, so a higher
+// number alone is not focus: the window must become the top one (player, 2026-11-06: hidden
+// windows showed up on any action).
 function revealWhenFocused(window: HTMLDivElement, id: string, dockTab: Element | undefined) {
-  const zIndex = () => {
-    const value = Number(window.style.zIndex);
+  const zIndexOf = (element: Element) => {
+    const value = Number((element as HTMLElement).style.zIndex);
     return Number.isFinite(value) ? value : 0;
   };
-  let last = zIndex();
   const observer = new MutationObserver(() => {
-    const now = zIndex();
-    if (now <= last) {
-      last = now;
+    const windows = Array.from(document.getElementsByClassName(C.Window.window));
+    const mine = zIndexOf(window);
+    const top = Math.max(...windows.map(zIndexOf));
+    if (windows.length < 2 || mine < top || !windows.some(x => x !== window && zIndexOf(x) < top)) {
       return;
     }
     observer.disconnect();

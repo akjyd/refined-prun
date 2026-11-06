@@ -58,6 +58,12 @@ const migrations: MigrationEntry[] = [
     },
   ],
   [
+    '06.11.2026 Add planet groups for BURN',
+    userData => {
+      userData.settings.burn.group ??= {};
+    },
+  ],
+  [
     '05.11.2026 Add resupply warehouse-only materials',
     userData => {
       userData.settings.burn.resupplyWarehouseOnly ??= {};

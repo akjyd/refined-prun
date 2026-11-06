@@ -1,11 +1,11 @@
 .handle {
   display: inline-block;
-  margin-right: 4px;
-  padding: 0 2px;
+  min-width: 10px;
+  margin-right: 6px;
   color: var(--rpz-text-weak);
+  font-size: 11px;
   cursor: grab;
   user-select: none;
-  letter-spacing: -3px;
 }
 
 .handle:hover {

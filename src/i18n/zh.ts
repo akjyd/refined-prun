@@ -1564,6 +1564,10 @@ const zh: Partial<Record<keyof typeof en, string>> = {
 
   // BURN 按派系分组
   'burn.noFaction': '无派系',
+  'burn.group.edit': '分组',
+  'burn.group.reset': '跟随派系',
+  'burn.group.add': '新建分组',
+  'burn.group.addButton': '添加',
 };
 
 export default zh;

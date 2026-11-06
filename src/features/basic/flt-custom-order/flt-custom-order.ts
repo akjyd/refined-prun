@@ -1,4 +1,5 @@
 import $style from './flt-custom-order.module.css';
+import fa from '@src/utils/font-awesome.module.css';
 import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
 import { userData } from '@src/store/user-data';
 
@@ -33,7 +34,9 @@ function applyOrder(tbody: HTMLTableSectionElement) {
 }
 
 // A drag handle at the start of the row: only the handle starts a drag, so the pointer does not
-// flicker over the whole table (player, 2026-11-06).
+// flicker over the whole table (player, 2026-11-06). The same Font Awesome grip character the
+// rest of RP uses (components/grip/GripChar.vue); two '⋮' with negative letter spacing were
+// almost invisible (player, 2026-11-06).
 function addHandle(
   row: HTMLTableRowElement,
   drag: { id?: string },
@@ -44,8 +47,8 @@ function addHandle(
     return;
   }
   const handle = document.createElement('span');
-  handle.className = $style.handle;
-  handle.textContent = '⋮⋮';
+  handle.className = `${$style.handle} ${fa.solid}`;
+  handle.textContent = '\uf58e';
   handle.draggable = true;
   handle.addEventListener('click', e => e.stopPropagation());
   handle.addEventListener('dragstart', e => {
@@ -107,43 +110,31 @@ function setupRow(tbody: HTMLTableSectionElement, row: HTMLTableRowElement, drag
   });
 }
 
-// Rows are found as they appear, like the other FLT features (the table and its body may come
-// later than the tile, and the game can draw them again).
+// The table is watched as a whole: the game draws its rows again when a ship changes, and a row
+// seen on its own may not be in its tbody yet (player, 2026-11-06: no handle was shown).
 function onTileReady(tile: PrunTile) {
   const drag: { id?: string } = {};
-  const queued = new Set<HTMLTableSectionElement>();
-  const observed = new WeakSet<HTMLTableRowElement>();
-  const refresh = (tbody: HTMLTableSectionElement) => {
-    if (queued.has(tbody)) {
-      return;
-    }
-    queued.add(tbody);
-    queueMicrotask(() => {
-      queued.delete(tbody);
-      for (const row of rowsOf(tbody)) {
-        setupRow(tbody, row, drag);
+  subscribe($$(tile.anchor, 'table'), table => {
+    let queued = false;
+    const refresh = () => {
+      if (queued) {
+        return;
       }
-      applyOrder(tbody);
-    });
-  };
-  subscribe($$(tile.anchor, 'tr'), row => {
-    const tbody = row.parentElement;
-    if (!(tbody instanceof HTMLTableSectionElement) || tbody.tagName !== 'TBODY') {
-      return;
-    }
-    refresh(tbody);
-    if (observed.has(row)) {
-      return;
-    }
-    observed.add(row);
-    // The game may draw the row's cells again (dropping the handle) or give the row another
-    // ship.
-    new MutationObserver(() => refresh(tbody)).observe(row, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['data-prun-id'],
-    });
+      queued = true;
+      queueMicrotask(() => {
+        queued = false;
+        for (const tbody of Array.from(table.tBodies)) {
+          for (const row of rowsOf(tbody)) {
+            setupRow(tbody, row, drag);
+          }
+          applyOrder(tbody);
+        }
+      });
+    };
+    refresh();
+    // Moving rows with applyOrder calls this again; the second pass finds the order right and
+    // changes nothing, so it settles.
+    new MutationObserver(refresh).observe(table, { childList: true, subtree: true });
   });
 }
 

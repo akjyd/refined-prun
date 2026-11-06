@@ -13,6 +13,7 @@ import {
 import { comparePlanets } from '@src/util';
 import BurnSection from '@src/features/XIT/BURN/BurnSection.vue';
 import BurnGroupHeader from '@src/features/XIT/BURN/BurnGroupHeader.vue';
+import BurnGroupEditor from '@src/features/XIT/BURN/BurnGroupEditor.vue';
 import { burnGroups } from '@src/features/XIT/BURN/burn-groups';
 import { useTileState } from '@src/features/XIT/BURN/tile-state';
 import Tooltip from '@src/components/Tooltip.vue';
@@ -217,6 +218,8 @@ const expand = useTileState('expand');
 
 // Planets grouped by faction, the overall section last (player, 2026-11-06).
 const groups = computed(() => burnGroups(planetBurn.value ?? []));
+const editingGroups = ref(false);
+const groupPlanets = computed(() => (planetBurn.value ?? []).filter(x => x.naturalId !== ''));
 
 const anyExpanded = computed(() => expand.value.length > 0);
 
@@ -298,8 +301,10 @@ function copyBurnTable() {
       <div :class="$style.separator" />
       <RadioItem v-model="io" horizontal>{{ t('burn.filter.io') }}</RadioItem>
       <div :class="$style.spacer" />
+      <RadioItem v-model="editingGroups" horizontal>{{ t('burn.group.edit') }}</RadioItem>
       <CopyButton :copy-fn="copyBurnTable" data-tooltip-position="bottom" />
     </div>
+    <BurnGroupEditor v-if="editingGroups" :planets="groupPlanets" />
     <table>
       <thead>
         <tr>
@@ -338,7 +343,7 @@ function copyBurnTable() {
         <MaterialRow always-visible :burn="fakeBurn" :material="rat" />
       </tbody>
       <template v-for="group in groups" :key="group.name ?? ''">
-        <BurnGroupHeader v-if="group.name !== undefined" :name="group.name" />
+        <BurnGroupHeader v-if="group.name !== undefined" :name="group.name" :color="group.color" />
         <BurnSection
           v-for="burn in group.planets"
           :key="burn.planetName"

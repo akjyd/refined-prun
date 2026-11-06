@@ -34,6 +34,9 @@ export const initialUserData = deepFreeze({
       resupplyExcluded: {} as Record<string, string[]>,
       resupplyWarehouseOnly: {} as Record<string, string[]>,
       resupplyWarehouseCx: {} as Record<string, string | undefined>,
+      // Planet natural id -> the group it is listed under, when you moved it yourself
+      // (player, 2026-11-06). Without an entry the planet follows its faction.
+      group: {} as Record<string, string>,
     },
     flow: {
       overrides: {} as Record<string, UserData.PriceOverride>,

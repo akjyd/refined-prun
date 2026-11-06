@@ -31,6 +31,11 @@ function onTileReady(tile: PrunTile, getOwnOrders: GetOwnOrders, orderCommand: s
       return;
     }
     amountColumn.addEventListener('click', e => {
+      // The del button sits in this cell too (cxob-delete-own-exchange-orders): its click must
+      // not open the order as well (player, 2026-11-06).
+      if ((e.target as Element | null)?.closest('button') !== null) {
+        return;
+      }
       if (ownOrder.value) {
         void showBuffer(`${orderCommand} ${ownOrder.value.id.substring(0, 8)}`);
         e.preventDefault();

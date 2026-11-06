@@ -1645,4 +1645,8 @@ export default {
 
   // BURN 按派系分组
   'burn.noFaction': 'No faction',
+  'burn.group.edit': 'Groups',
+  'burn.group.reset': 'follow faction',
+  'burn.group.add': 'New group',
+  'burn.group.addButton': 'add',
 };
