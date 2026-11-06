@@ -857,6 +857,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.finla-hide-ecd': 'FINLA：隐藏 ECD 一行。',
   'feature.finla-more-columns': 'FINLA：增加更多流动资产类型的列。',
   'feature.flt-arrival-eta': 'FLT：「ETA」列显示到达日期。',
+  'feature.flt-custom-order': 'FLT：拖动飞船行，按你定的顺序排列，不再只能按名字排。',
   'feature.flt-flex-fuel': 'FLT：燃料列的布局更好地利用空间。',
   'feature.flt-flight-status-icons': 'FLT：飞行状态文字改成箭头图标。',
   'feature.flt-hide-transponder': 'FLT：隐藏「应答器」列。',

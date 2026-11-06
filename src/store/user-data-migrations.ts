@@ -21,6 +21,12 @@ function isCheckpoint(entry: MigrationEntry): entry is Checkpoint {
 // The date is for reference only, and it does not affect migration order.
 const migrations: MigrationEntry[] = [
   [
+    '06.11.2026 Add FLT ship order',
+    userData => {
+      userData.fltOrder ??= [];
+    },
+  ],
+  [
     '05.11.2026 Add arbitrage cart',
     userData => {
       userData.arbCart ??= { ship: '500/500', items: [] };

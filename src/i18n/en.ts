@@ -900,6 +900,7 @@ export default {
   'feature.finla-hide-ecd': 'FINLA: Hides the ECD row.',
   'feature.finla-more-columns': 'FINLA: Adds columns for additional liquid asset types.',
   'feature.flt-arrival-eta': 'FLT: Adds an arrival date to the "ETA" column.',
+  'feature.flt-custom-order': 'FLT: Drag ship rows to set your own order.',
   'feature.flt-flex-fuel': 'FLT: Allows the fuel column layout to better use available space.',
   'feature.flt-flight-status-icons': 'FLT: Replaces the flight status text with arrow icons.',
   'feature.flt-hide-transponder': 'FLT: Hides the "Transponder" column.',

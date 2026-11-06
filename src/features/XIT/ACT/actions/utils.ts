@@ -10,8 +10,30 @@ import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { getBaseStore } from '@src/core/store-id';
 
+// A ship's name, with its registration when another ship has the same name, so ships can share
+// names (player, 2026-11-06).
+function shipLabel(ship: PrunApi.Ship | undefined) {
+  if (!ship) {
+    return undefined;
+  }
+  const same = (shipsStore.all.value ?? []).filter(x => x.name === ship.name).length;
+  return same > 1 ? `${ship.name} (${ship.registration})` : ship.name;
+}
+
+// The ship a label names: "Name (REGISTRATION)", a registration, or a unique name.
+function shipOfLabel(label: string) {
+  const match = /^(.*) \(([^()]+)\)$/.exec(label);
+  if (match) {
+    const ship = shipsStore.getByRegistration(match[2]);
+    if (ship) {
+      return ship;
+    }
+  }
+  return shipsStore.getByRegistration(label) ?? shipsStore.getByName(label);
+}
+
 export function serializeStorage(storage: PrunApi.Store) {
-  const getShipName = () => shipsStore.getByStoreId(storage.id)?.name;
+  const getShipName = () => shipLabel(shipsStore.getByStoreId(storage.id));
   switch (storage.type) {
     case 'STL_FUEL_STORE':
       return getShipName() + ' STL Store';
@@ -50,15 +72,15 @@ export function deserializeStorage(serializedName: string | undefined) {
   }
   name = extractName(serializedName, 'Cargo');
   if (name) {
-    return storagesStore.getById(shipsStore.getByName(name)?.idShipStore);
+    return storagesStore.getById(shipOfLabel(name)?.idShipStore);
   }
   name = extractName(serializedName, 'FTL Store');
   if (name) {
-    return storagesStore.getById(shipsStore.getByName(name)?.idFtlFuelStore);
+    return storagesStore.getById(shipOfLabel(name)?.idFtlFuelStore);
   }
   name = extractName(serializedName, 'STL Store');
   if (name) {
-    return storagesStore.getById(shipsStore.getByName(name)?.idStlFuelStore);
+    return storagesStore.getById(shipOfLabel(name)?.idStlFuelStore);
   }
 
   return undefined;

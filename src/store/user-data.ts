@@ -114,6 +114,8 @@ export const initialUserData = deepFreeze({
   orderSeen: {} as Record<string, number | undefined>,
   // XIT ARB blacklist: material ticker -> reason id.
   arbBlacklist: {} as Record<string, string | undefined>,
+  // Ship ids in the order you dragged them to in FLT.
+  fltOrder: [] as string[],
   // XIT ARB cart: the goods for one flight on one route.
   arbCart: {
     ship: '500/500',

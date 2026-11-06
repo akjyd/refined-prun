@@ -1,0 +1,16 @@
+.row {
+  cursor: grab;
+}
+
+.dragging {
+  opacity: 0.4;
+}
+
+/* The drop line: above or below the row under the pointer. */
+.dropAbove > td {
+  box-shadow: inset 0 2px 0 var(--rpz-brand);
+}
+
+.dropBelow > td {
+  box-shadow: inset 0 -2px 0 var(--rpz-brand);
+}
