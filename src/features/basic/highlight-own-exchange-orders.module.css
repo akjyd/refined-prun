@@ -15,3 +15,11 @@
   color: #f7a600;
   font-size: 11px;
 }
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    color: #f7a600;
+  }
+}

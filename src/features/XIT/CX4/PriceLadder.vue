@@ -14,7 +14,6 @@ import { useOrderDrag } from '@src/hooks/use-order-drag';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02, percent1 } from '@src/utils/format';
 import { t } from '@src/i18n';
-import link from '@src/infrastructure/prun-ui/css/link.module.css';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 
 // The order books of the four exchanges side by side. Only the best offers and the best
@@ -310,18 +309,25 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
             <template v-if="cell">
               <span
                 v-if="traders"
-                :class="[$style.trader, !cell.ghost && cell.traderCode ? link.link : undefined]"
+                :class="[
+                  $style.trader,
+                  !cell.ghost && cell.traderCode ? $style.clickable : undefined,
+                ]"
                 @click.stop="!cell.ghost && cell.traderCode && showBuffer(`CO ${cell.traderCode}`)"
                 >{{ cell.ghost ? '' : cell.trader }}</span
               >
               <span v-else :class="cell.mark">{{ formatProfit(cell.profit) }}</span>
-              <span :class="[$style.num, $style.amount, cell.own ? link.link : undefined]">
+              <span :class="[$style.num, $style.amount]">
                 <DeleteExchangeOrderButton
                   v-if="cell.own"
                   :order-id="cell.id"
                   screen-command="CXOS" />
                 <span v-if="cell.change" :class="$style.change">{{ cell.change }}</span>
-                {{ cell.amount }}
+                <span
+                  :class="cell.own ? $style.clickable : undefined"
+                  @click.stop="cell.own && showBuffer(`CXO ${cell.id.substring(0, 8)}`)"
+                  >{{ cell.amount }}</span
+                >
               </span>
               <span :class="$style.num">
                 {{ fixed02(cell.price) }}
@@ -495,11 +501,6 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
   color: var(--rpz-text-weak);
 }
 
-/* A trader name opens the company (CO), as in the game; it keeps the ink tone until hovered. */
-.cell .trader:hover {
-  color: var(--rpz-brand);
-}
-
 .num {
   text-align: right;
 }
@@ -512,5 +513,16 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 .muted {
   color: var(--rpz-text-weak);
+}
+/* Clickable text keeps its ink tone; the brand color shows on hover (player, 2026-11-06: no
+   blue link color). Your amount opens the order (CXO), a trader name the company (CO). */
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover,
+.cell .clickable:hover,
+.row .clickable:hover {
+  color: var(--rpz-brand);
 }
 </style>

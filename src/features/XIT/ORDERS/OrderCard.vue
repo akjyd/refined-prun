@@ -13,7 +13,7 @@ import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02, percent1 } from '@src/utils/format';
 import { t } from '@src/i18n';
-import link from '@src/infrastructure/prun-ui/css/link.module.css';
+import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { useOrderDrag } from '@src/hooks/use-order-drag';
 
 // The order book of one material with your orders in it.
@@ -192,13 +192,17 @@ watch(
           @dragend="drag.end"
           @drop="drag.drop">
           <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
-          <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
+          <span :class="[$style.num, $style.amount]">
             <DeleteExchangeOrderButton
               v-if="r.own && !r.gone"
               :order-id="r.id"
               screen-command="CXOS" />
             <span v-if="r.change && !r.gone" :class="$style.change">{{ r.change }}</span>
-            {{ r.amount }}
+            <span
+              :class="r.own && !r.gone ? $style.clickable : undefined"
+              @click.stop="r.own && !r.gone && showBuffer(`CXO ${r.id.substring(0, 8)}`)"
+              >{{ r.amount }}</span
+            >
           </span>
           <span :class="$style.num">
             {{ fixed02(r.price) }}
@@ -351,5 +355,16 @@ watch(
 .muted {
   padding: 6px 8px;
   color: var(--rpz-text-weak);
+}
+/* Clickable text keeps its ink tone; the brand color shows on hover (player, 2026-11-06: no
+   blue link color). Your amount opens the order (CXO), a trader name the company (CO). */
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover,
+.cell .clickable:hover,
+.row .clickable:hover {
+  color: var(--rpz-brand);
 }
 </style>
