@@ -64,15 +64,33 @@ export function useOrderDrag() {
     }
   }
 
+  // Between the last ask and the first bid, the line of a sell order sits under the last ask, on
+  // the ask side of the spread divider; the line of a buy order sits over the first bid.
+  function onAskEdge() {
+    const tgt = target.value;
+    if (tgt === undefined || dragged.value?.ask !== true) {
+      return false;
+    }
+    const above = tgt.book[tgt.at - 1];
+    const below = tgt.book[tgt.at];
+    return above !== undefined && below !== undefined && above.ask && !below.ask;
+  }
+
   // True when the drop line is above this order (or below it, for the last one).
   function lineAbove(id: string) {
     const tgt = target.value;
-    return tgt !== undefined && tgt.book[tgt.at]?.id === id;
+    return tgt !== undefined && !onAskEdge() && tgt.book[tgt.at]?.id === id;
   }
 
   function lineBelow(id: string) {
     const tgt = target.value;
-    return tgt !== undefined && tgt.at === tgt.book.length && tgt.book.at(-1)?.id === id;
+    if (tgt === undefined) {
+      return false;
+    }
+    if (onAskEdge()) {
+      return tgt.book[tgt.at - 1]?.id === id;
+    }
+    return tgt.at === tgt.book.length && tgt.book.at(-1)?.id === id;
   }
 
   return { dragged, newPrice, start, over, end, drop, lineAbove, lineBelow };
