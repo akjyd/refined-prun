@@ -17,3 +17,7 @@ E('set.arb.failureHint',
   '0–100。越低越严，机会越少。')
 E('set.arb.minDaily', 'Least profit a day', '最低天利润')
 E('set.arb.minDailyHint', 'Trades under this are not shown.', '低于这个数的不显示。')
+E('set.arb.maxDays', 'Longest wait', '最长天数')
+E('set.arb.maxDaysHint',
+  'Days you are willing to wait. A trade that needs longer is not shown.',
+  '你愿意等几天。需要更久的不显示。')

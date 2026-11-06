@@ -1587,6 +1587,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'set.arb.failureHint': '0–100。越低越严，机会越少。',
   'set.arb.minDaily': '最低天利润',
   'set.arb.minDailyHint': '低于这个数的不显示。',
+  'set.arb.maxDays': '最长天数',
+  'set.arb.maxDaysHint': '你愿意等几天。需要更久的不显示。',
 };
 
 export default zh;

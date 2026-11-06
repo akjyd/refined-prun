@@ -20,6 +20,14 @@ export interface ArbPlanInput {
   volatility?: number;
   failurePercent: number;
   maxUnits: number;
+  // What the end exchange has really been paying, as a cap on the price offered: an offer far
+  // over the prices that trade would not sell at the rate dailyTrade says (player, 2026-11-06:
+  // the profits were absurd). Undefined leaves the offer at one step under the best offer.
+  sellCap?: number;
+  // Days you are willing to wait. Beyond about two weeks the measured table has nothing to say,
+  // and a trade that ties up a ship for a month is of little use however safe it looks
+  // (player, 2026-11-06).
+  maxDays: number;
 }
 
 export interface ArbPlanResult {
@@ -38,11 +46,11 @@ export interface ArbPlanResult {
   listPrice?: number;
   fillsA: Fill[];
   fillsB: Fill[];
-  limit: 'ship' | 'risk' | 'book';
+  limit: 'ship' | 'risk' | 'book' | 'days';
 }
 
 export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
-  const { flightDays, dailyTrade, volatility, failurePercent, maxUnits } = input;
+  const { flightDays, dailyTrade, volatility, failurePercent, maxUnits, maxDays } = input;
   const asks = [...input.asksA].sort((a, b) => a.price - b.price);
   if (asks.length === 0 || maxUnits <= 0) {
     return undefined;
@@ -98,10 +106,19 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
 
   // Part 2: the rest, offered under the best offer of the end exchange.
   const bestAskB = Math.min(...input.asksB.map(x => x.price));
-  const listPrice = Number.isFinite(bestAskB) ? dropPrice(true, bestAskB) : undefined;
+  const underBest = Number.isFinite(bestAskB) ? dropPrice(true, bestAskB) : undefined;
+  const cap = input.sellCap;
+  const listPrice =
+    underBest === undefined
+      ? undefined
+      : cap !== undefined && cap > 0
+        ? Math.min(underBest, cap)
+        : underBest;
   let listUnits = 0;
   let listCost = 0;
-  if (listPrice !== undefined && dailyTrade > 0) {
+  // The most units that can be offered without waiting longer than you want.
+  const listRoom = Math.max(0, Math.floor((maxDays - flightDays) * dailyTrade));
+  if (listPrice !== undefined && dailyTrade > 0 && listRoom > 0) {
     const daysAt = (extra: number) => flightDays + (listUnits + extra) / dailyTrade;
     const fits = (ask: number, extra: number) =>
       ask > 0 &&
@@ -112,7 +129,11 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
         break;
       }
       const ask = asks[i].price;
-      const room = Math.min(leftA, maxUnits - units);
+      const room = Math.min(leftA, maxUnits - units, listRoom - listUnits);
+      if (room <= 0 && listUnits >= listRoom) {
+        limit = 'days';
+        break;
+      }
       if (!Number.isFinite(room) || room <= 0) {
         break;
       }
@@ -144,6 +165,10 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
       revenue += take * listPrice;
       fillsA[i].take += take;
       leftA -= take;
+      if (listUnits >= listRoom) {
+        limit = 'days';
+        break;
+      }
       if (take < room) {
         break;
       }

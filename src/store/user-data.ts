@@ -43,6 +43,7 @@ export const initialUserData = deepFreeze({
     arb: {
       failurePercent: 10,
       minDailyProfit: 30_000,
+      maxDays: 7,
     },
     flow: {
       overrides: {} as Record<string, UserData.PriceOverride>,

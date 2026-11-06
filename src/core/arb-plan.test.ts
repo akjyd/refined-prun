@@ -8,6 +8,7 @@ const base = {
   volatility: 0.02,
   failurePercent: 10,
   maxUnits: 10_000,
+  maxDays: 30,
 };
 
 describe('planTrade', () => {
@@ -95,6 +96,19 @@ describe('planTrade', () => {
     expect(failureRate(r.margin, base.volatility, r.days)).toBeCloseTo(r.failure, 6);
   });
 
+  it('waits no longer than you allow', () => {
+    const r = planTrade({
+      ...base,
+      maxDays: 3,
+      asksA: [{ price: 100, amount: 5000 }],
+      bidsB: [{ price: 150, amount: 10 }],
+      asksB: [{ price: 300, amount: 10 }],
+    })!;
+    // 10 filled at once, then two days of trade at 100 a day.
+    expect(r.listUnits).toBe(200);
+    expect(r.limit).toBe('days');
+  });
+
   it('weighs the days by the money each part holds', () => {
     const r = planTrade({
       ...base,
@@ -104,5 +118,19 @@ describe('planTrade', () => {
     })!;
     expect(r.days).toBeGreaterThan(base.flightDays);
     expect(r.days).toBeLessThan(r.listDays);
+  });
+
+  it('does not offer over what the end exchange really pays', () => {
+    const books = {
+      asksA: [{ price: 100, amount: 1000 }],
+      bidsB: [{ price: 110, amount: 5 }],
+      // Someone is asking ten times the usual price; an offer just under it would not sell.
+      asksB: [{ price: 1000, amount: 5 }],
+    };
+    const wild = planTrade({ ...base, ...books })!;
+    const sane = planTrade({ ...base, ...books, sellCap: 130 })!;
+    expect(wild.listPrice).toBeGreaterThan(900);
+    expect(sane.listPrice).toBe(130);
+    expect(sane.profit).toBeLessThan(wild.profit);
   });
 });

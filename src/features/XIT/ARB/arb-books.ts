@@ -49,6 +49,8 @@ export function planOf(ticker: string, from: string, to: string, maxUnits: numbe
     volatility: closes ? dailyVolatility(closes) : undefined,
     failurePercent: userData.settings.arb.failurePercent,
     maxUnits,
+    maxDays: userData.settings.arb.maxDays,
+    sellCap: cxStore.prices.get(to)?.get(ticker)?.VWAP7D ?? undefined,
   });
   if (!plan) {
     return undefined;

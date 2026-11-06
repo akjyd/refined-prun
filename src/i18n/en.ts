@@ -1668,4 +1668,6 @@ export default {
   'set.arb.failureHint': '0-100. Lower is stricter and shows fewer chances.',
   'set.arb.minDaily': 'Least profit a day',
   'set.arb.minDailyHint': 'Trades under this are not shown.',
+  'set.arb.maxDays': 'Longest wait',
+  'set.arb.maxDaysHint': 'Days you are willing to wait. A trade that needs longer is not shown.',
 };

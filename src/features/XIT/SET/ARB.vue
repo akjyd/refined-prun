@@ -15,6 +15,13 @@ function setFailure(value: string) {
   }
 }
 
+function setMaxDays(value: string) {
+  const n = Number(value);
+  if (Number.isFinite(n) && n >= 1) {
+    arb.maxDays = Math.min(Math.round(n), 60);
+  }
+}
+
 function setMinDaily(value: string) {
   const n = Number(value);
   if (Number.isFinite(n) && n >= 0) {
@@ -32,6 +39,14 @@ function setMinDaily(value: string) {
         :value="arb.failurePercent"
         @change="setFailure(($event.target as HTMLInputElement).value)" />
       <span :class="$style.hint">% {{ t('set.arb.failureHint') }}</span>
+    </div>
+    <div :class="$style.row">
+      <span :class="$style.label">{{ t('set.arb.maxDays') }}</span>
+      <input
+        :class="$style.input"
+        :value="arb.maxDays"
+        @change="setMaxDays(($event.target as HTMLInputElement).value)" />
+      <span :class="$style.hint">{{ t('set.arb.maxDaysHint') }}</span>
     </div>
     <div :class="$style.row">
       <span :class="$style.label">{{ t('set.arb.minDaily') }}</span>
