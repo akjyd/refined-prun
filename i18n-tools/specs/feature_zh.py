@@ -161,6 +161,7 @@ ZH = {
  'flt-custom-order': 'FLT：拖动飞船行，按你定的顺序排列，不再只能按名字排。',
  'cx-delete-log': 'XIT CXDEL：记录每一次删除未成交挂单（改价也算），用来统计每天能删多少张。',
  'arb-watch': 'XIT ARB、ARBLOG：自动记录倒货机会的利润走势和新机会；记录好的机会（不买），之后估算如果真做了能不能赚钱。',
+ 'inv-store-links': 'INV/SHPI：在库存信息那一行加按钮，一键打开同一地点的另一个库存（基地库存、仓库）。',
  'inv-arb-badge': 'INV/SHPI：在有倒货批次未卖完的物资上加「倒」标记和数量。',
  'cxob-daily-profit': 'CXOB：挂单公司名换成「按这一行的价格卖出，一个基地每天的利润」（配方在 XIT RECIPES 里选）。',
 }

@@ -1,0 +1,7 @@
+.links {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rpz-space-1);
+  margin-left: auto;
+  padding-left: var(--rpz-space-2);
+}

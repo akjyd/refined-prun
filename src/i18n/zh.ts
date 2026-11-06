@@ -897,6 +897,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'feature.inv-shorten-storage-types': 'INV：表格和筛选里的库存类型名缩短显示。',
   'feature.inv-show-space-remaining': 'INV / SHPI：显示所选库存剩余的重量和体积。',
   'feature.inv-shpt-condition-indicator': 'INV / SHPI：在 SHPT 和 BLCK 物品上显示合同条件标记。',
+  'feature.inv-store-links':
+    'INV/SHPI：在库存信息那一行加按钮，一键打开同一地点的另一个库存（基地库存、仓库）。',
   'feature.inv-warehouse-button': 'INV：基地库存加 WAR（仓库）按钮。',
   'feature.item-icons': '给物品加图标。',
   'feature.item-ticker-shadow': '给物品代码文字加阴影。',
@@ -1568,6 +1570,10 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'burn.group.reset': '跟随派系',
   'burn.group.add': '新建分组',
   'burn.group.addButton': '添加',
+
+  // INV/SHPI：同地点的另一个库存按钮
+  'inv.baseStore': '基地库存',
+  'inv.warehouse': '仓库',
 };
 
 export default zh;

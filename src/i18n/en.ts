@@ -950,6 +950,8 @@ export default {
     'INV/SHPI: Shows the remaining weight and volume capacity of the selected store in INV and SHPI',
   'feature.inv-shpt-condition-indicator':
     'INV/SHPI: Adds a contract condition indicator to SHPT and BLCK items.',
+  'feature.inv-store-links':
+    'INV/SHPI: Adds buttons to the other stores at the same place (base store, warehouse).',
   'feature.inv-warehouse-button': 'INV: Adds a WAR context button to base inventories.',
   'feature.item-icons': 'Adds icons to items.',
   'feature.item-ticker-shadow': 'Adds a shadow to item tickers.',
@@ -1649,4 +1651,8 @@ export default {
   'burn.group.reset': 'follow faction',
   'burn.group.add': 'New group',
   'burn.group.addButton': 'add',
+
+  // INV/SHPI：同地点的另一个库存按钮
+  'inv.baseStore': 'Base',
+  'inv.warehouse': 'Warehouse',
 };
