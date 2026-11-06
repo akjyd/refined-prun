@@ -11,7 +11,7 @@ import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { orderProfit } from '@src/core/daily-profit/order-profit';
 import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
-import { fixed0, fixed02 } from '@src/utils/format';
+import { fixed0, fixed02, percent1 } from '@src/utils/format';
 import { t } from '@src/i18n';
 import link from '@src/infrastructure/prun-ui/css/link.module.css';
 import { useOrderDrag } from '@src/hooks/use-order-drag';
@@ -102,6 +102,17 @@ const rows = computed(() => {
   return all.map(x => ({ ...x, first: x === firstBid }));
 });
 
+// Best offer − best request, on the line between them.
+const spread = computed(() => {
+  const live = liveRows.value;
+  const ask = live.filter(x => x.ask).at(-1)?.price;
+  const bid = live.find(x => !x.ask)?.price;
+  if (ask === undefined || bid === undefined) {
+    return '';
+  }
+  return `${fixed0(ask - bid)} · ${percent1((ask - bid) / ask)}`;
+});
+
 // Units of the material in your warehouse at this exchange station.
 const stock = computed(() => {
   const warehouse = warehousesStore.getByEntityNaturalId(
@@ -158,37 +169,41 @@ watch(
     </div>
     <div ref="body" :class="$style.body">
       <p v-if="!book" :class="$style.muted">{{ t('cx4.loading') }}</p>
-      <div
-        v-for="r in rows"
-        :key="r.id"
-        :draggable="r.own && !r.gone"
-        :data-price="drag.newPrice.value !== undefined ? fixed02(drag.newPrice.value) : ''"
-        :class="[
-          $style.row,
-          r.own ? $style.own : undefined,
-          !r.gone && r.change !== undefined ? $style.changed : undefined,
-          r.gone ? $style.gone : undefined,
-          r.first ? $style.spread : undefined,
-          !r.gone && drag.lineAbove(r.id) ? $style.dropAbove : undefined,
-          !r.gone && drag.lineBelow(r.id) ? $style.dropBelow : undefined,
-        ]"
-        @dragstart="drag.start($event, r)"
-        @dragover="!r.gone && drag.over($event, live, live.indexOf(r))"
-        @dragend="drag.end"
-        @drop="drag.drop">
-        <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
-        <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
-          <DeleteExchangeOrderButton
-            v-if="r.own && !r.gone"
-            :order-id="r.id"
-            screen-command="CXOS" />
-          <span v-if="r.change && !r.gone" :class="$style.change">{{ r.change }}</span>
-          {{ r.amount }}
-        </span>
-        <span :class="$style.num">
-          {{ fixed02(r.price) }}
-        </span>
-      </div>
+      <template v-for="r in rows" :key="r.id">
+        <div v-if="r.first" :class="$style.spread">
+          <span>▲ {{ t('cx4.asks') }}</span>
+          <span>{{ spread }}</span>
+          <span>{{ t('cx4.bids') }} ▼</span>
+        </div>
+        <div
+          :draggable="r.own && !r.gone"
+          :data-price="drag.newPrice.value !== undefined ? fixed02(drag.newPrice.value) : ''"
+          :class="[
+            $style.row,
+            r.own ? $style.own : undefined,
+            !r.gone && r.change !== undefined ? $style.changed : undefined,
+            r.gone ? $style.gone : undefined,
+            !r.gone && drag.lineAbove(r.id) ? $style.dropAbove : undefined,
+            !r.gone && drag.lineBelow(r.id) ? $style.dropBelow : undefined,
+          ]"
+          @dragstart="drag.start($event, r)"
+          @dragover="!r.gone && drag.over($event, live, live.indexOf(r))"
+          @dragend="drag.end"
+          @drop="drag.drop">
+          <span :class="r.mark">{{ formatProfit(r.profit) }}</span>
+          <span :class="[$style.num, $style.amount, r.own ? link.link : undefined]">
+            <DeleteExchangeOrderButton
+              v-if="r.own && !r.gone"
+              :order-id="r.id"
+              screen-command="CXOS" />
+            <span v-if="r.change && !r.gone" :class="$style.change">{{ r.change }}</span>
+            {{ r.amount }}
+          </span>
+          <span :class="$style.num">
+            {{ fixed02(r.price) }}
+          </span>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -253,7 +268,13 @@ watch(
 }
 
 .spread {
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 8px;
   border-top: 1px solid var(--rpz-stroke);
+  border-bottom: 1px solid var(--rpz-stroke);
+  color: var(--rpz-text-weak);
+  font-size: var(--rpz-fs-label);
 }
 
 .changed {

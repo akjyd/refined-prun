@@ -12,7 +12,7 @@ import { orderProfit } from '@src/core/daily-profit/order-profit';
 import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { useOrderDrag } from '@src/hooks/use-order-drag';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
-import { fixed0, fixed02 } from '@src/utils/format';
+import { fixed0, fixed02, percent1 } from '@src/utils/format';
 import { t } from '@src/i18n';
 import link from '@src/infrastructure/prun-ui/css/link.module.css';
 
@@ -204,7 +204,7 @@ function bookOf(cell: Cell) {
 
 // One column per exchange.
 const columnsStyle = computed(() => ({
-  gridTemplateColumns: `repeat(${exchanges.length}, minmax(210px, 1fr))`,
+  gridTemplateColumns: `repeat(${exchanges.length}, minmax(210px, 360px))`,
 }));
 
 // Scroll to the spread (between offers and requests) once the books arrive.
@@ -224,6 +224,19 @@ watch(
     }
   },
   { immediate: true },
+);
+
+// The gap between the best offer and the best request of each exchange, shown on the line
+// that divides offers (above) from requests (below).
+const spreads = computed(() =>
+  columns.value.map(col => {
+    const ask = col.asks.filter(x => x.ghost !== true).at(-1)?.price;
+    const bid = col.bids.at(0)?.price;
+    if (ask === undefined || bid === undefined) {
+      return '';
+    }
+    return `${fixed0(ask - bid)} · ${percent1((ask - bid) / ask)}`;
+  }),
 );
 
 const loaded = computed(() => books.value.some(x => x !== undefined));
@@ -257,7 +270,13 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
       :class="height !== undefined ? $style.body : undefined"
       :style="height !== undefined ? { height: `${height}px` } : undefined">
       <template v-for="(rows, part) in [askRows, bidRows]" :key="part">
-        <div v-if="part === 1" :class="$style.spread" />
+        <div v-if="part === 1" :class="[$style.row, $style.spread]" :style="columnsStyle">
+          <span v-for="(s, i) in spreads" :key="i" :class="$style.spreadCell">
+            <span>▲ {{ t('cx4.asks') }}</span>
+            <span>{{ s }}</span>
+            <span>{{ t('cx4.bids') }} ▼</span>
+          </span>
+        </div>
         <div v-for="(row, k) in rows" :key="k" :class="$style.row" :style="columnsStyle">
           <span
             v-for="(cell, i) in row"
@@ -381,8 +400,16 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 .spread {
-  height: 6px;
-  border-top: 1px solid var(--rpz-stroke-weak);
+  border-top: 1px solid var(--rpz-stroke);
+  border-bottom: 1px solid var(--rpz-stroke);
+}
+
+.spreadCell {
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 8px;
+  color: var(--rpz-text-weak);
+  font-size: var(--rpz-fs-label);
 }
 
 /* XIT ARB: orders the trade takes, and the offer you will list. */

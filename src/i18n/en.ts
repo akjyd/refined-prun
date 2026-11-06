@@ -1593,4 +1593,6 @@ export default {
   'arblog.loc.atStart': 'At start',
   'arblog.destBook': '{0} live orders',
   'orders.filledSince': '{0} orders filled since last visit:',
+  'cx4.asks': 'Offers',
+  'cx4.bids': 'Requests',
 };

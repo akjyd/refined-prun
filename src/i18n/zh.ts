@@ -1513,6 +1513,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arblog.loc.atStart': '待装船',
   'arblog.destBook': '{0} 实时订单',
   'orders.filledSince': '上次查看后 {0} 张单有成交：',
+  'cx4.asks': '卖单',
+  'cx4.bids': '买单',
 };
 
 export default zh;
