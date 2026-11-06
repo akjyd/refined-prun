@@ -61,7 +61,7 @@ function linksOf(tile: PrunTile): Link[] {
 }
 
 function onTileReady(tile: PrunTile) {
-  subscribe($$(tile.anchor, C.InventorySortControls.controls), column => {
+  subscribe($$(tile.anchor, C.StoreView.column), column => {
     const links = computed(() => linksOf(tile));
     createFragmentApp(() => (
       <span class={$style.links}>
@@ -75,12 +75,11 @@ function onTileReady(tile: PrunTile) {
           </PrunButton>
         ))}
       </span>
-    )).appendTo(column);
+    )).prependTo(column);
   });
 }
 
 function init() {
-  applyCssRule(['INV', 'SHPI'], `.${C.InventorySortControls.controls}`, $style.sortRow);
   tiles.observe(['INV', 'SHPI'], onTileReady);
 }
 

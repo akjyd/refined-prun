@@ -3,7 +3,14 @@ const {
   max = 100,
   min = 0,
   step = 1,
-} = defineProps<{ max?: number; min?: number; step?: number; onChange?: () => void }>();
+} = defineProps<{
+  max?: number;
+  min?: number;
+  step?: number;
+  onChange?: () => void;
+  // The thin orange slider of the zh-cn windows (player, 2026-11-06), instead of the game's.
+  ink?: boolean;
+}>();
 
 const model = defineModel<number>();
 </script>
@@ -12,7 +19,7 @@ const model = defineModel<number>();
   <div>
     <input
       v-model="model"
-      :class="$style.input"
+      :class="[$style.input, ink ? $style.ink : undefined]"
       type="range"
       :min="min"
       :max="max"
@@ -74,5 +81,34 @@ const model = defineModel<number>();
   z-index: 2;
   appearance: none;
   -webkit-appearance: none;
+}
+
+/* The zh-cn slider: a 3px track, the part you picked in brand color, a small square handle. */
+.ink::-webkit-slider-runnable-track {
+  height: 3px;
+  background-color: #3a3a37;
+}
+
+.ink::-moz-range-track {
+  height: 3px;
+  background-color: #3a3a37;
+}
+
+.ink::-webkit-slider-thumb {
+  width: 9px;
+  height: 11px;
+  margin-top: -4px;
+  border: none;
+  border-radius: 0;
+  background-color: var(--rpz-brand);
+}
+
+.ink::-moz-range-thumb {
+  width: 9px;
+  height: 11px;
+  margin-top: -4px;
+  border: none;
+  border-radius: 0;
+  background-color: var(--rpz-brand);
 }
 </style>

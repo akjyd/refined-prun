@@ -209,24 +209,26 @@ const columnsStyle = computed(() => ({
   gridTemplateColumns: `repeat(${exchanges.length}, minmax(280px, 400px))`,
 }));
 
-// Scroll to the spread (between offers and requests) once the books arrive.
+// Start at the spread, between the offers and the requests. The books can arrive in pieces, so
+// this keeps trying until a spread line is on screen (player, 2026-11-06: it no longer started
+// in the middle).
 const body = ref<HTMLElement>();
 let scrolled = false;
-watch(
-  () => columns.value.some(x => x.asks.length + x.bids.length > 0),
-  async ready => {
-    if (scrolled || !ready || height === undefined) {
-      return;
-    }
-    await nextTick();
-    const spread = body.value?.querySelector<HTMLElement>(`.${$style.spread}`);
-    if (body.value && spread) {
-      body.value.scrollTop = spread.offsetTop - body.value.clientHeight / 2;
-      scrolled = true;
-    }
-  },
-  { immediate: true },
-);
+watchEffect(async () => {
+  // Read what changes, so this runs again when the books do.
+  const ready = columns.value.some(x => x.asks.length + x.bids.length > 0);
+  if (scrolled || !ready || height === undefined) {
+    return;
+  }
+  await nextTick();
+  const element = body.value;
+  const spread = element?.querySelector<HTMLElement>(`.${$style.spread}`);
+  if (!element || !spread || element.clientHeight <= 0) {
+    return;
+  }
+  element.scrollTop = Math.max(0, spread.offsetTop - element.clientHeight / 2);
+  scrolled = true;
+});
 
 // The gap between the best offer and the best request of each exchange, shown on the line
 // that divides offers (above) from requests (below).
@@ -511,10 +513,20 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 .markCell {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  justify-content: flex-end;
+  /* The row lines up on the text baseline, so this cell says where its middle is. */
+  align-self: center;
+}
+
+/* The del button places itself at the left of a box, so it gets a box of its own. */
+.delSlot {
   position: relative;
-  display: block;
-  padding-left: 20px;
-  text-align: right;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 14px;
 }
 
 /* Tone order in a book: your own orders, then prices, then amounts and traders. */

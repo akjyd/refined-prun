@@ -159,6 +159,7 @@ async function buyAll() {
           line.item.mode === 'now' ? t('arb.fill') : t('arb.list')
         }}</span>
         <RangeInput
+          ink
           :model-value="line.units"
           :min="0"
           :max="Math.max(1, line.max)"

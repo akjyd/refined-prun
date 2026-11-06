@@ -194,10 +194,9 @@ watch(
           @drop="drag.drop">
           <span :class="[$style.profitCell, r.mark]">{{ formatProfit(r.profit) }}</span>
           <span :class="$style.markCell">
-            <DeleteExchangeOrderButton
-              v-if="r.own && !r.gone"
-              :order-id="r.id"
-              screen-command="CXOS" />
+            <span v-if="r.own && !r.gone" :class="$style.delSlot"
+              ><DeleteExchangeOrderButton :order-id="r.id" screen-command="CXOS"
+            /></span>
             <span class="rpz-mark">{{ r.change && !r.gone ? r.change : '' }}</span>
           </span>
           <span :class="[$style.num, $style.amount]">
@@ -347,10 +346,20 @@ watch(
 }
 
 .markCell {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  justify-content: flex-end;
+  /* The row lines up on the text baseline, so this cell says where its middle is. */
+  align-self: center;
+}
+
+/* The del button places itself at the left of a box, so it gets a box of its own. */
+.delSlot {
   position: relative;
-  display: block;
-  padding-left: 20px;
-  text-align: right;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 14px;
 }
 
 /* Tone order in a book: your own orders, then prices, then amounts. */

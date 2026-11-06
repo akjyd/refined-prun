@@ -145,11 +145,22 @@ function revealWhenFocused(window: HTMLDivElement, id: string, dockTab: Element 
     const value = Number((element as HTMLElement).style.zIndex);
     return Number.isFinite(value) ? value : 0;
   };
-  const observer = new MutationObserver(() => {
+  const isTop = () => {
     const windows = Array.from(document.getElementsByClassName(C.Window.window));
-    const mine = zIndexOf(window);
+    if (windows.length < 2) {
+      return true;
+    }
     const top = Math.max(...windows.map(zIndexOf));
-    if (windows.length < 2 || mine < top || !windows.some(x => x !== window && zIndexOf(x) < top)) {
+    return zIndexOf(window) >= top;
+  };
+  // A window RP has just opened is the top one already, and the game renumbers every window
+  // whenever one opens or closes. Only going from not on top to on top is a focus (player,
+  // 2026-11-06: hidden windows showed up on any action).
+  let wasTop = true;
+  const observer = new MutationObserver(() => {
+    const top = isTop();
+    if (!top || wasTop) {
+      wasTop = top;
       return;
     }
     observer.disconnect();
@@ -157,7 +168,11 @@ function revealWhenFocused(window: HTMLDivElement, id: string, dockTab: Element 
     window.classList.remove(css.hidden);
     dockTab?.classList.remove(css.hidden);
   });
-  observer.observe(window, { attributes: true, attributeFilter: ['style'] });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['style'],
+    subtree: true,
+  });
   void (async () => {
     await waitNodeDisconnected(window);
     observer.disconnect();

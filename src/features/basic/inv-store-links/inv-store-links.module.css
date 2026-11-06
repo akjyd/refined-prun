@@ -1,13 +1,8 @@
-.sortRow {
-  position: relative;
-}
-
 .links {
-  position: absolute;
-  top: 0;
-  right: 14px;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: var(--rpz-space-1);
+  margin-right: var(--rpz-space-2);
   white-space: nowrap;
 }

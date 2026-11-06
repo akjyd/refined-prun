@@ -1,4 +1,4 @@
-from tr import S, E
+from tr import S, E, R
 
 S('ARB：按翻车率解算')
 
@@ -21,3 +21,21 @@ E('set.arb.maxDays', 'Longest wait', '最长天数')
 E('set.arb.maxDaysHint',
   'Days you are willing to wait. A trade that needs longer is not shown.',
   '你愿意等几天。需要更久的不显示。')
+
+F = 'src/features/XIT/SET/SET.vue'
+R(F, "import ACT from '@src/features/XIT/SET/ACT.vue';",
+   "import ACT from '@src/features/XIT/SET/ACT.vue';\n"
+   "import ARB from '@src/features/XIT/SET/ARB.vue';")
+R(F, """    id: 'ACT',
+    label: 'ACT',
+    component: ACT,
+  },""",
+  """    id: 'ACT',
+    label: 'ACT',
+    component: ACT,
+  },
+  {
+    id: 'ARB',
+    label: t('set.arb.title'),
+    component: ARB,
+  },""")
