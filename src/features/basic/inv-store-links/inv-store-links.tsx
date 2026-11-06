@@ -80,6 +80,7 @@ function onTileReady(tile: PrunTile) {
 }
 
 function init() {
+  applyCssRule(['INV', 'SHPI'], `.${C.InventorySortControls.controls}`, $style.sortRow);
   tiles.observe(['INV', 'SHPI'], onTileReady);
 }
 
