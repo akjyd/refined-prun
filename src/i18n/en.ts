@@ -1613,4 +1613,7 @@ export default {
   'cxdel.side': 'Side',
   'cxdel.left': 'Units left',
   'cxdel.partly': 'Partly filled',
+
+  // ARB：利润/天
+  'arb.perDay': 'Profit/day',
 };

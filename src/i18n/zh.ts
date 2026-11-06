@@ -1532,6 +1532,9 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'cxdel.side': '方向',
   'cxdel.left': '剩余数量',
   'cxdel.partly': '部分成交',
+
+  // ARB：利润/天
+  'arb.perDay': '利润/天',
 };
 
 export default zh;

@@ -22,6 +22,26 @@ export function flightDays(from: string, to: string) {
   return DIAGONALS.has(`${from}>${to}`) ? 2 : 1;
 }
 
+// Days the goods are on the way and waiting to sell (player, 2026-11-06): flight days, plus for
+// a listed sale the units over the daily trade of the end exchange. Undefined when a listed sale
+// has no trade to go by. The return trip is not counted.
+export function tradeDays(
+  from: string,
+  to: string,
+  listed: boolean,
+  units: number,
+  dailyTrade: number,
+) {
+  const flight = flightDays(from, to);
+  if (!listed) {
+    return flight;
+  }
+  if (dailyTrade <= 0) {
+    return undefined;
+  }
+  return flight + units / dailyTrade;
+}
+
 // Return / (daily volatility × √days): how many usual price moves the margin can take.
 export function safetyMultiple(ret: number, volatility: number | undefined, days: number) {
   if (volatility === undefined || volatility <= 0) {

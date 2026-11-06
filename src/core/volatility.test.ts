@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dailyVolatility, flightDays, safetyMultiple } from '@src/core/volatility';
+import { dailyVolatility, flightDays, safetyMultiple, tradeDays } from '@src/core/volatility';
 
 describe('volatility', () => {
   it('is the standard deviation of daily changes', () => {
@@ -14,5 +14,20 @@ describe('volatility', () => {
     expect(flightDays('AI1', 'IC1')).toBe(1);
     expect(safetyMultiple(0.04, 0.02, 1)).toBeCloseTo(2);
     expect(safetyMultiple(0.04, 0.02, 4)).toBeCloseTo(1);
+  });
+});
+
+describe('tradeDays', () => {
+  it('is the flight days for a fill', () => {
+    expect(tradeDays('AI1', 'IC1', false, 500, 100)).toBe(1);
+    expect(tradeDays('AI1', 'NC1', false, 500, 100)).toBe(2);
+  });
+
+  it('adds units over daily trade for a listed sale', () => {
+    expect(tradeDays('AI1', 'NC1', true, 300, 100)).toBe(5);
+  });
+
+  it('is undefined for a listed sale with no trade', () => {
+    expect(tradeDays('AI1', 'IC1', true, 300, 0)).toBeUndefined();
   });
 });

@@ -27,7 +27,7 @@ import { arbReasons } from '@src/core/blacklist-reasons';
 import { userData } from '@src/store/user-data';
 import { percent1 } from '@src/utils/format';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
-import { dailyVolatility, flightDays, safetyMultiple } from '@src/core/volatility';
+import { dailyVolatility, safetyMultiple, tradeDays } from '@src/core/volatility';
 import { dailyCloses, requestCloses } from '@src/infrastructure/fio/cxpc';
 import { fixed0, fixed01 } from '@src/utils/format';
 import { t } from '@src/i18n';
@@ -144,14 +144,26 @@ function shareOf(row: Row) {
 
 // Return / (daily volatility of the end exchange × √flight days); undefined until FIO sends the
 // daily prices.
+// Flight days, plus the days a listed sale waits (units / daily trade). Profit per day and the
+// safety multiple both use these days (player, 2026-11-06).
+function daysOf(row: Row) {
+  return tradeDays(row.from, row.to, mode.value === 'listed', row.units, row.daily);
+}
+
+function perDayOf(row: Row) {
+  const days = daysOf(row);
+  return days !== undefined ? row.profit / days : undefined;
+}
+
 function safetyOf(row: Row) {
   const closes = dailyCloses.get(`${row.ticker}.${row.to}`);
   const volatility = closes ? dailyVolatility(closes) : undefined;
-  return safetyMultiple(row.return, volatility, flightDays(row.from, row.to));
+  const days = daysOf(row);
+  return days !== undefined ? safetyMultiple(row.return, volatility, days) : undefined;
 }
 
-type SortKey = 'ticker' | 'share' | 'cost' | 'profit' | 'return' | 'safety';
-const sortKey = ref<SortKey>('profit');
+type SortKey = 'ticker' | 'share' | 'cost' | 'profit' | 'perDay' | 'return' | 'safety';
+const sortKey = ref<SortKey>('perDay');
 const sortDown = ref(true);
 
 function sortBy(key: SortKey) {
@@ -188,6 +200,9 @@ const rows = computed(() => {
   const value = (x: Row) => {
     if (sortKey.value === 'safety') {
       return safetyOf(x) ?? -Infinity;
+    }
+    if (sortKey.value === 'perDay') {
+      return perDayOf(x) ?? -Infinity;
     }
     if (sortKey.value === 'share') {
       return shareOf(x);
@@ -353,6 +368,9 @@ function toggleBlacklistMode() {
       <span :class="[$style.num, $style.sort]" @click="sortBy('profit')"
         >{{ t('arb.profit') }}{{ arrow('profit') }}</span
       >
+      <span :class="[$style.num, $style.sort]" @click="sortBy('perDay')"
+        >{{ t('arb.perDay') }}{{ arrow('perDay') }}</span
+      >
       <span :class="[$style.num, $style.sort]" @click="sortBy('return')"
         >{{ t('arb.return') }}{{ arrow('return') }}</span
       >
@@ -390,7 +408,10 @@ function toggleBlacklistMode() {
           /></span>
         </span>
         <span :class="[$style.num, $style.muted]">{{ formatProfit(r.cost) }}</span>
-        <span :class="[$style.num, $style.key]">{{ formatProfit(r.profit) }}</span>
+        <span :class="$style.num">{{ formatProfit(r.profit) }}</span>
+        <span :class="[$style.num, $style.key]">{{
+          perDayOf(r) !== undefined ? formatProfit(perDayOf(r)!) : '--'
+        }}</span>
         <span :class="$style.num">
           {{
             editingBlacklist && r.ticker in userData.arbBlacklist
@@ -428,7 +449,7 @@ function toggleBlacklistMode() {
 
 <style module>
 .root {
-  min-width: 820px;
+  min-width: 900px;
   padding: 6px 8px;
   color: var(--rpz-text);
   font-size: var(--rpz-fs-body);
@@ -474,7 +495,7 @@ function toggleBlacklistMode() {
 
 .row {
   display: grid;
-  grid-template-columns: 56px minmax(100px, 1fr) 150px 80px 80px 64px 64px 60px;
+  grid-template-columns: 56px minmax(100px, 1fr) 150px 80px 80px 80px 64px 64px 60px;
   gap: 0 16px;
   align-items: center;
   padding: 4px 8px;
