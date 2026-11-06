@@ -382,14 +382,15 @@ function toggleBlacklistMode() {
         >
         <span :class="[$style.share, shareOf(r) > 1 ? $style.over : undefined]">
           <span :class="$style.shareText"
-            >{{ fixed0(r.units) }} / {{ fixed0(r.daily * Number(days)) }}</span
+            >{{ fixed0(r.units) }}
+            <span :class="$style.muted">/ {{ fixed0(r.daily * Number(days)) }}</span></span
           >
           <span :class="$style.shareBar"
             ><i :style="{ width: `${Math.min(1, shareOf(r)) * 100}%` }"
           /></span>
         </span>
-        <span :class="$style.num">{{ formatProfit(r.cost) }}</span>
-        <span :class="[$style.num, $style.name]">{{ formatProfit(r.profit) }}</span>
+        <span :class="[$style.num, $style.muted]">{{ formatProfit(r.cost) }}</span>
+        <span :class="[$style.num, $style.key]">{{ formatProfit(r.profit) }}</span>
         <span :class="$style.num">
           {{
             editingBlacklist && r.ticker in userData.arbBlacklist
@@ -397,7 +398,7 @@ function toggleBlacklistMode() {
               : percent1(r.return)
           }}
         </span>
-        <span :class="[$style.num, (safetyOf(r) ?? Infinity) < 1 ? $style.warn : undefined]">{{
+        <span :class="[$style.num, (safetyOf(r) ?? Infinity) < 1 ? $style.warn : $style.muted]">{{
           safetyOf(r) !== undefined ? fixed01(safetyOf(r)!) : '--'
         }}</span>
         <span :class="$style.action">
@@ -518,6 +519,12 @@ function toggleBlacklistMode() {
   text-align: right;
 }
 
+/* The one value of a row that the decision is made on (docs/ui-rules.md 3.5). */
+.key {
+  color: var(--rpz-text-strong);
+  font-weight: 600;
+}
+
 .sort {
   cursor: pointer;
 }
@@ -553,7 +560,7 @@ function toggleBlacklistMode() {
 .shareBar {
   position: relative;
   height: 4px;
-  background-color: #333;
+  background-color: var(--rpz-stroke-weak);
 }
 
 .shareBar i {
@@ -564,7 +571,8 @@ function toggleBlacklistMode() {
   background-color: var(--rpz-text-weak);
 }
 
-.over .shareText {
+.over .shareText,
+.over .shareText .muted {
   color: var(--rpz-neg);
 }
 

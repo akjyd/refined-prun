@@ -158,7 +158,8 @@ function recipeText(recipe: Recipe) {
 .root {
   min-width: 640px;
   padding: 6px 8px;
-  font-size: 13px;
+  font-size: var(--rpz-fs-body);
+  color: var(--rpz-text);
 }
 
 .toolbar {
@@ -250,7 +251,7 @@ function recipeText(recipe: Recipe) {
 }
 
 .building {
-  color: var(--rpz-text);
+  color: var(--rpz-text-strong);
   font-weight: bold;
 }
 

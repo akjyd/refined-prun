@@ -378,7 +378,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 .code {
-  color: var(--rpz-text);
+  color: var(--rpz-text-strong);
   font-weight: bold;
 }
 
@@ -440,6 +440,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 }
 
 .own {
+  color: var(--rpz-text-strong);
   font-weight: bold;
   cursor: grab;
 }
@@ -478,6 +479,12 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 .amount {
   position: relative;
   padding-left: 22px;
+}
+
+/* Tone order in a book: your own orders, then prices, then amounts and traders. */
+.cell:not(.own) .amount,
+.cell:not(.own) .trader {
+  color: var(--rpz-text-weak);
 }
 
 .num {

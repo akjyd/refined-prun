@@ -286,16 +286,18 @@ function time(ms: number) {
             </span>
             <span>
               <span :class="$style.progressText"
-                >{{ fixed0(r.soldUnits) }} / {{ fixed0(r.units) }}</span
+                >{{ fixed0(r.soldUnits) }}
+                <span :class="$style.muted">/ {{ fixed0(r.units) }}</span></span
               >
               <span :class="$style.progress"
                 ><i :style="{ width: `${r.units > 0 ? (r.soldUnits / r.units) * 100 : 0}%` }"
               /></span>
             </span>
-            <span :class="$style.num">{{ formatProfit(r.batch.plan.profit) }}</span>
+            <span :class="[$style.num, $style.muted]">{{ formatProfit(r.batch.plan.profit) }}</span>
             <span
               :class="[
                 $style.num,
+                $style.key,
                 r.profit === undefined
                   ? $style.muted
                   : r.profit >= 0
@@ -305,7 +307,7 @@ function time(ms: number) {
               >{{ r.profit !== undefined ? formatProfit(r.profit) : '--' }}</span
             >
             <span :class="$style.num">{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
-            <span :class="$style.num">{{ t('arblog.dayCount', r.days) }}</span>
+            <span :class="[$style.num, $style.muted]">{{ t('arblog.dayCount', r.days) }}</span>
           </div>
           <div v-if="opened === r.batch.id" :class="$style.detail">
             <!-- Four figures, plan against actual where both exist. -->
@@ -449,6 +451,11 @@ function time(ms: number) {
 
 .muted {
   color: var(--rpz-text-weak);
+}
+
+/* The one value of a row that the decision is made on (docs/ui-rules.md 3.5). */
+.key {
+  font-weight: 600;
 }
 
 .dot {

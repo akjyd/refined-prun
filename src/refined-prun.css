@@ -12,23 +12,28 @@ html {
    New zh-cn windows take every color, space and font size from these variables only.
    Rules: docs/ui-rules.md. */
 html {
-  --rpz-bg-base: #1e1e1e;
-  --rpz-bg-raised: #252525;
-  --rpz-bg-overlay: #2e2e2e;
-  --rpz-text: #eeeeee;
-  --rpz-text-weak: #8c8c8c;
-  --rpz-text-off: #6a6a6a;
-  --rpz-stroke: #707070;
-  --rpz-stroke-weak: #2c2c2c;
+  --rpz-bg-base: #1f1f1e;
+  --rpz-bg-raised: #262625;
+  --rpz-bg-overlay: #2f2f2d;
+  /* Ink tones: four greys, no white (player, 2026-11-06). Strong is for the one value of a row
+     that the decision is made on, and for your own orders. */
+  --rpz-text-strong: #d8d6d0;
+  --rpz-text: #b3b1ab;
+  --rpz-text-weak: #85837e;
+  --rpz-text-off: #5c5b57;
+  --rpz-stroke: #75736f;
+  --rpz-stroke-weak: #2b2b29;
   --rpz-brand: #f7a600;
   --rpz-brand-fill: rgba(247, 166, 0, 0.2);
-  --rpz-on-brand: #1e1e1e;
-  --rpz-pos: #5cb85c;
-  --rpz-neg: #d9534f;
+  --rpz-on-brand: #1f1f1e;
+  --rpz-pos: #6fae6f;
+  --rpz-neg: #c96a66;
   --rpz-warn: #f0ad4e;
   --rpz-hover: rgba(255, 255, 255, 0.06);
+  --rpz-hover-mark: inset 2px 0 0 var(--rpz-text-weak);
   --rpz-press: rgba(255, 255, 255, 0.1);
-  --rpz-zebra: rgba(255, 255, 255, 0.035);
+  /* The same stripe RP puts on the game tables (table-rows-alternating-colors). */
+  --rpz-zebra: rgba(255, 255, 255, 0.02);
   --rpz-space-1: 4px;
   --rpz-space-2: 8px;
   --rpz-space-3: 16px;
@@ -57,4 +62,10 @@ html {
    among its siblings. Zero specificity, so hover, selected and order states win. */
 :where(.rpz-row:nth-child(even of .rpz-row)) {
   background-color: var(--rpz-zebra);
+}
+
+/* Hover on a row: a stronger fill and a mark on the left, so that it is not taken for a stripe. */
+:where(.rpz-row:hover) {
+  background-color: var(--rpz-hover);
+  box-shadow: var(--rpz-hover-mark);
 }

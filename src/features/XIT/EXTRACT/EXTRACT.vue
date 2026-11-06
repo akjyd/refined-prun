@@ -437,7 +437,8 @@ function cogcName(cogc: string) {
 .root {
   min-width: 900px;
   padding: 6px 8px;
-  font-size: 13px;
+  font-size: var(--rpz-fs-body);
+  color: var(--rpz-text);
 }
 
 .row {

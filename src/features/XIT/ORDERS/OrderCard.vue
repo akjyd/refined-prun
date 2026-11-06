@@ -294,6 +294,7 @@ watch(
 }
 
 .own {
+  color: var(--rpz-text-strong);
   font-weight: bold;
   cursor: grab;
 }
@@ -332,6 +333,11 @@ watch(
 .amount {
   position: relative;
   padding-left: 22px;
+}
+
+/* Tone order in a book: your own orders, then prices, then amounts. */
+.row:not(.own) .amount {
+  color: var(--rpz-text-weak);
 }
 
 .num {

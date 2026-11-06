@@ -116,6 +116,7 @@ const stopVisit = watchEffect(() => {
 <style module>
 .root {
   padding: 6px 8px;
+  color: var(--rpz-text);
 }
 
 .fills {
@@ -130,7 +131,7 @@ const stopVisit = watchEffect(() => {
 }
 
 .fillsTitle {
-  color: var(--rpz-text);
+  color: var(--rpz-text-strong);
   font-weight: bold;
 }
 

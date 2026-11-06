@@ -49,7 +49,7 @@ function pick(value: T) {
   margin-left: var(--rpz-space-1);
   padding: 0 4px;
   background-color: var(--rpz-neg);
-  color: var(--rpz-text);
+  color: var(--rpz-text-strong);
   font-size: var(--rpz-fs-label);
   font-weight: bold;
 }
@@ -91,7 +91,7 @@ function pick(value: T) {
 }
 
 .on {
-  color: var(--rpz-text);
+  color: var(--rpz-text-strong);
 }
 
 .on::before {

@@ -147,6 +147,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
   min-width: 1100px;
   gap: 10px;
   padding: 6px 8px;
+  color: var(--rpz-text);
 }
 
 .tabs {
@@ -209,7 +210,7 @@ function onRightClick(e: MouseEvent, ticker: string) {
 }
 
 .currentTicker {
-  color: var(--rpz-text);
+  color: var(--rpz-text-strong);
   font-size: 15px;
   font-weight: bold;
 }
