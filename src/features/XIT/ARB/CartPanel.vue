@@ -3,6 +3,7 @@ import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import RangeInput from '@src/components/forms/RangeInput.vue';
 import { userData } from '@src/store/user-data';
+import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { createId } from '@src/store/create-id';
 import { placeCxOrder } from '@src/infrastructure/prun-ui/utils/place-cx-order';
 import { isArbBatchLinked, startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
@@ -81,6 +82,12 @@ function setList(index: number, value: number) {
   }
   const list = Math.max(0, Math.min(Math.floor(value), listMax(line)));
   setFill(index, line.units - list);
+}
+
+// Money is not the same on every exchange, so the cost says which one it is
+// (player, 2026-11-07).
+function currencyOf(code: string) {
+  return exchangesStore.getByCode(code)?.currency.code ?? '';
 }
 
 // The highest offer the buy takes: the limit price of the buy order.
@@ -189,13 +196,11 @@ async function buyAll() {
       <div :class="[$style.item, $style.head]">
         <span>{{ t('arb.material') }}</span>
         <span>{{ t('arb.units') }}</span>
-        <span :class="$style.num" />
-        <span :class="$style.num">{{ t('arb.tradeDays') }}</span>
+        <span :class="$style.num">{{ t('arb.saleDays') }}</span>
         <span :class="$style.num">{{ t('arb.cost') }}</span>
         <span :class="$style.num">{{ t('arb.perDay') }}</span>
         <span :class="$style.num">{{ t('arb.perDayReturn') }}</span>
         <span :class="$style.num">{{ t('arb.failure') }}</span>
-        <span />
         <span />
       </div>
       <template v-for="(line, i) in cartLines" :key="line.item.ticker">
@@ -212,7 +217,17 @@ async function buyAll() {
                 :min="0"
                 :max="Math.max(1, line.max)"
                 @update:model-value="setUnits(i, $event ?? 0)" />
-              <span :class="$style.sliderNum">{{ fixed0(line.units) }}</span>
+              <span :class="$style.sliderNum">
+                <input
+                  :id="`arb-cart-${line.item.ticker}`"
+                  :class="$style.input"
+                  type="number"
+                  min="0"
+                  :max="line.max"
+                  :value="line.units"
+                  @change="onInput(i, $event)" />
+                <span :class="$style.muted">/ {{ fixed0(line.max) }}</span>
+              </span>
             </span>
             <span :class="$style.slider">
               <span :class="$style.sliderLabel">{{ t('arb.modeFill') }}</span>
@@ -235,18 +250,12 @@ async function buyAll() {
               <span :class="$style.sliderNum">{{ fixed0(listOf(line)) }}</span>
             </span>
           </span>
-          <input
-            :id="`arb-cart-${line.item.ticker}`"
-            :class="$style.input"
-            type="number"
-            min="0"
-            :max="line.max"
-            :value="line.units"
-            @change="onInput(i, $event)" />
           <span :class="[$style.num, $style.muted]">{{
-            line.plan ? t('arb.days', fixed01(line.plan.days)) : '--'
+            line.plan ? t('arb.days', fixed01(line.plan.saleDays)) : '--'
           }}</span>
-          <span :class="[$style.num, $style.muted]">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
+          <span :class="[$style.num, $style.muted]"
+            >{{ formatProfit(line.plan?.cost ?? 0) }} {{ currencyOf(line.item.from) }}</span
+          >
           <span :class="[$style.num, $style.key]">{{
             line.plan && line.plan.days > 0 ? formatProfit(line.plan.profit / line.plan.days) : '--'
           }}</span>
@@ -378,7 +387,7 @@ async function buyAll() {
 
 .item {
   display: grid;
-  grid-template-columns: 40px minmax(180px, 1fr) 70px 58px 76px 72px 62px 50px 22px;
+  grid-template-columns: 40px minmax(240px, 1fr) 58px 76px 72px 62px 50px 22px;
   gap: 0 var(--rpz-space-2);
   align-items: center;
   padding: var(--rpz-space-1) 0;
@@ -423,7 +432,7 @@ async function buyAll() {
 
 .slider {
   display: grid;
-  grid-template-columns: 30px minmax(60px, 1fr) 52px;
+  grid-template-columns: 30px minmax(60px, 1fr) 118px;
   align-items: center;
   gap: var(--rpz-space-1);
 }
@@ -434,6 +443,10 @@ async function buyAll() {
 }
 
 .sliderNum {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
   text-align: right;
 }
 

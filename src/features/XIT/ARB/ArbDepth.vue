@@ -24,7 +24,14 @@ const { ticker, from, to, plan, canFill, listed, daily } = defineProps<{
   daily: number;
 }>();
 
-const emit = defineEmits<{ mode: [listed: boolean] }>();
+const emit = defineEmits<{ mode: [listed: boolean]; pick: [units: number] }>();
+
+// Clicking an offer of the start exchange means "buy up to here".
+function onPick(exchange: string, units: number) {
+  if (exchange === from) {
+    emit('pick', units);
+  }
+}
 
 // A buy placed from the CXPO of the start exchange becomes an arbitrage batch (XIT ARBLOG).
 function onCxpo(exchange: string) {
@@ -80,15 +87,13 @@ const ghost = computed(() =>
     <div :class="$style.alt">
       <span :class="$style.modes">
         <button
-          :class="[$style.toggle, !listed && canFill ? $style.toggleOn : undefined]"
-          :disabled="!canFill"
-          :title="canFill ? undefined : t('arb.noFill')"
+          v-if="canFill"
+          :class="[$style.toggle, listed ? undefined : $style.toggleOn]"
           @click="emit('mode', false)">
           {{ t('arb.modeFill') }}
         </button>
         <button
           :class="[$style.toggle, listed || !canFill ? $style.toggleOn : undefined]"
-          :disabled="!canFill"
           @click="emit('mode', true)">
           {{ t('arb.modeList') }}
         </button>
@@ -117,7 +122,8 @@ const ghost = computed(() =>
       traders
       :height="300"
       :ghost="ghost"
-      @cxpo="onCxpo" />
+      @cxpo="onCxpo"
+      @pick="onPick" />
   </div>
 </template>
 

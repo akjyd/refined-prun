@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
 import PriceLadder from '@src/features/XIT/CX4/PriceLadder.vue';
-import BatchOrders from '@src/features/XIT/ARBLOG/BatchOrders.vue';
 import TripSell from '@src/features/XIT/ARBLOG/TripSell.vue';
 import WatchList from '@src/features/XIT/ARBLOG/WatchList.vue';
 import {
@@ -405,10 +404,6 @@ function date(ms: number) {
                 </span>
               </span>
             </div>
-            <template v-if="r.open.length > 0">
-              <div :class="$style.title">{{ t('arblog.orders') }}</div>
-              <BatchOrders :batch="r.batch" :orders="r.open" />
-            </template>
             <!-- The live book of the end exchange, to watch the market you sell in. -->
             <PriceLadder
               :class="$style.ladder"

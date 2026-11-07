@@ -313,6 +313,20 @@ function add(row: Row) {
   );
 }
 
+// Clicking an offer in the book of the start exchange buys up to there, as far as the trade
+// allows (player, 2026-11-07).
+function setTotal(row: Row, units: number) {
+  const capped = Math.max(0, Math.min(units, row.plan.units));
+  if (capped <= 0) {
+    return;
+  }
+  add(row);
+  const item = userData.arbCart.items.find(x => x.ticker === row.ticker);
+  if (item) {
+    item.units = capped;
+  }
+}
+
 function setMode(key: string, listed: boolean) {
   if (listed) {
     listedRows.add(key);
@@ -555,7 +569,8 @@ function toggleBlacklistMode() {
         :can-fill="r.canFill"
         :daily="r.daily"
         :listed="listedRows.has(r.key)"
-        @mode="setMode(r.key, $event)" />
+        @mode="setMode(r.key, $event)"
+        @pick="setTotal(r, $event)" />
     </template>
   </div>
 </template>

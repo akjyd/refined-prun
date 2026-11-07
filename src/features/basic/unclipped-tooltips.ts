@@ -169,6 +169,15 @@ function prepareTooltips() {
       if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
         return;
       }
+      // While nothing is up, E releases the tooltip locked last (player, 2026-11-07).
+      if (activeTarget === null || !tooltip.matches(':popover-open')) {
+        const last = locked.pop();
+        if (last) {
+          last.hidePopover();
+          last.remove();
+        }
+        return;
+      }
       lockTooltip();
     }
   });

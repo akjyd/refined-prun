@@ -45,7 +45,36 @@ const {
 }>();
 
 // Fires when the CXPO button of an exchange column is clicked.
-const emit = defineEmits<{ cxpo: [exchange: string] }>();
+const emit = defineEmits<{
+  cxpo: [exchange: string];
+  // Units of this book up to and including the order clicked, best price first.
+  pick: [exchange: string, units: number];
+}>();
+
+// Click an offer to say "buy up to here": the units of every offer at or under that price
+// (player, 2026-11-07).
+function onPick(cell: Cell, index: number) {
+  if (cell.ghost === true || !cell.ask) {
+    return;
+  }
+  const book = columns.value[index].asks;
+  const at = book.indexOf(cell);
+  if (at < 0) {
+    return;
+  }
+  let units = 0;
+  for (const other of book.slice(at)) {
+    if (other.ghost !== true) {
+      units += Number(
+        String(other.amount)
+          .split('/')
+          .at(-1)
+          ?.replace(/[^0-9]/g, '') ?? 0,
+      );
+    }
+  }
+  emit('pick', exchanges[index], units);
+}
 
 const $style = useCssModule();
 
@@ -333,6 +362,7 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
                   ]
                 : $style.empty
             "
+            @click="cell && onPick(cell, i)"
             @dragstart="cell && drag.start($event, cell)"
             @dragover="cell && drag.over($event, bookOf(cell), bookOf(cell).indexOf(cell))"
             @dragend="drag.end"
