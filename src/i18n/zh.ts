@@ -1618,6 +1618,27 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.daily': '日交易量',
   'arb.noFill': '终点市场的买单吃不下这批货，只能挂单。',
   'arb.total': '总量',
+
+  // XIT RESUP：一键补给与装货
+  'resup.title': '补给',
+  'resup.description': '把停泊的船上的补给卸到基地，再把基地做出来的产物装上船。',
+  'resup.parameters': '船舶注册号',
+  'resup.noShip': '找不到船 {0}。',
+  'resup.noBase': '这条船不在你的基地。',
+  'resup.toBase': '卸到基地',
+  'resup.toWarehouse': '卸到仓库',
+  'resup.toShip': '装上船',
+  'resup.nothing': '没有要搬的东西。',
+  'resup.baseFull': '基地和仓库都满了，有一部分补给留在船上。',
+  'resup.shipFull': '船装满了，有一部分产物留在基地。',
+  'set.burn.intermediate': '中间产物留存天数',
+  'set.burn.intermediateHint': '既是产物又被本星球消耗的物资，装船时在星球上留几天的量。',
+  'set.burn.shipDays': '补给天数',
+  'set.burn.shipDaysHint': '船在这个星球卸下多少天的补给。留空表示船上的补给全部卸下。',
+  'set.burn.infinite': '无限',
+  'set.burn.title': '基地补给',
+  'set.burn.groupShip': '一键补给',
+  'set.burn.groupGroups': '星球分组',
 };
 
 export default zh;

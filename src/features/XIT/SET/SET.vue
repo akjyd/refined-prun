@@ -8,6 +8,7 @@ import FIN from '@src/features/XIT/SET/FIN.vue';
 import BFR from '@src/features/XIT/SET/BFR.vue';
 import ACT from '@src/features/XIT/SET/ACT.vue';
 import ARB from '@src/features/XIT/SET/ARB.vue';
+import BURN from '@src/features/XIT/SET/BURN.vue';
 
 const tabs: Tab[] = [
   {
@@ -39,6 +40,11 @@ const tabs: Tab[] = [
     id: 'ARB',
     label: t('set.arb.title'),
     component: ARB,
+  },
+  {
+    id: 'BURN',
+    label: t('set.burn.title'),
+    component: BURN,
   },
 ];
 

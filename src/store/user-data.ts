@@ -28,6 +28,11 @@ export const initialUserData = deepFreeze({
       yellow: 7,
       resupply: 16,
       planetResupply: {} as Record<string, number>,
+      // Days of supply a ship leaves on a planet when you press Resupply on it. Null means
+      // every supply the ship holds goes down (player, 2026-11-07).
+      shipSupplyDays: {} as Record<string, number | null>,
+      // Days of an intermediate that stay on the planet when a ship loads the goods.
+      intermediateDays: 5,
       // Planet natural id -> ship-size label from core/ship-sizes.
       planetPickup: {} as Record<string, string>,
       // Planet natural id -> production materials the player unticked in ACT resupply.

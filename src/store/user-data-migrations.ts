@@ -64,6 +64,13 @@ const migrations: MigrationEntry[] = [
     },
   ],
   [
+    '07.11.2026 Add the ship resupply settings',
+    userData => {
+      userData.settings.burn.shipSupplyDays ??= {};
+      userData.settings.burn.intermediateDays ??= 5;
+    },
+  ],
+  [
     '07.11.2026 Add the share of trade and the flight days',
     userData => {
       userData.settings.arb.tradeShare ??= 1;

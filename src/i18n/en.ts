@@ -1701,4 +1701,29 @@ export default {
   'arb.daily': 'Daily trade',
   'arb.noFill': 'The requests of the end exchange cannot take any of this trade.',
   'arb.total': 'Total',
+
+  // XIT RESUP：一键补给与装货
+  'resup.title': 'Resupply',
+  'resup.description':
+    'Puts the supplies a docked ship carries into the base and loads the goods the base has made.',
+  'resup.parameters': 'Ship registration',
+  'resup.noShip': 'No ship {0}.',
+  'resup.noBase': 'The ship is not at a base of yours.',
+  'resup.toBase': 'To the base',
+  'resup.toWarehouse': 'To the warehouse',
+  'resup.toShip': 'To the ship',
+  'resup.nothing': 'Nothing to move.',
+  'resup.baseFull':
+    'The base and the warehouse are full, so a part of the supplies stays on the ship.',
+  'resup.shipFull': 'The ship is full, so a part of the goods stays here.',
+  'set.burn.intermediate': 'Intermediate days',
+  'set.burn.intermediateHint':
+    'Days of a material the planet both makes and uses that stay there when a ship loads the goods.',
+  'set.burn.shipDays': 'Ship resupply days',
+  'set.burn.shipDaysHint':
+    'Days of supply a ship leaves on a planet. Empty means every supply the ship holds goes down.',
+  'set.burn.infinite': 'all',
+  'set.burn.title': 'BURN',
+  'set.burn.groupShip': 'Ship resupply',
+  'set.burn.groupGroups': 'Planet groups',
 };
