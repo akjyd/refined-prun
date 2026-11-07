@@ -31,6 +31,15 @@ describe('dropTargetPrice', () => {
     expect(dropTargetPrice(book, book[1], 3)).toBe(32900);
     expect(dropTargetPrice(book, book[1], 1)).toBe(34900);
   });
+  it('refuses a drop between two orders of one price', () => {
+    const tight = [
+      { id: 'own', ask: true, price: 200 },
+      { id: 'x', ask: true, price: 148 },
+      { id: 'y', ask: true, price: 148 },
+      { id: 'z', ask: false, price: 100 },
+    ];
+    expect(dropTargetPrice(tight, tight[0], 2)).toBeUndefined();
+  });
   it('refuses to cross the spread', () => {
     expect(dropTargetPrice(book, book[1], 4)).toBeUndefined();
   });

@@ -39,6 +39,11 @@ export function dropTargetPrice(book: BookOrder[], dragged: BookOrder, at: numbe
   const before = book.slice(0, at).filter(x => x.id !== dragged.id).length;
   const above = others[before - 1];
   const below = others[before];
+  // Two orders of one price have no gap between them, so there is no price to drop into
+  // (player, 2026-11-07: a drop between two orders of 148 gave 147).
+  if (above !== undefined && below !== undefined && above.price === below.price) {
+    return undefined;
+  }
   const price = dropPrice(dragged.ask, above?.price, below?.price);
   if (price === undefined || price === dragged.price) {
     return undefined;
