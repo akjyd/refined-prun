@@ -191,16 +191,34 @@ async function buyAll() {
             :class="[$style.num, (line.plan?.failure ?? 0) > target ? $style.warn : $style.muted]"
             >{{ line.plan ? percent0(line.plan.failure / 100) : '--' }}</span
           >
-          <span
-            :class="[
-              $style.listed,
-              isListOnly(line.item.ticker, line.item.from, line.item.to)
-                ? $style.listedOn
-                : undefined,
-            ]"
-            @click="toggleListOnly(line.item.ticker, line.item.from, line.item.to)"
-            >{{ t('arb.list') }}</span
-          >
+          <span :class="$style.modes">
+            <button
+              :class="[
+                $style.mode,
+                isListOnly(line.item.ticker, line.item.from, line.item.to)
+                  ? undefined
+                  : $style.modeOn,
+              ]"
+              @click="
+                isListOnly(line.item.ticker, line.item.from, line.item.to) &&
+                toggleListOnly(line.item.ticker, line.item.from, line.item.to)
+              ">
+              {{ t('arb.modeFill') }}
+            </button>
+            <button
+              :class="[
+                $style.mode,
+                isListOnly(line.item.ticker, line.item.from, line.item.to)
+                  ? $style.modeOn
+                  : undefined,
+              ]"
+              @click="
+                !isListOnly(line.item.ticker, line.item.from, line.item.to) &&
+                toggleListOnly(line.item.ticker, line.item.from, line.item.to)
+              ">
+              {{ t('arb.modeList') }}
+            </button>
+          </span>
           <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
         </div>
       </template>
@@ -322,7 +340,7 @@ async function buyAll() {
 
 .item {
   display: grid;
-  grid-template-columns: 40px minmax(120px, 1fr) 70px 58px 76px 72px 62px 50px 40px 22px;
+  grid-template-columns: 40px minmax(110px, 1fr) 70px 58px 76px 72px 62px 50px 78px 22px;
   gap: 0 var(--rpz-space-2);
   align-items: center;
   padding: var(--rpz-space-1) 0;
@@ -360,19 +378,28 @@ async function buyAll() {
   border-color: var(--rpz-brand);
 }
 
-.listed {
+.modes {
+  display: flex;
+  gap: 2px;
+}
+
+.mode {
+  padding: 1px 5px;
+  border: 1px solid var(--rpz-stroke-weak);
+  background: none;
   color: var(--rpz-text-off);
+  font: inherit;
   font-size: var(--rpz-fs-label);
-  text-align: center;
   cursor: pointer;
 }
 
-.listed:hover {
-  color: var(--rpz-text);
+.mode:hover {
+  background-color: var(--rpz-hover);
 }
 
-.listedOn {
-  color: var(--rpz-brand);
+.modeOn {
+  border-color: var(--rpz-brand);
+  color: var(--rpz-text-strong);
 }
 
 .key {

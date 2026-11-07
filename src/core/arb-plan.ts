@@ -20,10 +20,6 @@ export interface ArbPlanInput {
   volatility?: number;
   failurePercent: number;
   maxUnits: number;
-  // What the end exchange has really been paying, as a cap on the price offered: an offer far
-  // over the prices that trade would not sell at the rate dailyTrade says (player, 2026-11-06:
-  // the profits were absurd). Undefined leaves the offer at one step under the best offer.
-  sellCap?: number;
   // Days you are willing to wait. Beyond about two weeks the measured table has nothing to say,
   // and a trade that ties up a ship for a month is of little use however safe it looks
   // (player, 2026-11-06).
@@ -107,22 +103,9 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
   // Part 2: the rest, offered under the best offer of the end exchange.
   const bestAskB = Math.min(...input.asksB.map(x => x.price));
   const underBest = Number.isFinite(bestAskB) ? dropPrice(true, bestAskB) : undefined;
-  // The 7-day VWAP is only a guard against a lone, absurd offer. While the best offer is near
-  // the VWAP it is a real price, so we go under it (player, 2026-11-07: an offer sat at 1,190
-  // when the book had 1,290).
-  const cap = input.sellCap;
-  const OUTLIER = 1.5;
-  const capped =
-    underBest === undefined
-      ? undefined
-      : cap !== undefined && cap > 0 && underBest > cap * OUTLIER
-        ? cap
-        : underBest;
-  // An offer under the best request earns less than you get at once, so it is never right
-  // (player, 2026-11-07: the offer made less than the fill).
-  const bestBidB = Math.max(...input.bidsB.map(x => x.price));
-  const listPrice =
-    capped !== undefined && Number.isFinite(bestBidB) ? Math.max(capped, bestBidB) : capped;
+  // Just under the best offer of the end exchange. No other cap: the book is the price
+  // (player, 2026-11-07).
+  const listPrice = underBest;
   let listUnits = 0;
   let listCost = 0;
   // The most units that can be offered without waiting longer than you want.

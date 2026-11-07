@@ -59,7 +59,6 @@ export function planOf(
     maxUnits,
     // A player whose data was saved before this setting existed has none yet.
     maxDays: userData.settings.arb.maxDays ?? 7,
-    sellCap: cxStore.prices.get(to)?.get(ticker)?.VWAP7D ?? undefined,
   });
   if (!plan) {
     return undefined;

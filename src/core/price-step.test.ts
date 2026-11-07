@@ -31,6 +31,16 @@ describe('dropTargetPrice', () => {
     expect(dropTargetPrice(book, book[1], 3)).toBe(32900);
     expect(dropTargetPrice(book, book[1], 1)).toBe(34900);
   });
+  it('refuses a drop with no price between the two orders', () => {
+    // 5080 and 5070 are one step apart, so an offer cannot go between them.
+    const tight = [
+      { id: 'x', ask: true, price: 5080 },
+      { id: 'y', ask: true, price: 5070 },
+      { id: 'own', ask: true, price: 5200 },
+      { id: 'z', ask: false, price: 4760 },
+    ];
+    expect(dropTargetPrice(tight, tight[2], 1)).toBeUndefined();
+  });
   it('refuses to cross the spread', () => {
     expect(dropTargetPrice(book, book[1], 4)).toBeUndefined();
   });

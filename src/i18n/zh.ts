@@ -1599,6 +1599,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arblog.perDayVsPlan': '天利润 / 期望天利润',
   'arb.modeFill': '填单',
   'arb.modeList': '挂单',
+  'arb.split': '立即 / 挂单',
 };
 
 export default zh;

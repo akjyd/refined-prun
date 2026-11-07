@@ -43,6 +43,15 @@ export function dropTargetPrice(book: BookOrder[], dragged: BookOrder, at: numbe
   if (price === undefined || price === dragged.price) {
     return undefined;
   }
+  // The step can be too large to put a price between the two orders. Then the order would tie
+  // the one below and go behind it in the queue, which is not where you dropped it, so we
+  // refuse the drop (player, 2026-11-07).
+  if (below !== undefined && price <= below.price) {
+    return undefined;
+  }
+  if (above !== undefined && price >= above.price) {
+    return undefined;
+  }
   const bestBid = others.find(x => !x.ask)?.price;
   const bestAsk = others.filter(x => x.ask).at(-1)?.price;
   if (dragged.ask && bestBid !== undefined && price <= bestBid) {

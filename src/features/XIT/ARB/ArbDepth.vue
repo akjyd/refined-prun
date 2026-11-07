@@ -6,6 +6,8 @@ import { arbHistory, HISTORY_DAYS, HISTORY_SHIP } from '@src/features/XIT/ARB/ar
 import { getShipSize } from '@src/core/ship-sizes';
 import { t } from '@src/i18n';
 import { ArbPlanResult } from '@src/core/arb-plan';
+import { formatProfit } from '@src/core/daily-profit/profit-format';
+import { fixed0, percent1 } from '@src/utils/format';
 import { isListOnly, toggleListOnly } from '@src/features/XIT/ARB/cart';
 import { startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
 
@@ -83,6 +85,16 @@ const ghost = computed(() =>
         @click="!listed && toggleListOnly(ticker, from, to)">
         {{ t('arb.modeList') }}
       </button>
+      <span :class="$style.sum">
+        <span :class="$style.muted">{{ t('arb.profit') }}</span>
+        <span :class="$style.key">{{ formatProfit(plan.profit) }}</span>
+        <span :class="$style.muted">{{ t('arb.return') }}</span>
+        <span>{{ percent1(plan.margin) }}</span>
+        <span :class="$style.muted">{{ t('arb.cost') }}</span>
+        <span>{{ formatProfit(plan.cost) }}</span>
+        <span :class="$style.muted">{{ t('arb.split') }}</span>
+        <span>{{ fixed0(plan.fillUnits) }} / {{ fixed0(plan.listUnits) }}</span>
+      </span>
     </div>
     <div :class="$style.chartTitle">{{ t('arb.chartTitle', shipLabel, HISTORY_DAYS) }}</div>
     <ProfitChart :points="history" />
@@ -127,6 +139,21 @@ const ghost = computed(() =>
 
 .toggleOn {
   border-color: var(--rpz-brand);
+  color: var(--rpz-text-strong);
+}
+
+.sum {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--rpz-space-1);
+}
+
+.muted {
+  color: var(--rpz-text-weak);
+}
+
+.key {
   color: var(--rpz-text-strong);
 }
 

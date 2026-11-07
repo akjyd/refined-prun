@@ -119,18 +119,4 @@ describe('planTrade', () => {
     expect(r.days).toBeGreaterThan(base.flightDays);
     expect(r.days).toBeLessThan(r.listDays);
   });
-
-  it('does not offer over what the end exchange really pays', () => {
-    const books = {
-      asksA: [{ price: 100, amount: 1000 }],
-      bidsB: [{ price: 110, amount: 5 }],
-      // Someone is asking ten times the usual price; an offer just under it would not sell.
-      asksB: [{ price: 1000, amount: 5 }],
-    };
-    const wild = planTrade({ ...base, ...books })!;
-    const sane = planTrade({ ...base, ...books, sellCap: 130 })!;
-    expect(wild.listPrice).toBeGreaterThan(900);
-    expect(sane.listPrice).toBe(130);
-    expect(sane.profit).toBeLessThan(wild.profit);
-  });
 });
