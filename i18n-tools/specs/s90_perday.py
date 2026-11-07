@@ -14,11 +14,18 @@ E('arb.chartEmpty', 'No history yet', '还没有记录')
 E('arb.hurdle', 'Hurdle', '风险门槛')
 E('arb.hurdleOff', 'Off', '关')
 E('arb.tipUnits',
-  'Units this trade buys, against what the end exchange trades in the chosen days. Red when the '
-  'units are more than the trade: you may not sell them all.',
-  '这次买入的数量，和终点交易所在所选天数里的成交量。数量超过成交量时变红，表示可能卖不完。')
+  'Left: units the requests of the end exchange take the moment the ship lands. '
+  'Right: the whole trade, the smallest of three numbers - what the ship holds; '
+  'the daily trade times the longest sale days times the share of trade (XIT SET); '
+  'and the units on offer at the start exchange that still earn enough at your risk setting.',
+  '左边：船一落地，终点市场的买单能立刻吃掉的数量。'
+  '右边：这次倒货的总量，取三者里最小的一个——'
+  '船能装多少；日交易量 × 最长售卖天数 × 吃单比例（设置里改）；'
+  '以及起点市场上、在你的翻车率下利润仍然达标的卖单数量。')
 E('arb.tipCost', 'What you pay for the goods on the start exchange.', '在起点买入这些货要花的钱。')
 E('arb.tipDays',
+  'Days the offered part needs to sell after the ship lands, flight not counted: the offered '
+  'units over the daily trade. Flight days are in XIT SET. OLD: '
   'Flight days plus the days a listed sale waits. Flight: 1 day between neighbour exchanges, '
   '2 otherwise. Listed days = units / daily trade of the end exchange. A fill sells at once, so '
   '0 days. The return trip is not counted.',

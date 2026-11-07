@@ -64,6 +64,13 @@ const migrations: MigrationEntry[] = [
     },
   ],
   [
+    '07.11.2026 Add the share of trade and the flight days',
+    userData => {
+      userData.settings.arb.tradeShare ??= 1;
+      userData.settings.arb.flightDays ??= {};
+    },
+  ],
+  [
     '07.11.2026 Add the queue warning of an arbitrage order',
     userData => {
       userData.settings.arb.queueDays ??= 0.5;

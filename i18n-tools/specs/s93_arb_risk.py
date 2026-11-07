@@ -5,22 +5,36 @@ S('ARB：按翻车率解算')
 E('arb.failureLabel', 'Risk', '翻车率')
 E('arb.failure', 'Risk', '翻车率')
 E('arb.perDayReturn', 'Return/day', '天利润率')
-E('arb.unitsFill', 'Units now/total', '数量 立即/总')
 E('arb.tipFailure',
   'How often a trade like this loses money, measured from past prices. Set what you accept in '
   'XIT SET; the size of every trade follows from it.',
   '这一单亏钱的概率，用历史价格实测出来的。你能接受多少在 XIT SET 里设，每一单的数量由它推出来。')
 E('set.arb.title', 'Arbitrage', '倒货')
-E('set.arb.failure', 'Acceptable risk', '可接受翻车率')
+E('set.arb.failure', 'Highest risk', '最高翻车率')
 E('set.arb.failureHint',
-  '0-100. Lower is stricter and shows fewer chances.',
-  '0–100。越低越严，机会越少。')
+  '0-100. The share of trades that may end in a loss. Lower is stricter and leaves fewer '
+  'chances, each of them smaller.',
+  '0–100。允许多大比例的交易最后是亏的。越低越严，机会更少，每笔也更小。')
 E('set.arb.minDaily', 'Least profit a day', '最低天利润')
 E('set.arb.minDailyHint', 'Trades under this are not shown.', '低于这个数的不显示。')
-E('set.arb.maxDays', 'Longest wait', '最长天数')
+E('set.arb.maxDays', 'Longest sale', '最长售卖天数')
 E('set.arb.maxDaysHint',
-  'Days you are willing to wait. A trade that needs longer is not shown.',
-  '你愿意等几天。需要更久的不显示。')
+  'Days you are willing to wait for the goods to sell, flight not counted. '
+  'An offer that needs longer is cut back.',
+  '货到之后你愿意等几天卖完，不含运输。需要更久的部分会被砍掉。')
+E('set.arb.groupArb', 'Arbitrage list', '倒货')
+E('set.arb.groupLog', 'Arbitrage log', '倒货记录')
+E('set.arb.share', 'Share of trade', '吃单比例')
+E('set.arb.shareHint',
+  '0-1. The part of the trade of the end exchange that can be yours. Not all of it is: some '
+  'of it is requests you do not take, and some goes to the offers of other traders. '
+  '1 counts on all of it.',
+  '0–1。终点市场的成交量里，你能吃到的那一部分。并不是全部：其中有你不会去接的买单，'
+  '也有被别人的挂单先吃掉的。填 1 表示全部算你的。')
+E('set.arb.flight', 'Flight days', '运输天数')
+E('set.arb.flightHint',
+  'Days from one exchange to the other. Change these to what your ships really take.',
+  '每条路线的飞行天数。按你的船实际用时填写。')
 
 F = 'src/features/XIT/SET/SET.vue'
 R(F, "import ACT from '@src/features/XIT/SET/ACT.vue';",
@@ -43,13 +57,18 @@ R(F, """    id: 'ACT',
 E('arblog.ahead', 'queue {0}d', '排队 {0} 天')
 E('arb.worstFailure', 'Worst risk', '最差翻车率')
 E('arblog.queue', 'Queue / day', '排队量 / 日成交')
-E('set.arb.queue', 'Queue warning', '排队提醒')
+E('set.arb.queue', 'Price cut warning', '压价提醒')
 E('set.arb.queueHint',
-  'Days of trade queued in front of your order before the dot lights up.',
-  '前面排队超过这么多天的成交量时，亮小圆点。')
+  'Days of trade queued in front of your order before the dot lights up. The dot says that '
+  'the orders in front take this long to clear, so a price cut is worth thinking about.',
+  '你的单子前面排队的量，够市场成交这么多天时，亮起小圆点。'
+  '圆点的意思是：前面的单子要这么久才能清完，可以考虑压价。')
 E('orders.pin', 'Keep this book listed', '固定这个订单簿，没有单子也不消失')
 
 E('arblog.profitVsPlan', 'Profit / planned', '利润 / 期望利润')
 E('arblog.perDayVsPlan', 'Profit a day / planned', '天利润 / 期望天利润')
 E('arb.modeFill', 'Fill', '填单')
 E('arb.modeList', 'Offer', '挂单')
+E('arb.settings', 'Settings', '设置')
+E('arb.saleDays', 'Sale days', '售卖天数')
+E('arb.unitsFill', 'Can fill / total', '可填 / 总量')

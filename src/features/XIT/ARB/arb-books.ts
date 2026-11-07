@@ -7,9 +7,13 @@ import { cxStore } from '@src/infrastructure/fio/cx';
 import { fioBooks, OrderBookData } from '@src/infrastructure/fio/exchange-full';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 
-// Average units traded per day on an exchange (7-day trade / 7).
+// Units of a material you can expect to sell per day on an exchange: the 30-day trade over 30
+// days, times the share of it you count on. Not all the trade can be yours: a part of it is
+// requests you do not take, and a part goes to the offers of other traders, so you set the
+// share in XIT SET (player, 2026-11-07).
 export function dailyTrade(ticker: string, code: string) {
-  return (cxStore.prices.get(code)?.get(ticker)?.Traded7D ?? 0) / 7;
+  const traded = (cxStore.prices.get(code)?.get(ticker)?.Traded30D ?? 0) / 30;
+  return traded * (userData.settings.arb.tradeShare ?? 1);
 }
 
 // The most units a trade is computed for when nothing else limits it (orders without a limit).

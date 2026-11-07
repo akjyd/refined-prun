@@ -46,6 +46,12 @@ export const initialUserData = deepFreeze({
       maxDays: 7,
       // Days of trade queued in front of one of your orders before it is worth a price cut.
       queueDays: 0.5,
+      // The share of the trade of the end exchange you expect to get. Not all of it is yours:
+      // a part of the trade is requests you cannot take and offers of other traders that go
+      // first (player, 2026-11-07).
+      tradeShare: 1,
+      // Flight days of each route, "FROM>TO". What is not here uses the default table.
+      flightDays: {} as Record<string, number>,
     },
     flow: {
       overrides: {} as Record<string, UserData.PriceOverride>,

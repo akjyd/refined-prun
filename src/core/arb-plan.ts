@@ -20,9 +20,8 @@ export interface ArbPlanInput {
   volatility?: number;
   failurePercent: number;
   maxUnits: number;
-  // Days you are willing to wait. Beyond about two weeks the measured table has nothing to say,
-  // and a trade that ties up a ship for a month is of little use however safe it looks
-  // (player, 2026-11-06).
+  // Days you are willing to wait for the goods to sell, flight not counted
+  // (player, 2026-11-07).
   maxDays: number;
 }
 
@@ -38,6 +37,8 @@ export interface ArbPlanResult {
   // Days the money is tied up, weighted by how much of it each part holds.
   days: number;
   listDays: number;
+  // Days the offered part needs to sell, flight not counted.
+  saleDays: number;
   failure: number;
   listPrice?: number;
   fillsA: Fill[];
@@ -109,7 +110,7 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
   let listUnits = 0;
   let listCost = 0;
   // The most units that can be offered without waiting longer than you want.
-  const listRoom = Math.max(0, Math.floor((maxDays - flightDays) * dailyTrade));
+  const listRoom = Math.max(0, Math.floor(maxDays * dailyTrade));
   if (listPrice !== undefined && dailyTrade > 0 && listRoom > 0) {
     const daysAt = (extra: number) => flightDays + (listUnits + extra) / dailyTrade;
     const fits = (ask: number, extra: number) =>
@@ -172,7 +173,8 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
   if (units <= 0 || cost <= 0) {
     return undefined;
   }
-  const listDays = flightDays + (dailyTrade > 0 ? listUnits / dailyTrade : 0);
+  const saleDays = dailyTrade > 0 ? listUnits / dailyTrade : 0;
+  const listDays = flightDays + saleDays;
   const days = (fillCost * flightDays + listCost * listDays) / cost;
   const profit = revenue - cost;
   const margin = profit / cost;
@@ -186,6 +188,7 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
     margin,
     days,
     listDays,
+    saleDays,
     failure: failureRate(margin, volatility, days),
     listPrice: listUnits > 0 ? listPrice : undefined,
     fillsA,

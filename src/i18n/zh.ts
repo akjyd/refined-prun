@@ -1548,7 +1548,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.hurdle': '风险门槛',
   'arb.hurdleOff': '关',
   'arb.tipUnits':
-    '这次买入的数量，和终点交易所在所选天数里的成交量。数量超过成交量时变红，表示可能卖不完。',
+    '左边：船一落地，终点市场的买单能立刻吃掉的数量。右边：这次倒货的总量，取三者里最小的一个——船能装多少；日交易量 × 最长售卖天数 × 吃单比例（设置里改）；以及起点市场上、在你的翻车率下利润仍然达标的卖单数量。',
   'arb.tipCost': '在起点买入这些货要花的钱。',
   'arb.tipDays':
     '运输天数 + 预计挂单天数。运输：相邻交易所 1 天，不相邻 2 天。挂单天数 = 数量 ÷ 终点每日成交量。填单到了当场卖出，算 0 天。回程不算。',
@@ -1579,26 +1579,36 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.failureLabel': '翻车率',
   'arb.failure': '翻车率',
   'arb.perDayReturn': '天利润率',
-  'arb.unitsFill': '数量 立即/总',
   'arb.tipFailure':
     '这一单亏钱的概率，用历史价格实测出来的。你能接受多少在 XIT SET 里设，每一单的数量由它推出来。',
   'set.arb.title': '倒货',
-  'set.arb.failure': '可接受翻车率',
-  'set.arb.failureHint': '0–100。越低越严，机会越少。',
+  'set.arb.failure': '最高翻车率',
+  'set.arb.failureHint': '0–100。允许多大比例的交易最后是亏的。越低越严，机会更少，每笔也更小。',
   'set.arb.minDaily': '最低天利润',
   'set.arb.minDailyHint': '低于这个数的不显示。',
-  'set.arb.maxDays': '最长天数',
-  'set.arb.maxDaysHint': '你愿意等几天。需要更久的不显示。',
+  'set.arb.maxDays': '最长售卖天数',
+  'set.arb.maxDaysHint': '货到之后你愿意等几天卖完，不含运输。需要更久的部分会被砍掉。',
+  'set.arb.groupArb': '倒货',
+  'set.arb.groupLog': '倒货记录',
+  'set.arb.share': '吃单比例',
+  'set.arb.shareHint':
+    '0–1。终点市场的成交量里，你能吃到的那一部分。并不是全部：其中有你不会去接的买单，也有被别人的挂单先吃掉的。填 1 表示全部算你的。',
+  'set.arb.flight': '运输天数',
+  'set.arb.flightHint': '每条路线的飞行天数。按你的船实际用时填写。',
   'arblog.ahead': '排队 {0} 天',
   'arb.worstFailure': '最差翻车率',
   'arblog.queue': '排队量 / 日成交',
-  'set.arb.queue': '排队提醒',
-  'set.arb.queueHint': '前面排队超过这么多天的成交量时，亮小圆点。',
+  'set.arb.queue': '压价提醒',
+  'set.arb.queueHint':
+    '你的单子前面排队的量，够市场成交这么多天时，亮起小圆点。圆点的意思是：前面的单子要这么久才能清完，可以考虑压价。',
   'orders.pin': '固定这个订单簿，没有单子也不消失',
   'arblog.profitVsPlan': '利润 / 期望利润',
   'arblog.perDayVsPlan': '天利润 / 期望天利润',
   'arb.modeFill': '填单',
   'arb.modeList': '挂单',
+  'arb.settings': '设置',
+  'arb.saleDays': '售卖天数',
+  'arb.unitsFill': '可填 / 总量',
 };
 
 export default zh;

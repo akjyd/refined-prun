@@ -1628,10 +1628,10 @@ export default {
   'arb.hurdle': 'Hurdle',
   'arb.hurdleOff': 'Off',
   'arb.tipUnits':
-    'Units this trade buys, against what the end exchange trades in the chosen days. Red when the units are more than the trade: you may not sell them all.',
+    'Left: units the requests of the end exchange take the moment the ship lands. Right: the whole trade, the smallest of three numbers - what the ship holds; the daily trade times the longest sale days times the share of trade (XIT SET); and the units on offer at the start exchange that still earn enough at your risk setting.',
   'arb.tipCost': 'What you pay for the goods on the start exchange.',
   'arb.tipDays':
-    'Flight days plus the days a listed sale waits. Flight: 1 day between neighbour exchanges, 2 otherwise. Listed days = units / daily trade of the end exchange. A fill sells at once, so 0 days. The return trip is not counted.',
+    'Days the offered part needs to sell after the ship lands, flight not counted: the offered units over the daily trade. Flight days are in XIT SET. OLD: Flight days plus the days a listed sale waits. Flight: 1 day between neighbour exchanges, 2 otherwise. Listed days = units / daily trade of the end exchange. A fill sells at once, so 0 days. The return trip is not counted.',
   'arb.tipPerDay':
     'Profit over the expected days: what this trade makes for each day it holds your ship and your money. Use it to compare a slow big trade with a fast small one.',
   'arb.tipReturn':
@@ -1660,24 +1660,37 @@ export default {
   'arb.failureLabel': 'Risk',
   'arb.failure': 'Risk',
   'arb.perDayReturn': 'Return/day',
-  'arb.unitsFill': 'Units now/total',
   'arb.tipFailure':
     'How often a trade like this loses money, measured from past prices. Set what you accept in XIT SET; the size of every trade follows from it.',
   'set.arb.title': 'Arbitrage',
-  'set.arb.failure': 'Acceptable risk',
-  'set.arb.failureHint': '0-100. Lower is stricter and shows fewer chances.',
+  'set.arb.failure': 'Highest risk',
+  'set.arb.failureHint':
+    '0-100. The share of trades that may end in a loss. Lower is stricter and leaves fewer chances, each of them smaller.',
   'set.arb.minDaily': 'Least profit a day',
   'set.arb.minDailyHint': 'Trades under this are not shown.',
-  'set.arb.maxDays': 'Longest wait',
-  'set.arb.maxDaysHint': 'Days you are willing to wait. A trade that needs longer is not shown.',
+  'set.arb.maxDays': 'Longest sale',
+  'set.arb.maxDaysHint':
+    'Days you are willing to wait for the goods to sell, flight not counted. An offer that needs longer is cut back.',
+  'set.arb.groupArb': 'Arbitrage list',
+  'set.arb.groupLog': 'Arbitrage log',
+  'set.arb.share': 'Share of trade',
+  'set.arb.shareHint':
+    '0-1. The part of the trade of the end exchange that can be yours. Not all of it is: some of it is requests you do not take, and some goes to the offers of other traders. 1 counts on all of it.',
+  'set.arb.flight': 'Flight days',
+  'set.arb.flightHint':
+    'Days from one exchange to the other. Change these to what your ships really take.',
   'arblog.ahead': 'queue {0}d',
   'arb.worstFailure': 'Worst risk',
   'arblog.queue': 'Queue / day',
-  'set.arb.queue': 'Queue warning',
-  'set.arb.queueHint': 'Days of trade queued in front of your order before the dot lights up.',
+  'set.arb.queue': 'Price cut warning',
+  'set.arb.queueHint':
+    'Days of trade queued in front of your order before the dot lights up. The dot says that the orders in front take this long to clear, so a price cut is worth thinking about.',
   'orders.pin': 'Keep this book listed',
   'arblog.profitVsPlan': 'Profit / planned',
   'arblog.perDayVsPlan': 'Profit a day / planned',
   'arb.modeFill': 'Fill',
   'arb.modeList': 'Offer',
+  'arb.settings': 'Settings',
+  'arb.saleDays': 'Sale days',
+  'arb.unitsFill': 'Can fill / total',
 };

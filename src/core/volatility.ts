@@ -1,3 +1,4 @@
+import { userData } from '@src/store/user-data';
 // Daily volatility: the standard deviation of the day-to-day price changes (as fractions).
 export function dailyVolatility(closes: number[]) {
   const changes: number[] = [];
@@ -18,8 +19,14 @@ export function dailyVolatility(closes: number[]) {
 // ring AI1-IC1-NC1-CI1-AI1 are 1 day, the two diagonals (AI1-NC1, CI1-IC1) 2 days.
 const DIAGONALS = new Set(['AI1>NC1', 'NC1>AI1', 'CI1>IC1', 'IC1>CI1']);
 
-export function flightDays(from: string, to: string) {
+// What you set in XIT SET wins over the table (player, 2026-11-07).
+export function defaultFlightDays(from: string, to: string) {
   return DIAGONALS.has(`${from}>${to}`) ? 2 : 1;
+}
+
+export function flightDays(from: string, to: string) {
+  const set = userData.settings.arb.flightDays?.[`${from}>${to}`];
+  return set !== undefined && set > 0 ? set : defaultFlightDays(from, to);
 }
 
 // Days the goods are on the way and waiting to sell (player, 2026-11-06): flight days, plus for

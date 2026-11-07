@@ -60,9 +60,24 @@ const shipChips = shipSizes.map(x => ({ value: x.id, label: x.label }));
 // What you set in XIT SET: how often a trade may lose money.
 const target = computed(() => userData.settings.arb.failurePercent);
 
-onMounted(() => {
-  if (Date.now() - fioBooks.loadedAt > 5 * 60_000) {
+// The books go stale while the window stays open, so they load again every five minutes
+// (player, 2026-11-07).
+const RELOAD_MS = 5 * 60_000;
+
+function reloadIfStale() {
+  if (!fioBooks.loading && Date.now() - fioBooks.loadedAt > RELOAD_MS) {
     void loadFioBooks();
+  }
+}
+
+let timer: ReturnType<typeof setInterval> | undefined;
+onMounted(() => {
+  reloadIfStale();
+  timer = setInterval(reloadIfStale, 30_000);
+});
+onUnmounted(() => {
+  if (timer !== undefined) {
+    clearInterval(timer);
   }
 });
 
@@ -177,7 +192,7 @@ const rows = computed(() => {
       case 'perDayReturn':
         return perDayReturnOf(x);
       case 'days':
-        return x.plan.days;
+        return x.plan.saleDays;
       case 'units':
         return x.plan.units;
       case 'cost':
@@ -311,12 +326,9 @@ function toggleBlacklistMode() {
       </template>
       <span :class="$style.spacer" />
       <template v-if="!editingBlacklist">
-        <span :class="$style.muted"
-          >{{ t('arb.failureLabel') }}
-          <span :class="$style.reload" @click="showBuffer('XIT SET ARB')">{{
-            percent0(target / 100)
-          }}</span></span
-        >
+        <span :class="$style.reload" @click="showBuffer('XIT SET ARB')">{{
+          t('arb.settings')
+        }}</span>
         <span :class="$style.muted">
           {{
             fioBooks.loading
@@ -392,7 +404,7 @@ function toggleBlacklistMode() {
         :data-tooltip="t('arb.tipDays')"
         data-tooltip-position="bottom"
         @click="sortBy('days')"
-        >{{ t('arb.tradeDays') }}{{ arrow('days') }}</span
+        >{{ t('arb.saleDays') }}{{ arrow('days') }}</span
       >
       <span
         :class="[$style.num, $style.sort, C.Tooltip.container]"
@@ -451,7 +463,9 @@ function toggleBlacklistMode() {
               }" /></span
         ></span>
         <span :class="[$style.num, $style.muted]">{{ formatProfit(r.plan.cost) }}</span>
-        <span :class="[$style.num, $style.muted]">{{ t('arb.days', fixed01(r.plan.days)) }}</span>
+        <span :class="[$style.num, $style.muted]">{{
+          t('arb.days', fixed01(r.plan.saleDays))
+        }}</span>
         <span :class="[$style.num, $style.key]">{{ formatProfit(perDayOf(r)) }}</span>
         <span :class="$style.num">
           {{

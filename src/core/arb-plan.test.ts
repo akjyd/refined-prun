@@ -104,8 +104,8 @@ describe('planTrade', () => {
       bidsB: [{ price: 150, amount: 10 }],
       asksB: [{ price: 300, amount: 10 }],
     })!;
-    // 10 filled at once, then two days of trade at 100 a day.
-    expect(r.listUnits).toBe(200);
+    // The longest sale is the sale alone, so three days of trade at 100 a day.
+    expect(r.listUnits).toBe(300);
     expect(r.limit).toBe('days');
   });
 
