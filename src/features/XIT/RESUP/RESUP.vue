@@ -9,7 +9,10 @@ import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
-import { getLocationLineFromAddress } from '@src/infrastructure/prun-api/data/addresses';
+import {
+  getEntityNameFromAddress,
+  getLocationLineFromAddress,
+} from '@src/infrastructure/prun-api/data/addresses';
 import { materialsStore } from '@src/infrastructure/prun-api/data/materials';
 import { userData } from '@src/store/user-data';
 import { fixed0 } from '@src/utils/format';
@@ -97,22 +100,36 @@ interface Move {
   dest?: string;
 }
 
+// MTRA names a store in words, not by id: "<planet> Base", "<planet> Warehouse",
+// "<registration> Cargo" (player, 2026-11-07: it said the origin was invalid).
+const planetName = computed(() =>
+  site.value ? getEntityNameFromAddress(site.value.address) : undefined,
+);
+const baseName = computed(() =>
+  planetName.value === undefined ? undefined : `${planetName.value} Base`,
+);
+const warehouseName = computed(() =>
+  planetName.value === undefined || warehouseStore.value === undefined
+    ? undefined
+    : `${planetName.value} Warehouse`,
+);
+const cargoName = computed(() => `${registration} Cargo`);
+
 const moves = computed<Move[]>(() => {
   const p = plan.value;
-  const shipId = shipStore.value?.id;
-  const baseId = baseStore.value?.id;
-  if (!p || !shipId || !baseId) {
+  const base = baseName.value;
+  if (p === undefined || base === undefined) {
     return [];
   }
   const list: Move[] = [
-    { name: t('resup.toBase'), bill: p.toBase, origin: shipId, dest: baseId },
+    { name: t('resup.toBase'), bill: p.toBase, origin: cargoName.value, dest: base },
     {
       name: t('resup.toWarehouse'),
       bill: p.toWarehouse,
-      origin: shipId,
-      dest: warehouseStore.value?.id,
+      origin: cargoName.value,
+      dest: warehouseName.value,
     },
-    { name: t('resup.toShip'), bill: p.toShip, origin: baseId, dest: shipId },
+    { name: t('resup.toShip'), bill: p.toShip, origin: base, dest: cargoName.value },
   ];
   return list.filter(x => Object.keys(x.bill).length > 0 && x.dest !== undefined);
 });
@@ -156,7 +173,8 @@ function line(bill: Record<string, number>) {
       <p v-if="plan?.baseFull" :class="$style.warn">{{ t('resup.baseFull') }}</p>
       <p v-if="plan?.shipFull" :class="$style.warn">{{ t('resup.shipFull') }}</p>
     </div>
-    <ExecuteActionPackage v-if="moves.length > 0" :pkg="pkg" />
+    <!-- Runs by itself, like the refuel does. -->
+    <ExecuteActionPackage v-if="moves.length > 0" :pkg="pkg" auto-act />
   </div>
 </template>
 
