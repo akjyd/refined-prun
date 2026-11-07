@@ -152,11 +152,17 @@ const columns = computed(() => {
         taken: take > 0,
       };
     };
-    // The game gives the offers best first and draws them with the best at the bottom, so the
-    // drawn sequence is the list turned around. We do not sort: any sort of ours can put the
-    // orders of one price in a different sequence than the game, and the sequence is the queue
-    // (player, 2026-11-07).
-    let asks = [...book.sellingOrders].reverse().map(x => toCell(x, true));
+    // First in, first out: everything already at a price is served before yours, so your own
+    // order sits at the end of its price that is furthest from the spread. The sequence of the
+    // orders of one price in the book of the game is not the queue, so we place yours
+    // ourselves (player, 2026-11-07: the game draws it the same way).
+    let asks = book.sellingOrders
+      .map(x => toCell(x, true))
+      .sort((a, b) =>
+        a.price !== b.price
+          ? b.price - a.price
+          : (a.own === true ? -1 : 0) + (b.own === true ? 1 : 0),
+      );
     if (ghost && ghost.exchange === exchanges[i]) {
       const cell: Cell = {
         id: 'ghost',
@@ -168,11 +174,17 @@ const columns = computed(() => {
         ghost: true,
       };
       // The offers at this price are served before yours, so yours goes over them.
-      const at = asks.findIndex(x => x.price <= ghost.price);
+      const at = asks.findIndex(x => x.price <= ghost.price && x.own !== true);
       asks.splice(at < 0 ? asks.length : at, 0, cell);
     }
-    // The requests are best first, which is also how they are drawn.
-    let bids = book.buyingOrders.map(x => toCell(x, false));
+    // The requests are drawn best first, so the end furthest from the spread is the bottom.
+    let bids = book.buyingOrders
+      .map(x => toCell(x, false))
+      .sort((a, b) =>
+        a.price !== b.price
+          ? b.price - a.price
+          : (a.own === true ? 1 : 0) + (b.own === true ? -1 : 0),
+      );
     if (trim !== undefined) {
       // Offers: the best are last. Requests: the best are first.
       const keepAsks = asks.filter(x => x.taken === true || x.ghost === true).length + trim;
