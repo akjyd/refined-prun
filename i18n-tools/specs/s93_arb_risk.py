@@ -42,11 +42,14 @@ R(F, """    id: 'ACT',
 
 E('arblog.ahead', 'queue {0}d', '排队 {0} 天')
 E('arb.worstFailure', 'Worst risk', '最差翻车率')
-E('arb.toListed', 'Offer all', '全部改挂单')
-E('arb.toFill', 'Sell what the requests take', '恢复落地先卖')
 E('arblog.queue', 'Queue / day', '排队量 / 日成交')
 E('set.arb.queue', 'Queue warning', '排队提醒')
 E('set.arb.queueHint',
   'Days of trade queued in front of your order before the dot lights up.',
   '前面排队超过这么多天的成交量时，亮小圆点。')
 E('orders.pin', 'Keep this book listed', '固定这个订单簿，没有单子也不消失')
+
+E('arblog.profitVsPlan', 'Profit / planned', '利润 / 期望利润')
+E('arblog.perDayVsPlan', 'Profit a day / planned', '天利润 / 期望天利润')
+E('arb.modeFill', 'Fill', '填单')
+E('arb.modeList', 'Offer', '挂单')

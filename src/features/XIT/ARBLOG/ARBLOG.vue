@@ -271,14 +271,12 @@ function date(ms: number) {
         <span>{{ t('arblog.status') }}</span>
         <span :class="$style.num">{{ t('arblog.queue') }}</span>
         <span>{{ t('arblog.progress') }}</span>
-        <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
-        <span :class="$style.num">{{ t('arblog.actualProfit') }}</span>
-        <span :class="$style.num">{{ t('arb.return') }}</span>
+        <span :class="$style.num">{{ t('arblog.profitVsPlan') }}</span>
         <span
           :class="[$style.num, C.Tooltip.container]"
           :data-tooltip="t('arblog.tipPerDay')"
           data-tooltip-position="bottom"
-          >{{ t('arblog.perDay') }}</span
+          >{{ t('arblog.perDayVsPlan') }}</span
         >
         <span
           :class="[$style.num, C.Tooltip.container]"
@@ -343,22 +341,21 @@ function date(ms: number) {
                 ><i :style="{ width: `${r.units > 0 ? (r.soldUnits / r.units) * 100 : 0}%` }"
               /></span>
             </span>
-            <span :class="[$style.num, $style.muted]">{{ formatProfit(r.batch.plan.profit) }}</span>
-            <span
-              :class="[
-                $style.num,
-                $style.key,
-                r.profit === undefined
-                  ? $style.muted
-                  : r.profit >= 0
-                    ? C.ColoredValue.positive
-                    : C.ColoredValue.negative,
-              ]"
-              >{{ r.profit !== undefined ? formatProfit(r.profit) : '--' }}</span
-            >
-            <span :class="$style.num">{{ r.ret !== undefined ? percent1(r.ret) : '--' }}</span>
             <span :class="$style.num"
-              >{{ perDayText(r.profit, r.days) }}
+              ><span
+                :class="
+                  r.profit === undefined
+                    ? $style.muted
+                    : r.profit >= 0
+                      ? C.ColoredValue.positive
+                      : C.ColoredValue.negative
+                "
+                >{{ r.profit !== undefined ? formatProfit(r.profit) : '--' }}</span
+              >
+              <span :class="$style.muted">/ {{ formatProfit(r.batch.plan.profit) }}</span></span
+            >
+            <span :class="$style.num"
+              ><span :class="$style.key">{{ perDayText(r.profit, r.days) }}</span>
               <span :class="$style.muted"
                 >/ {{ perDayText(r.batch.plan.profit, r.plannedDays) }}</span
               ></span
@@ -461,7 +458,7 @@ function date(ms: number) {
 }
 
 .root {
-  min-width: 1000px;
+  min-width: 760px;
   padding: 6px 8px;
   color: var(--rpz-text);
   font-size: var(--rpz-fs-body);
@@ -481,8 +478,8 @@ function date(ms: number) {
 
 .row {
   display: grid;
-  grid-template-columns: 56px 100px 110px 110px 80px 90px 70px 130px minmax(70px, 1fr);
-  gap: 0 10px;
+  grid-template-columns: 44px 82px 104px 96px 128px 120px minmax(96px, 1fr);
+  gap: 0 8px;
   align-items: center;
   padding: var(--rpz-space-1) var(--rpz-space-2);
   border-top: 1px solid var(--rpz-stroke-weak);

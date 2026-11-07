@@ -188,11 +188,15 @@ const rows = computed(() => {
         return 0;
     }
   };
-  return list.sort((a, b) =>
+  list.sort((a, b) =>
     sortKey.value === 'ticker'
       ? sign * a.ticker.localeCompare(b.ticker)
       : sign * (value(a) - value(b)),
   );
+  // Goods in the cart stay at the top, so the list does not jump when you change one
+  // (player, 2026-11-07).
+  const inCart = new Set(userData.arbCart.items.map(x => x.ticker));
+  return [...list.filter(x => inCart.has(x.ticker)), ...list.filter(x => !inCart.has(x.ticker))];
 });
 
 // Daily prices of the end exchanges in the list, for the volatility.

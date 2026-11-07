@@ -1428,7 +1428,6 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arblog.boughtAt': '买入时间',
   'arblog.state.buying': '买入中',
   'arblog.state.holding': '已买入',
-  'arblog.state.listed': '挂单中',
   'arblog.state.selling': '卖出中',
   'arblog.state.done': '完成',
   'arblog.planVsActual': '计划 / 实际',
@@ -1592,12 +1591,14 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'set.arb.maxDaysHint': '你愿意等几天。需要更久的不显示。',
   'arblog.ahead': '排队 {0} 天',
   'arb.worstFailure': '最差翻车率',
-  'arb.toListed': '全部改挂单',
-  'arb.toFill': '恢复落地先卖',
   'arblog.queue': '排队量 / 日成交',
   'set.arb.queue': '排队提醒',
   'set.arb.queueHint': '前面排队超过这么多天的成交量时，亮小圆点。',
   'orders.pin': '固定这个订单簿，没有单子也不消失',
+  'arblog.profitVsPlan': '利润 / 期望利润',
+  'arblog.perDayVsPlan': '天利润 / 期望天利润',
+  'arb.modeFill': '填单',
+  'arb.modeList': '挂单',
 };
 
 export default zh;

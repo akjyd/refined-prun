@@ -107,13 +107,22 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
   // Part 2: the rest, offered under the best offer of the end exchange.
   const bestAskB = Math.min(...input.asksB.map(x => x.price));
   const underBest = Number.isFinite(bestAskB) ? dropPrice(true, bestAskB) : undefined;
+  // The 7-day VWAP is only a guard against a lone, absurd offer. While the best offer is near
+  // the VWAP it is a real price, so we go under it (player, 2026-11-07: an offer sat at 1,190
+  // when the book had 1,290).
   const cap = input.sellCap;
-  const listPrice =
+  const OUTLIER = 1.5;
+  const capped =
     underBest === undefined
       ? undefined
-      : cap !== undefined && cap > 0
-        ? Math.min(underBest, cap)
+      : cap !== undefined && cap > 0 && underBest > cap * OUTLIER
+        ? cap
         : underBest;
+  // An offer under the best request earns less than you get at once, so it is never right
+  // (player, 2026-11-07: the offer made less than the fill).
+  const bestBidB = Math.max(...input.bidsB.map(x => x.price));
+  const listPrice =
+    capped !== undefined && Number.isFinite(bestBidB) ? Math.max(capped, bestBidB) : capped;
   let listUnits = 0;
   let listCost = 0;
   // The most units that can be offered without waiting longer than you want.

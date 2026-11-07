@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
-import ArbDepth from '@src/features/XIT/ARB/ArbDepth.vue';
 import RangeInput from '@src/components/forms/RangeInput.vue';
 import { userData } from '@src/store/user-data';
 import { createId } from '@src/store/create-id';
@@ -27,14 +26,6 @@ import { t } from '@src/i18n';
 // more than its order books allow or than the ship has left.
 
 const $style = useCssModule();
-
-// Click a good to see its two books, so you set the amount against the real orders
-// (player, 2026-11-07).
-const opened = ref<string>();
-
-function toggleOpen(ticker: string) {
-  opened.value = opened.value === ticker ? undefined : ticker;
-}
 
 // What you set in XIT SET: how often a trade may lose money.
 const target = computed(() => userData.settings.arb.failurePercent);
@@ -168,13 +159,8 @@ async function buyAll() {
         <span />
       </div>
       <template v-for="(line, i) in cartLines" :key="line.item.ticker">
-        <div
-          :class="[
-            'rpz-row',
-            $style.item,
-            opened === line.item.ticker ? $style.opened : undefined,
-          ]">
-          <span :class="$style.icon" @click="toggleOpen(line.item.ticker)"
+        <div :class="['rpz-row', $style.item]">
+          <span :class="$style.icon"
             ><MaterialIcon size="inline-table" :ticker="line.item.ticker"
           /></span>
           <RangeInput
@@ -217,12 +203,6 @@ async function buyAll() {
           >
           <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
         </div>
-        <ArbDepth
-          v-if="opened === line.item.ticker && line.plan"
-          :ticker="line.item.ticker"
-          :from="line.item.from"
-          :to="line.item.to"
-          :plan="line.plan" />
       </template>
     </div>
     <div :class="$style.totals">
@@ -354,13 +334,8 @@ async function buyAll() {
   border-top: none;
 }
 
-.opened {
-  background-color: var(--rpz-bg-overlay) !important;
-}
-
 .icon {
   display: inline-flex;
-  cursor: pointer;
 }
 
 .num {

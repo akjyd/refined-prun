@@ -5,8 +5,13 @@
 }
 
 .container {
-  display: inline-block;
+  /* One line whatever the text says: a longer price age used to wrap and push the game up
+     (player, 2026-11-07). */
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
   margin-right: 10px;
+  white-space: nowrap;
 }
 
 .label {

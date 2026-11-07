@@ -53,7 +53,7 @@ export interface ArbBatch {
   trades: ArbTrade[];
 }
 
-export type ArbStatus = 'buying' | 'holding' | 'listed' | 'selling' | 'done';
+export type ArbStatus = 'buying' | 'holding' | 'selling' | 'done';
 
 export interface OrderTrades {
   id: string;
@@ -105,14 +105,11 @@ export function status(batch: ArbBatch, openBuyOrders: number, openSellOrders = 
   if (units > 0 && soldUnits >= units && openBuyOrders === 0) {
     return 'done';
   }
-  if (soldUnits > 0) {
+  // Offered counts as selling, whether anything has gone yet or not (player, 2026-11-07).
+  if (soldUnits > 0 || openSellOrders > 0) {
     return 'selling';
   }
-  if (openBuyOrders > 0) {
-    return 'buying';
-  }
-  // Bought and offered, but nothing sold yet (player, 2026-11-07: it still said "bought").
-  return openSellOrders > 0 ? 'listed' : 'holding';
+  return openBuyOrders > 0 ? 'buying' : 'holding';
 }
 
 // Adds the new trades of the orders to the batches. Returns true when something changed.

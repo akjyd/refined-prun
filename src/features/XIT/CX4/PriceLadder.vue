@@ -112,8 +112,30 @@ const columns = computed(() => {
       return { asks: [] as Cell[], bids: [] as Cell[] };
     }
     const profitAt = orderProfit(ticker, exchanges[i]);
+    // The plan reads the FIO books, this ladder reads the game books, and the two can hold the
+    // orders of one price in a different sequence. At one price it makes no difference which
+    // order you take, so we mark them from the top of the price down (player, 2026-11-07).
+    const resolved = new Map<string, number>();
+    if (takes !== undefined) {
+      const byPrice = new Map<number, number>();
+      for (const order of [...book.sellingOrders, ...book.buyingOrders]) {
+        const take = takes.get(order.id) ?? 0;
+        if (take > 0) {
+          byPrice.set(order.limit.amount, (byPrice.get(order.limit.amount) ?? 0) + take);
+        }
+      }
+      for (const order of [...book.sellingOrders, ...book.buyingOrders]) {
+        const left = byPrice.get(order.limit.amount) ?? 0;
+        if (left <= 0) {
+          continue;
+        }
+        const take = Math.min(left, order.amount ?? left);
+        resolved.set(order.id, take);
+        byPrice.set(order.limit.amount, left - take);
+      }
+    }
     const toCell = (order: PrunApi.CXBrokerOrder, ask: boolean): Cell => {
-      const take = takes?.get(order.id) ?? 0;
+      const take = resolved.get(order.id) ?? 0;
       const amount = ownAmount(order) ?? (order.amount === null ? '∞' : fixed0(order.amount));
       // A part-taken order shows taken/amount.
       const partial = take > 0 && order.amount !== null && take < order.amount;

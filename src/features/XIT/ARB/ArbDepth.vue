@@ -73,8 +73,15 @@ const ghost = computed(() =>
 <template>
   <div :class="$style.depth">
     <div :class="$style.alt">
-      <button :class="$style.toggle" @click="toggleListOnly(ticker, from, to)">
-        {{ listed ? t('arb.toFill') : t('arb.toListed') }}
+      <button
+        :class="[$style.toggle, listed ? undefined : $style.toggleOn]"
+        @click="listed && toggleListOnly(ticker, from, to)">
+        {{ t('arb.modeFill') }}
+      </button>
+      <button
+        :class="[$style.toggle, listed ? $style.toggleOn : undefined]"
+        @click="!listed && toggleListOnly(ticker, from, to)">
+        {{ t('arb.modeList') }}
       </button>
     </div>
     <div :class="$style.chartTitle">{{ t('arb.chartTitle', shipLabel, HISTORY_DAYS) }}</div>
@@ -116,6 +123,11 @@ const ghost = computed(() =>
 
 .toggle:hover {
   background-color: var(--rpz-hover);
+}
+
+.toggleOn {
+  border-color: var(--rpz-brand);
+  color: var(--rpz-text-strong);
 }
 
 .chartTitle {
