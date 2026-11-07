@@ -58,6 +58,18 @@ const migrations: MigrationEntry[] = [
     },
   ],
   [
+    '07.11.2026 Add pinned order books',
+    userData => {
+      userData.pinnedBooks ??= [];
+    },
+  ],
+  [
+    '07.11.2026 Add the queue warning of an arbitrage order',
+    userData => {
+      userData.settings.arb.queueDays ??= 0.5;
+    },
+  ],
+  [
     '06.11.2026 Add the longest wait of an arbitrage trade',
     userData => {
       userData.settings.arb.maxDays ??= 7;

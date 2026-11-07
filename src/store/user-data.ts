@@ -44,6 +44,8 @@ export const initialUserData = deepFreeze({
       failurePercent: 10,
       minDailyProfit: 30_000,
       maxDays: 7,
+      // Days of trade queued in front of one of your orders before it is worth a price cut.
+      queueDays: 0.5,
     },
     flow: {
       overrides: {} as Record<string, UserData.PriceOverride>,
@@ -135,8 +137,12 @@ export const initialUserData = deepFreeze({
       to: string;
       mode: 'now' | 'listed';
       units: number;
+      // True when you pressed 挂单 on this good: it is offered, never sold to the requests.
+      listOnly?: boolean;
     }[],
   },
+  // XIT ORDERS: books you pinned, as 'RAT.NC1'. A pinned card stays when the orders are gone.
+  pinnedBooks: [] as string[],
   // Arbitrage batches started from XIT ARB, oldest first.
   arbBatches: [] as import('@src/core/arb-batches').ArbBatch[],
   // XIT ARB: when each spread ('AL.AI1>NC1') was first seen, in ms.

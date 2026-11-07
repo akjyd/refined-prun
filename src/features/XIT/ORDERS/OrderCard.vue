@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
+import BookCells from '@src/features/XIT/CX4/BookCells.vue';
 import CxpoButton from '@src/components/CxpoButton.vue';
 import { getOwnCxOrder, orderChange } from '@src/core/order-seen';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
@@ -12,8 +12,8 @@ import { orderProfit } from '@src/core/daily-profit/order-profit';
 import PlanetPicker from '@src/components/PlanetPicker.vue';
 import { formatProfit, profitMarks } from '@src/core/daily-profit/profit-format';
 import { fixed0, fixed02, percent1 } from '@src/utils/format';
+import { userData } from '@src/store/user-data';
 import { t } from '@src/i18n';
-import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { useOrderDrag } from '@src/hooks/use-order-drag';
 
 // The order book of one material with your orders in it.
@@ -25,6 +25,16 @@ const { ticker, exchange, refreshKey } = defineProps<{
 }>();
 
 const $style = useCssModule();
+
+// Pinning a book keeps its card after the last order is gone.
+const pinKey = computed(() => `${ticker}.${exchange}`);
+const pinned = computed(() => userData.pinnedBooks.includes(pinKey.value));
+
+function togglePin() {
+  userData.pinnedBooks = pinned.value
+    ? userData.pinnedBooks.filter(x => x !== pinKey.value)
+    : [...userData.pinnedBooks, pinKey.value];
+}
 
 const book = computed(() => cxobStore.getByTicker(`${ticker}.${exchange}`));
 
@@ -156,6 +166,13 @@ watch(
     <div :class="$style.title">
       <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="ticker" /></span>
       <PlanetPicker :ticker="ticker" :exchange="exchange" />
+      <span
+        :class="[$style.pin, pinned ? $style.pinOn : undefined]"
+        :data-tooltip="t('orders.pin')"
+        data-tooltip-position="bottom"
+        @click="togglePin"
+        >★</span
+      >
       <span :class="$style.spacer" />
       <span :class="$style.muted"
         >{{ t('cx4.stock') }} {{ stock !== undefined ? fixed0(stock) : '--' }}</span
@@ -192,23 +209,15 @@ watch(
           @dragover="!r.gone && drag.over($event, live, live.indexOf(r))"
           @dragend="drag.end"
           @drop="drag.drop">
-          <span :class="[$style.profitCell, r.mark]">{{ formatProfit(r.profit) }}</span>
-          <span :class="$style.markCell">
-            <span v-if="r.own && !r.gone" :class="$style.delSlot"
-              ><DeleteExchangeOrderButton :order-id="r.id" screen-command="CXOS"
-            /></span>
-            <span class="rpz-mark">{{ r.change && !r.gone ? r.change : '' }}</span>
-          </span>
-          <span :class="[$style.num, $style.amount]">
-            <span
-              :class="r.own && !r.gone ? $style.clickable : undefined"
-              @click.stop="r.own && !r.gone && showBuffer(`CXO ${r.id.substring(0, 8)}`)"
-              >{{ r.amount }}</span
-            >
-          </span>
-          <span :class="$style.num">
-            {{ fixed02(r.price) }}
-          </span>
+          <BookCells
+            :lead="formatProfit(r.profit)"
+            :lead-class="r.mark"
+            :mark="r.change && !r.gone ? r.change : undefined"
+            :amount="String(r.amount)"
+            :price="r.price"
+            :own="r.own"
+            :order-id="r.id"
+            :deletable="r.own && !r.gone" />
         </div>
       </template>
     </div>
@@ -233,6 +242,20 @@ watch(
 
 .icon {
   display: inline-flex;
+}
+
+.pin {
+  color: var(--rpz-text-off);
+  font-size: var(--rpz-fs-label);
+  cursor: pointer;
+}
+
+.pin:hover {
+  color: var(--rpz-text);
+}
+
+.pinOn {
+  color: var(--rpz-brand);
 }
 
 .spacer {
@@ -339,29 +362,6 @@ watch(
   position: relative;
 }
 
-/* The daily profit is a number, so it is right-aligned like the others; a trader name is not
-   (docs/ui-rules.md 4.4). */
-.profitCell {
-  text-align: right;
-}
-
-.markCell {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  justify-content: flex-end;
-  /* The row lines up on the text baseline, so this cell says where its middle is. */
-  align-self: center;
-}
-
-/* The del button places itself at the left of a box, so it gets a box of its own. */
-.delSlot {
-  position: relative;
-  flex: 0 0 auto;
-  width: 22px;
-  height: 14px;
-}
-
 /* Tone order in a book: your own orders, then prices, then amounts. */
 .row:not(.own) .amount {
   color: var(--rpz-text-weak);
@@ -373,16 +373,6 @@ watch(
 
 .stock {
   color: var(--rpz-text-weak);
-}
-
-.muted {
-  padding: 6px 8px;
-  color: var(--rpz-text-weak);
-}
-/* Clickable text keeps its ink tone; the brand color shows on hover (player, 2026-11-06: no
-   blue link color). Your amount opens the order (CXO), a trader name the company (CO). */
-.clickable {
-  cursor: pointer;
 }
 
 .clickable:hover,

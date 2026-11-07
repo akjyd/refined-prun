@@ -45,3 +45,9 @@ E('arb.worstFailure', 'Worst risk', '最差翻车率')
 E('arb.ifListed',
   'Offered instead: {0} units, {1} profit, {2} days, risk {3}',
   '若全部改成挂单卖：{0} 个，利润 {1}，{2} 天，翻车率 {3}')
+E('arblog.queue', 'Queue / day', '前面 / 日成交')
+E('set.arb.queue', 'Queue warning', '排队提醒')
+E('set.arb.queueHint',
+  'Days of trade queued in front of your order before the dot lights up.',
+  '前面排队超过这么多天的成交量时，亮小圆点。')
+E('orders.pin', 'Keep this book listed', '固定这个订单簿，没有单子也不消失')

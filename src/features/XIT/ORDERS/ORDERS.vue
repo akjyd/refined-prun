@@ -66,8 +66,13 @@ async function showFill(order: { ticker: string; exchange: string }) {
     ?.scrollIntoView({ block: 'nearest' });
 }
 
+// A pinned book stays in the list even with no orders at all (player, 2026-11-07).
+const pinned = computed(() =>
+  userData.pinnedBooks.filter(x => x.endsWith(`.${exchange.value}`)).map(x => x.split('.')[0]),
+);
+
 const tickers = computed(() =>
-  [...(kept.value.get(exchange.value) ?? [])].sort((a, b) =>
+  [...new Set([...(kept.value.get(exchange.value) ?? []), ...pinned.value])].sort((a, b) =>
     compareMaterials(materialsStore.getByTicker(a), materialsStore.getByTicker(b)),
   ),
 );

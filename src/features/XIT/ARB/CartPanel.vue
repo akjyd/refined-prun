@@ -13,6 +13,7 @@ import {
   cartTotals,
   clearCart,
   removeFromCart,
+  setListOnly,
   snapshotOf,
 } from '@src/features/XIT/ARB/cart';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
@@ -147,12 +148,13 @@ async function buyAll() {
       <div :class="[$style.item, $style.head]">
         <span>{{ t('arb.material') }}</span>
         <span>{{ t('arb.units') }}</span>
-        <span />
+        <span :class="$style.num" />
         <span :class="$style.num">{{ t('arb.tradeDays') }}</span>
-        <span :class="$style.num">{{ t('arb.weightVolume') }}</span>
         <span :class="$style.num">{{ t('arb.cost') }}</span>
         <span :class="$style.num">{{ t('arb.perDay') }}</span>
+        <span :class="$style.num">{{ t('arb.perDayReturn') }}</span>
         <span :class="$style.num">{{ t('arb.failure') }}</span>
+        <span />
         <span />
       </div>
       <div v-for="(line, i) in cartLines" :key="line.item.ticker" :class="['rpz-row', $style.item]">
@@ -176,17 +178,21 @@ async function buyAll() {
         <span :class="[$style.num, $style.muted]">{{
           line.plan ? t('arb.days', fixed01(line.plan.days)) : '--'
         }}</span>
-        <span :class="[$style.num, $style.muted]"
-          >{{ fixed01(line.units * line.weight) }}t ·
-          {{ fixed01(line.units * line.volume) }}m³</span
-        >
         <span :class="[$style.num, $style.muted]">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
         <span :class="[$style.num, $style.key]">{{
           line.plan && line.plan.days > 0 ? formatProfit(line.plan.profit / line.plan.days) : '--'
         }}</span>
+        <span :class="[$style.num, $style.muted]">{{
+          line.plan && line.plan.days > 0 ? percent1(line.plan.margin / line.plan.days) : '--'
+        }}</span>
         <span
           :class="[$style.num, (line.plan?.failure ?? 0) > target ? $style.warn : $style.muted]"
           >{{ line.plan ? percent0(line.plan.failure / 100) : '--' }}</span
+        >
+        <span
+          :class="[$style.listed, line.item.listOnly === true ? $style.listedOn : undefined]"
+          @click="setListOnly(line.item.ticker, line.item.listOnly !== true)"
+          >{{ t('arb.list') }}</span
         >
         <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
       </div>
@@ -308,7 +314,7 @@ async function buyAll() {
 
 .item {
   display: grid;
-  grid-template-columns: 44px minmax(90px, 1fr) 64px 60px 120px 80px 76px 52px 24px;
+  grid-template-columns: 40px minmax(120px, 1fr) 70px 58px 76px 72px 62px 50px 40px 22px;
   gap: 0 var(--rpz-space-2);
   align-items: center;
   padding: var(--rpz-space-1) 0;
@@ -344,6 +350,21 @@ async function buyAll() {
 
 .input:focus {
   border-color: var(--rpz-brand);
+}
+
+.listed {
+  color: var(--rpz-text-off);
+  font-size: var(--rpz-fs-label);
+  text-align: center;
+  cursor: pointer;
+}
+
+.listed:hover {
+  color: var(--rpz-text);
+}
+
+.listedOn {
+  color: var(--rpz-brand);
 }
 
 .key {

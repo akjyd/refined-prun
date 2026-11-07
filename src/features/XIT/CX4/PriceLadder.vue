@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cxLabel } from '@src/core/exchange-label';
-import DeleteExchangeOrderButton from '@src/components/DeleteExchangeOrderButton.vue';
+import BookCells from '@src/features/XIT/CX4/BookCells.vue';
 import CxpoButton from '@src/components/CxpoButton.vue';
 import { getOwnCxOrder, orderChange } from '@src/core/order-seen';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
@@ -142,7 +142,14 @@ const columns = computed(() => {
         ghost: true,
       });
     }
-    asks.sort((a, b) => b.price - a.price);
+    // At the same price the order already there is served first, so the offer you would place
+    // sits above them, further from the spread (player, 2026-11-07).
+    asks.sort((a, b) => {
+      if (a.price !== b.price) {
+        return b.price - a.price;
+      }
+      return (a.ghost === true ? -1 : 0) + (b.ghost === true ? 1 : 0);
+    });
     let bids = book.buyingOrders.map(x => toCell(x, false)).sort((a, b) => b.price - a.price);
     if (trim !== undefined) {
       // Offers: the best are last. Requests: the best are first.
@@ -313,35 +320,22 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
             @dragend="drag.end"
             @drop="drag.drop">
             <template v-if="cell">
-              <span
-                v-if="traders"
-                :class="[
-                  $style.trader,
-                  !cell.ghost && cell.traderCode ? $style.clickable : undefined,
-                ]"
-                @click.stop="!cell.ghost && cell.traderCode && showBuffer(`CO ${cell.traderCode}`)"
-                >{{ cell.ghost ? '' : cell.trader }}</span
-              >
-              <span v-else :class="[$style.profitCell, cell.mark]">{{
-                formatProfit(cell.profit)
-              }}</span>
-              <span :class="$style.markCell">
-                <DeleteExchangeOrderButton
-                  v-if="cell.own"
-                  :order-id="cell.id"
-                  screen-command="CXOS" />
-                <span class="rpz-mark">{{ cell.change ? cell.change : '' }}</span>
-              </span>
-              <span :class="[$style.num, $style.amount]">
-                <span
-                  :class="cell.own ? $style.clickable : undefined"
-                  @click.stop="cell.own && showBuffer(`CXO ${cell.id.substring(0, 8)}`)"
-                  >{{ cell.amount }}</span
-                >
-              </span>
-              <span :class="$style.num">
-                {{ fixed02(cell.price) }}
-              </span>
+              <BookCells
+                :lead="
+                  traders ? (cell.ghost ? '' : (cell.trader ?? '')) : formatProfit(cell.profit)
+                "
+                :lead-class="traders ? undefined : cell.mark"
+                :lead-is-text="traders"
+                :lead-clickable="traders && !cell.ghost && cell.traderCode !== undefined"
+                :mark="cell.change"
+                :amount="String(cell.amount)"
+                :price="cell.price"
+                :own="cell.own && !cell.ghost"
+                :order-id="cell.ghost ? undefined : cell.id"
+                :deletable="cell.own && !cell.ghost"
+                @lead-click="
+                  !cell.ghost && cell.traderCode && showBuffer(`CO ${cell.traderCode}`)
+                " />
             </template>
           </span>
         </div>
@@ -506,29 +500,6 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
   position: relative;
 }
 
-/* The daily profit is a number, so it is right-aligned like the others; a trader name is not
-   (docs/ui-rules.md 4.4). */
-.profitCell {
-  text-align: right;
-}
-
-.markCell {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  justify-content: flex-end;
-  /* The row lines up on the text baseline, so this cell says where its middle is. */
-  align-self: center;
-}
-
-/* The del button places itself at the left of a box, so it gets a box of its own. */
-.delSlot {
-  position: relative;
-  flex: 0 0 auto;
-  width: 22px;
-  height: 14px;
-}
-
 /* Tone order in a book: your own orders, then prices, then amounts and traders. */
 .cell:not(.own) .amount,
 .cell:not(.own) .trader {
@@ -537,21 +508,6 @@ const loaded = computed(() => books.value.some(x => x !== undefined));
 
 .num {
   text-align: right;
-}
-
-.trader {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.muted {
-  color: var(--rpz-text-weak);
-}
-/* Clickable text keeps its ink tone; the brand color shows on hover (player, 2026-11-06: no
-   blue link color). Your amount opens the order (CXO), a trader name the company (CO). */
-.clickable {
-  cursor: pointer;
 }
 
 .clickable:hover,

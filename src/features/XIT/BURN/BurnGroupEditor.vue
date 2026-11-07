@@ -43,7 +43,7 @@ function addGroup() {
       <ChipGroup
         :model-value="groupOf(planet.naturalId)"
         :options="chipsFor()"
-        @update:model-value="set(planet.naturalId, $event)" />
+        @update:model-value="set(planet.naturalId, String($event))" />
       <span
         v-if="userData.settings.burn.group[planet.naturalId] !== undefined"
         :class="$style.reset"

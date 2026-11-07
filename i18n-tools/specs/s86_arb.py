@@ -31,7 +31,7 @@ E('arb.fioAge', 'FIO copy of the books: {0} {1} ago, {2} {3} ago. Below: live bo
 
 # Rework 2026-11-05: chips, return, depth view.
 E('arb.custom', 'Custom', '自定义')
-E('arb.return', 'Return', '回报率')
+E('arb.return', 'Return', '利润率')
 E('arb.asksBuy', 'offers · you buy', '卖单 · 你买入')
 E('arb.bidsSell', 'requests · you sell', '买单 · 你卖出')
 E('arb.asksList', 'offers · you list', '卖单 · 你挂单')

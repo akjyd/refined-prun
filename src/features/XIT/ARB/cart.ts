@@ -44,6 +44,14 @@ export function removeFromCart(ticker: string) {
   userData.arbCart.items = userData.arbCart.items.filter(x => x.ticker !== ticker);
 }
 
+// Offer this good instead of selling it to the requests, or go back to both.
+export function setListOnly(ticker: string, listOnly: boolean) {
+  const item = userData.arbCart.items.find(x => x.ticker === ticker);
+  if (item) {
+    item.listOnly = listOnly;
+  }
+}
+
 export function clearCart() {
   userData.arbCart.items = [];
 }
@@ -53,7 +61,7 @@ export const cartLines = computed(() => {
   const items = userData.arbCart.items;
   const goods = items.map(item => {
     const material = materialsStore.getByTicker(item.ticker);
-    const market = planOf(item.ticker, item.from, item.to, unitCap(item.ticker));
+    const market = planOf(item.ticker, item.from, item.to, unitCap(item.ticker), item.listOnly);
     return {
       item,
       weight: material?.weight ?? 0,
@@ -73,7 +81,9 @@ export const cartLines = computed(() => {
   return goods.map((good, i) => {
     const { units, max } = fits[i];
     const trade =
-      units > 0 ? planOf(good.item.ticker, good.item.from, good.item.to, units) : undefined;
+      units > 0
+        ? planOf(good.item.ticker, good.item.from, good.item.to, units, good.item.listOnly)
+        : undefined;
     return { ...good, units, max, plan: trade?.plan };
   });
 });

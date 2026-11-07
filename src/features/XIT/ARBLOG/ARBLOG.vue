@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { cxLabel } from '@src/core/exchange-label';
+import { dailyTrade } from '@src/features/XIT/ARB/arb-books';
 import dayjs from 'dayjs';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import ChipGroup from '@src/components/ChipGroup.vue';
@@ -56,9 +57,9 @@ function openOrders(batch: ArbBatch) {
 // How long the orders in front of yours would take to clear, in days of the exchange's trade
 // (player, 2026-11-07). Being behind a few units is not worth a price cut; being behind a day
 // of trade is. Undefined when nothing is in front.
-function waitAhead(batch: ArbBatch) {
+function queueAhead(batch: ArbBatch) {
   const ownId = companyStore.value?.id;
-  let worst = 0;
+  let worst: { ahead: number; daily: number; days: number } | undefined;
   for (const order of openOrders(batch)) {
     const code = order.exchange.code;
     const ticker = order.material.ticker;
@@ -79,15 +80,17 @@ function waitAhead(batch: ArbBatch) {
     // A buy order waits at the start exchange and a sell order at the end one, so each queue is
     // measured against the daily trade of its own exchange (player, 2026-11-07).
     const daily = dailyTrade(ticker, code);
-    if (ahead > 0 && daily > 0) {
-      worst = Math.max(worst, ahead / daily);
+    const days = daily > 0 ? ahead / daily : 0;
+    if (ahead > 0 && (worst === undefined || days > worst.days)) {
+      worst = { ahead, daily, days };
     }
   }
-  return worst > 0 ? worst : undefined;
+  return worst;
 }
 
-// A price cut is worth thinking about once the queue in front is this many days long.
-const WAIT_WARNING = 1;
+// A price cut is worth thinking about once the queue in front is this many days long. You set
+// it in XIT SET (player, 2026-11-07).
+const queueWarning = computed(() => userData.settings.arb.queueDays);
 
 // Profit over days, for the actual run (realized profit over days so far) and the plan.
 function perDayText(profit: number | undefined, days: number | undefined) {
@@ -255,6 +258,7 @@ function date(ms: number) {
       <div v-else :class="[$style.row, $style.head]">
         <span>{{ t('arb.material') }}</span>
         <span>{{ t('arblog.status') }}</span>
+        <span :class="$style.num">{{ t('arblog.queue') }}</span>
         <span>{{ t('arblog.progress') }}</span>
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
         <span :class="$style.num">{{ t('arblog.actualProfit') }}</span>
@@ -310,11 +314,14 @@ function date(ms: number) {
             /></span>
             <span :class="r.state === 'done' ? $style.muted : undefined">
               {{ r.state === 'holding' ? locationLabel(r.batch) : stateLabel(r.state) }}
-              <span
-                v-if="r.state !== 'done' && (waitAhead(r.batch) ?? 0) >= WAIT_WARNING"
-                :class="$style.ahead"
-                >{{ t('arblog.ahead', fixed01(waitAhead(r.batch)!)) }}</span
-              >
+            </span>
+            <span :class="[$style.num, $style.muted]">
+              <template v-if="r.state !== 'done' && queueAhead(r.batch)">
+                <span v-if="queueAhead(r.batch)!.days >= queueWarning" :class="$style.dot" />{{
+                  fixed0(queueAhead(r.batch)!.ahead)
+                }}
+                <span :class="$style.faint">/ {{ fixed0(queueAhead(r.batch)!.daily) }}</span>
+              </template>
             </span>
             <span>
               <span :class="$style.progressText"
@@ -443,7 +450,7 @@ function date(ms: number) {
 }
 
 .root {
-  min-width: 900px;
+  min-width: 1000px;
   padding: 6px 8px;
   color: var(--rpz-text);
   font-size: var(--rpz-fs-body);
@@ -463,7 +470,7 @@ function date(ms: number) {
 
 .row {
   display: grid;
-  grid-template-columns: 56px 110px 110px 80px 90px 70px 130px minmax(90px, 1fr);
+  grid-template-columns: 56px 100px 110px 110px 80px 90px 70px 130px minmax(70px, 1fr);
   gap: 0 10px;
   align-items: center;
   padding: var(--rpz-space-1) var(--rpz-space-2);
@@ -503,6 +510,10 @@ function date(ms: number) {
   color: var(--rpz-text-weak);
 }
 
+.faint {
+  color: var(--rpz-text-off);
+}
+
 /* Over the expected days. A warning is red (player, 2026-11-05). */
 .warn,
 .warn .muted {
@@ -512,13 +523,6 @@ function date(ms: number) {
 /* The one value of a row that the decision is made on (docs/ui-rules.md 3.5). */
 .key {
   font-weight: 600;
-}
-
-.ahead {
-  margin-left: var(--rpz-space-1);
-  color: var(--rpz-mark);
-  font-size: var(--rpz-fs-label);
-  font-weight: bold;
 }
 
 .dot {

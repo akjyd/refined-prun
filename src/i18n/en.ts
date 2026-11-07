@@ -1673,4 +1673,8 @@ export default {
   'arblog.ahead': 'queue {0}d',
   'arb.worstFailure': 'Worst risk',
   'arb.ifListed': 'Offered instead: {0} units, {1} profit, {2} days, risk {3}',
+  'arblog.queue': 'Queue / day',
+  'set.arb.queue': 'Queue warning',
+  'set.arb.queueHint': 'Days of trade queued in front of your order before the dot lights up.',
+  'orders.pin': 'Keep this book listed',
 };

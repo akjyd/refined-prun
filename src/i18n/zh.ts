@@ -1374,7 +1374,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.any': '全部',
   'arb.fioAge': 'FIO 订单簿的数据时间：{0} {1}前，{2} {3}前。下面是游戏实时订单簿。',
   'arb.custom': '自定义',
-  'arb.return': '回报率',
+  'arb.return': '利润率',
   'arb.asksBuy': '卖单 · 你买入',
   'arb.bidsSell': '买单 · 你卖出',
   'arb.asksList': '卖单 · 你挂单',
@@ -1592,6 +1592,10 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arblog.ahead': '排队 {0} 天',
   'arb.worstFailure': '最差翻车率',
   'arb.ifListed': '若全部改成挂单卖：{0} 个，利润 {1}，{2} 天，翻车率 {3}',
+  'arblog.queue': '前面 / 日成交',
+  'set.arb.queue': '排队提醒',
+  'set.arb.queueHint': '前面排队超过这么多天的成交量时，亮小圆点。',
+  'orders.pin': '固定这个订单簿，没有单子也不消失',
 };
 
 export default zh;

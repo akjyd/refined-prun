@@ -10,6 +10,7 @@ const arb = userData.settings.arb;
 arb.failurePercent ??= 10;
 arb.minDailyProfit ??= 30_000;
 arb.maxDays ??= 7;
+arb.queueDays ??= 0.5;
 
 function setFailure(value: string) {
   const n = Number(value);
@@ -22,6 +23,13 @@ function setMaxDays(value: string) {
   const n = Number(value);
   if (Number.isFinite(n) && n >= 1) {
     arb.maxDays = Math.min(Math.round(n), 60);
+  }
+}
+
+function setQueue(value: string) {
+  const n = Number(value);
+  if (Number.isFinite(n) && n >= 0) {
+    arb.queueDays = Math.min(n, 30);
   }
 }
 
@@ -50,6 +58,14 @@ function setMinDaily(value: string) {
         :value="arb.maxDays"
         @change="setMaxDays(($event.target as HTMLInputElement).value)" />
       <span :class="$style.hint">{{ t('set.arb.maxDaysHint') }}</span>
+    </div>
+    <div :class="$style.row">
+      <span :class="$style.label">{{ t('set.arb.queue') }}</span>
+      <input
+        :class="$style.input"
+        :value="arb.queueDays"
+        @change="setQueue(($event.target as HTMLInputElement).value)" />
+      <span :class="$style.hint">{{ t('set.arb.queueHint') }}</span>
     </div>
     <div :class="$style.row">
       <span :class="$style.label">{{ t('set.arb.minDaily') }}</span>
