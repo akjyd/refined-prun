@@ -152,13 +152,11 @@ const columns = computed(() => {
         taken: take > 0,
       };
     };
-    // The game gives the offers best first. We show them with the best at the bottom, so we
-    // sort by price and then turn the list around. At one price this keeps the sequence of the
-    // game: the offer that is served first stays nearest the spread (player, 2026-11-07).
-    let asks = [...book.sellingOrders]
-      .sort((a, b) => a.limit.amount - b.limit.amount)
-      .map(x => toCell(x, true))
-      .reverse();
+    // The game gives the offers best first and draws them with the best at the bottom, so the
+    // drawn sequence is the list turned around. We do not sort: any sort of ours can put the
+    // orders of one price in a different sequence than the game, and the sequence is the queue
+    // (player, 2026-11-07).
+    let asks = [...book.sellingOrders].reverse().map(x => toCell(x, true));
     if (ghost && ghost.exchange === exchanges[i]) {
       const cell: Cell = {
         id: 'ghost',
@@ -173,9 +171,8 @@ const columns = computed(() => {
       const at = asks.findIndex(x => x.price <= ghost.price);
       asks.splice(at < 0 ? asks.length : at, 0, cell);
     }
-    let bids = [...book.buyingOrders]
-      .sort((a, b) => b.limit.amount - a.limit.amount)
-      .map(x => toCell(x, false));
+    // The requests are best first, which is also how they are drawn.
+    let bids = book.buyingOrders.map(x => toCell(x, false));
     if (trim !== undefined) {
       // Offers: the best are last. Requests: the best are first.
       const keepAsks = asks.filter(x => x.taken === true || x.ghost === true).length + trim;
