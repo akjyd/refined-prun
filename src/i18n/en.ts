@@ -1616,6 +1616,8 @@ export default {
   'cxdel.left': 'Units left',
   'cxdel.partly': 'Partly filled',
   'arblog.split': 'Fill / offer planned',
+  'arblog.sellPrices': 'Price got / planned',
+  'arblog.buyPrice': 'Bought',
   'arblog.gone': 'gone',
 
   // ARB：利润/天
@@ -1630,10 +1632,10 @@ export default {
   'arb.hurdle': 'Hurdle',
   'arb.hurdleOff': 'Off',
   'arb.tipUnits':
-    'Left: units the requests of the end exchange take the moment the ship lands.\n\nRight: the whole trade. It is the smallest of three numbers:\n\n1. What the ship holds.\n2. Daily trade x longest cycle x share of trade.\n3. The offers at the start exchange that still earn enough at your risk setting.\n\nDaily trade: the 30-day trade of the end exchange over 30 days.\nShare of trade and longest cycle are in XIT SET.',
+    'Left: units the requests of the end exchange take the moment the ship lands.\n\nRight: the whole trade. It is the smallest of three numbers:\n\n1. What the ship holds.\n2. [[Daily trade::The 30-day trade of the end exchange over 30 days, times the share of trade.]] x [[longest cycle::Days you are willing to tie the money up, the flight and the sale together. In XIT SET.]] x [[share of trade::The part of the trade of the end exchange you count on getting. Not all of it can be yours. In XIT SET.]].\n3. The offers at the start exchange that still earn enough at your [[risk setting::The share of trades that may end in a loss. Every order bought must earn enough by itself to stand the usual price moves over the days it is held. In XIT SET.]].\n\nPress E to lock this, then point at an underlined word for more.',
   'arb.tipCost': 'What you pay for the goods on the start exchange.',
   'arb.tipDays':
-    'Days the offered part needs to sell after the ship lands. The flight is not counted here.\n\nOffered units / daily trade.\n\nThe profit a day is still counted over the flight plus the sale, because the money is tied up from the moment you buy.',
+    'Days the offered part needs to sell after the ship lands. The flight is not counted here.\n\nOffered units / [[daily trade::The 30-day trade of the end exchange over 30 days, times the share of trade you set in XIT SET.]].\n\nThe profit a day is still counted over the flight plus the sale, because the money is tied up from the moment you buy.',
   'arb.tipPerDay':
     'Profit over the expected days: what this trade makes for each day it holds your ship and your money. Use it to compare a slow big trade with a fast small one.',
   'arb.tipReturn':
@@ -1697,4 +1699,6 @@ export default {
   'arb.unitsFill': 'Can fill / total',
   'arb.reload': 'Reload',
   'arb.daily': 'Daily trade',
+  'arb.noFill': 'The requests of the end exchange cannot take any of this trade.',
+  'arb.total': 'Total',
 };

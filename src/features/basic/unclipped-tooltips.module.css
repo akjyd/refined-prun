@@ -9,6 +9,12 @@
   }
 }
 
+.term {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  cursor: help;
+}
+
 .locked {
   pointer-events: auto !important;
   user-select: text;

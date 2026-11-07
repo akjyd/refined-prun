@@ -43,9 +43,9 @@ function onInput(index: number, event: Event) {
   input.value = String(userData.arbCart.items[index].units);
 }
 
-// The split of a good: what the requests take the moment the ship lands, and the rest, offered.
-// The two sliders move against each other, because together they are the units you buy
-// (player, 2026-11-07).
+// A good has one slider for the units you buy and two for the split of them: what the requests
+// take the moment the ship lands, and the rest, offered. The total slider stands on its own;
+// the two under it share out that total (player, 2026-11-07).
 function fillOf(line: (typeof cartLines.value)[number]) {
   return line.plan?.fillUnits ?? 0;
 }
@@ -54,16 +54,24 @@ function listOf(line: (typeof cartLines.value)[number]) {
   return line.plan?.listUnits ?? 0;
 }
 
+// The fill can be no more than the requests hold, and no more than the total.
+function fillMax(line: (typeof cartLines.value)[number]) {
+  return Math.min(line.fillRoom, line.units);
+}
+
+// The offer can be no more than the days you allow hold, and no more than the total.
+function listMax(line: (typeof cartLines.value)[number]) {
+  return Math.min(line.listRoom, line.units);
+}
+
 function setFill(index: number, value: number) {
   const line = cartLines.value.at(index);
   if (line === undefined) {
     return;
   }
-  const fill = Math.max(0, Math.min(Math.floor(value), line.fillRoom));
-  const item = userData.arbCart.items[index];
-  item.fillUnits = fill;
-  // The whole trade grows with the fill, up to what the ship and the books allow.
-  item.units = Math.max(item.units, Math.min(fill + listOf(line), line.max));
+  const fill = Math.max(0, Math.min(Math.floor(value), fillMax(line)));
+  // What the fill leaves must still fit in the offer.
+  userData.arbCart.items[index].fillUnits = Math.max(fill, line.units - line.listRoom);
 }
 
 function setList(index: number, value: number) {
@@ -71,8 +79,8 @@ function setList(index: number, value: number) {
   if (line === undefined) {
     return;
   }
-  const list = Math.max(0, Math.floor(value));
-  setUnits(index, fillOf(line) + list);
+  const list = Math.max(0, Math.min(Math.floor(value), listMax(line)));
+  setFill(index, line.units - list);
 }
 
 // The highest offer the buy takes: the limit price of the buy order.
@@ -197,12 +205,22 @@ async function buyAll() {
           /></span>
           <span :class="$style.sliders">
             <span :class="$style.slider">
+              <span :class="$style.sliderLabel">{{ t('arb.total') }}</span>
+              <RangeInput
+                ink
+                :model-value="line.units"
+                :min="0"
+                :max="Math.max(1, line.max)"
+                @update:model-value="setUnits(i, $event ?? 0)" />
+              <span :class="$style.sliderNum">{{ fixed0(line.units) }}</span>
+            </span>
+            <span :class="$style.slider">
               <span :class="$style.sliderLabel">{{ t('arb.modeFill') }}</span>
               <RangeInput
                 ink
                 :model-value="fillOf(line)"
                 :min="0"
-                :max="Math.max(1, line.fillRoom)"
+                :max="Math.max(1, fillMax(line))"
                 @update:model-value="setFill(i, $event ?? 0)" />
               <span :class="$style.sliderNum">{{ fixed0(fillOf(line)) }}</span>
             </span>
@@ -212,7 +230,7 @@ async function buyAll() {
                 ink
                 :model-value="listOf(line)"
                 :min="0"
-                :max="Math.max(1, line.max - fillOf(line))"
+                :max="Math.max(1, listMax(line))"
                 @update:model-value="setList(i, $event ?? 0)" />
               <span :class="$style.sliderNum">{{ fixed0(listOf(line)) }}</span>
             </span>

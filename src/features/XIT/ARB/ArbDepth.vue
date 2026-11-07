@@ -78,14 +78,17 @@ const ghost = computed(() =>
 <template>
   <div :class="$style.depth">
     <div :class="$style.alt">
-      <span v-if="canFill" :class="$style.modes">
+      <span :class="$style.modes">
         <button
-          :class="[$style.toggle, listed ? undefined : $style.toggleOn]"
+          :class="[$style.toggle, !listed && canFill ? $style.toggleOn : undefined]"
+          :disabled="!canFill"
+          :title="canFill ? undefined : t('arb.noFill')"
           @click="emit('mode', false)">
           {{ t('arb.modeFill') }}
         </button>
         <button
-          :class="[$style.toggle, listed ? $style.toggleOn : undefined]"
+          :class="[$style.toggle, listed || !canFill ? $style.toggleOn : undefined]"
+          :disabled="!canFill"
           @click="emit('mode', true)">
           {{ t('arb.modeList') }}
         </button>
@@ -142,8 +145,13 @@ const ghost = computed(() =>
   cursor: pointer;
 }
 
-.toggle:hover {
+.toggle:hover:not(:disabled) {
   background-color: var(--rpz-hover);
+}
+
+.toggle:disabled {
+  color: var(--rpz-text-off);
+  cursor: default;
 }
 
 .toggleOn {

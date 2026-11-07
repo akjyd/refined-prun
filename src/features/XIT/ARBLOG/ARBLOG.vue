@@ -377,14 +377,14 @@ function date(ms: number) {
             <!-- Four figures, plan against actual where both exist. -->
             <div :class="$style.stats">
               <span :class="$style.stat">
-                <span :class="$style.label">{{ t('arblog.buy') }}</span>
+                <span :class="$style.label">{{ t('arblog.buyPrice') }}</span>
                 <span
                   >{{ fixed0(r.units) }} ×
                   {{ stepPrice(buyCost(r.batch) / Math.max(r.units, 1)) }}</span
                 >
               </span>
               <span :class="$style.stat">
-                <span :class="$style.label">{{ t('arblog.sell') }}</span>
+                <span :class="$style.label">{{ t('arblog.sellPrices') }}</span>
                 <span
                   >{{ r.soldUnits > 0 ? stepPrice(revenue(r.batch) / r.soldUnits) : '--' }}
                   <span :class="$style.muted">/ {{ stepPrice(r.batch.plan.sellPrice) }}</span></span

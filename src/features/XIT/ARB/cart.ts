@@ -58,14 +58,17 @@ export const cartLines = computed(() => {
   const goods = items.map(item => {
     const material = materialsStore.getByTicker(item.ticker);
     const market = planOf(item.ticker, item.from, item.to, unitCap(item.ticker), item.fillUnits);
-    // What the requests could take if you let them, for the top of the fill slider.
+    // What each part could take on its own, for the tops of the two sliders: the requests of
+    // the end exchange, and the days you allow times the daily trade (player, 2026-11-07).
     const open = planOf(item.ticker, item.from, item.to, unitCap(item.ticker));
+    const listed = planOf(item.ticker, item.from, item.to, unitCap(item.ticker), 0);
     return {
       item,
       weight: material?.weight ?? 0,
       volume: material?.volume ?? 0,
       market: market?.plan.units ?? 0,
       fillRoom: open?.plan.fillUnits ?? 0,
+      listRoom: listed?.plan.listUnits ?? 0,
     };
   });
   const fits = fitCart(

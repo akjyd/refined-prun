@@ -1,5 +1,24 @@
 import $style from './unclipped-tooltips.module.css';
 
+// A word in a tooltip can carry a tooltip of its own, written [[word::what it means]]. The
+// word is underlined; lock the tooltip with E, then point at the word (player, 2026-11-07).
+const TERM = /\[\[(.+?)::(.+?)\]\]/g;
+
+function setText(element: HTMLElement, text: string) {
+  element.textContent = '';
+  let at = 0;
+  for (const match of text.matchAll(TERM)) {
+    element.append(text.slice(at, match.index));
+    const term = document.createElement('span');
+    term.className = $style.term;
+    term.textContent = match[1];
+    term.setAttribute('data-tooltip', match[2]);
+    element.append(term);
+    at = match.index + match[0].length;
+  }
+  element.append(text.slice(at));
+}
+
 function prepareTooltips() {
   if (document.getElementById('rp-tooltip')) {
     return;
@@ -22,7 +41,7 @@ function prepareTooltips() {
     }
 
     activeTarget = target;
-    tooltip.textContent = text;
+    setText(tooltip, text);
     // Preserve explicit line breaks while allowing long tooltips to wrap.
     tooltip.style.whiteSpace = 'pre-wrap';
     // A tooltip written in paragraphs needs room; a short one keeps its own width.

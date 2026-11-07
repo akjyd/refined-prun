@@ -104,6 +104,9 @@ interface Row {
 // list always goes back to the better of the two plans (player, 2026-11-07).
 const listedRows = reactive(new Set<string>());
 
+// The order of the keys as it stood when a row was opened; undefined while none is open.
+const frozenKeys = ref<string[]>();
+
 function perDay(plan: ArbPlanResult) {
   return plan.days > 0 ? plan.profit / plan.days : 0;
 }
@@ -234,7 +237,21 @@ const rows = computed(() => {
   // Goods in the cart stay at the top, so the list does not jump when you change one
   // (player, 2026-11-07).
   const inCart = new Set(userData.arbCart.items.map(x => x.ticker));
-  return [...list.filter(x => inCart.has(x.ticker)), ...list.filter(x => !inCart.has(x.ticker))];
+  const sorted = [
+    ...list.filter(x => inCart.has(x.ticker)),
+    ...list.filter(x => !inCart.has(x.ticker)),
+  ];
+  // While a row is open the order is held still. Switching that row between filling and
+  // offering changes its profit, and the row would otherwise jump away under the pointer
+  // (player, 2026-11-07).
+  const frozen = frozenKeys.value;
+  if (frozen === undefined) {
+    return sorted;
+  }
+  const rank = new Map(frozen.map((key, i) => [key, i]));
+  return [...sorted].sort(
+    (a, b) => (rank.get(a.key) ?? frozen.length) - (rank.get(b.key) ?? frozen.length),
+  );
 });
 
 // Daily prices of the end exchanges in the list, for the volatility.
@@ -317,7 +334,9 @@ function onRowClick(row: Row) {
   if (open.value === row.key) {
     open.value = undefined;
     listedRows.delete(row.key);
+    frozenKeys.value = undefined;
   } else {
+    frozenKeys.value = rows.value.map(x => x.key);
     open.value = row.key;
   }
 }
