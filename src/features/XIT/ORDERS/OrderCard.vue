@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BookCells from '@src/features/XIT/CX4/BookCells.vue';
 import CxpoButton from '@src/components/CxpoButton.vue';
+import { drawnOrder } from '@src/core/book-order';
 import { getOwnCxOrder, orderChange } from '@src/core/order-seen';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
@@ -76,8 +77,8 @@ const liveRows = computed(() => {
       change: mine ? orderChange(mine.id, mine.amount) : undefined,
     };
   };
-  const asks = b.sellingOrders.map(x => toRow(x, true)).sort((x, y) => y.price - x.price);
-  const bids = b.buyingOrders.map(x => toRow(x, false)).sort((x, y) => y.price - x.price);
+  const asks = drawnOrder(b.sellingOrders, x => x.limit.amount).map(x => toRow(x, true));
+  const bids = drawnOrder(b.buyingOrders, x => x.limit.amount).map(x => toRow(x, false));
   if (bids.length > 0) {
     bids[0].first = true;
   }

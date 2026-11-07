@@ -1,4 +1,5 @@
 import $style from './cxob-drag-reprice.module.css';
+import { drawnOrder } from '@src/core/book-order';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { refPrunId } from '@src/infrastructure/prun-ui/attributes';
@@ -16,9 +17,17 @@ function onTileReady(tile: PrunTile) {
     if (!b) {
       return [];
     }
-    const asks = b.sellingOrders.map(x => ({ id: x.id, ask: true, price: x.limit.amount }));
-    const bids = b.buyingOrders.map(x => ({ id: x.id, ask: false, price: x.limit.amount }));
-    return [...asks.sort((x, y) => y.price - x.price), ...bids.sort((x, y) => y.price - x.price)];
+    const asks = drawnOrder(b.sellingOrders, x => x.limit.amount).map(x => ({
+      id: x.id,
+      ask: true,
+      price: x.limit.amount,
+    }));
+    const bids = drawnOrder(b.buyingOrders, x => x.limit.amount).map(x => ({
+      id: x.id,
+      ask: false,
+      price: x.limit.amount,
+    }));
+    return [...asks, ...bids];
   });
   const own = computed(() => {
     const b = cxobStore.getByTicker(tile.parameter);

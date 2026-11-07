@@ -4,6 +4,7 @@ import BookCells from '@src/features/XIT/CX4/BookCells.vue';
 import CxpoButton from '@src/components/CxpoButton.vue';
 import { getOwnCxOrder, orderChange } from '@src/core/order-seen';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
+import { drawnOrder } from '@src/core/book-order';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
@@ -152,13 +153,7 @@ const columns = computed(() => {
         taken: take > 0,
       };
     };
-    // What the game does with the list: turn it around, then sort by price. The sort keeps the
-    // sequence of one price, so the order served first stays nearest the spread. Measured
-    // against the book of the game, order by order (player, 2026-11-07).
-    let asks = [...book.sellingOrders]
-      .reverse()
-      .map(x => toCell(x, true))
-      .sort((a, b) => b.price - a.price);
+    let asks = drawnOrder(book.sellingOrders, x => x.limit.amount).map(x => toCell(x, true));
     if (ghost && ghost.exchange === exchanges[i]) {
       const cell: Cell = {
         id: 'ghost',
@@ -173,10 +168,7 @@ const columns = computed(() => {
       const at = asks.findIndex(x => x.price <= ghost.price);
       asks.splice(at < 0 ? asks.length : at, 0, cell);
     }
-    let bids = [...book.buyingOrders]
-      .reverse()
-      .map(x => toCell(x, false))
-      .sort((a, b) => b.price - a.price);
+    let bids = drawnOrder(book.buyingOrders, x => x.limit.amount).map(x => toCell(x, false));
     if (trim !== undefined) {
       // Offers: the best are last. Requests: the best are first.
       const keepAsks = asks.filter(x => x.taken === true || x.ghost === true).length + trim;
