@@ -53,20 +53,41 @@ function openOrders(batch: ArbBatch) {
   );
 }
 
-// True when another trader has a better or equal price than one of your open orders.
-function beaten(batch: ArbBatch) {
+// How long the orders in front of yours would take to clear, in days of the exchange's trade
+// (player, 2026-11-07). Being behind a few units is not worth a price cut; being behind a day
+// of trade is. Undefined when nothing is in front.
+function waitAhead(batch: ArbBatch) {
   const ownId = companyStore.value?.id;
-  return openOrders(batch).some(order => {
-    const book = cxobStore.getByTicker(`${order.material.ticker}.${order.exchange.code}`);
+  let worst = 0;
+  for (const order of openOrders(batch)) {
+    const code = order.exchange.code;
+    const ticker = order.material.ticker;
+    const book = cxobStore.getByTicker(`${ticker}.${code}`);
     const ask = order.type === 'SELLING';
     const others = (ask ? book?.sellingOrders : book?.buyingOrders)?.filter(
       x => x.trader.id !== ownId,
     );
-    return (others ?? []).some(x =>
-      ask ? x.limit.amount <= order.limit.amount : x.limit.amount >= order.limit.amount,
-    );
-  });
+    let ahead = 0;
+    for (const other of others ?? []) {
+      const better = ask
+        ? other.limit.amount <= order.limit.amount
+        : other.limit.amount >= order.limit.amount;
+      if (better) {
+        ahead += other.amount ?? 0;
+      }
+    }
+    // A buy order waits at the start exchange and a sell order at the end one, so each queue is
+    // measured against the daily trade of its own exchange (player, 2026-11-07).
+    const daily = dailyTrade(ticker, code);
+    if (ahead > 0 && daily > 0) {
+      worst = Math.max(worst, ahead / daily);
+    }
+  }
+  return worst > 0 ? worst : undefined;
 }
+
+// A price cut is worth thinking about once the queue in front is this many days long.
+const WAIT_WARNING = 1;
 
 // Profit over days, for the actual run (realized profit over days so far) and the plan.
 function perDayText(profit: number | undefined, days: number | undefined) {
@@ -233,8 +254,6 @@ function date(ms: number) {
       <p v-if="rows.length === 0" :class="$style.muted">{{ t('arblog.none') }}</p>
       <div v-else :class="[$style.row, $style.head]">
         <span>{{ t('arb.material') }}</span>
-        <span>{{ t('arb.route') }}</span>
-        <span>{{ t('arb.mode') }}</span>
         <span>{{ t('arblog.status') }}</span>
         <span>{{ t('arblog.progress') }}</span>
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
@@ -289,16 +308,13 @@ function date(ms: number) {
             <span :class="$style.icon" @click.stop
               ><MaterialIcon size="inline-table" :ticker="r.batch.ticker"
             /></span>
-            <span
-              >{{ cxLabel(r.batch.from) }} <span :class="$style.muted">→</span>
-              {{ cxLabel(r.batch.to) }}</span
-            >
-            <span :class="$style.muted">{{
-              r.batch.mode === 'now' ? t('arb.fill') : t('arb.list')
-            }}</span>
             <span :class="r.state === 'done' ? $style.muted : undefined">
               {{ r.state === 'holding' ? locationLabel(r.batch) : stateLabel(r.state) }}
-              <span v-if="r.state !== 'done' && beaten(r.batch)" :class="$style.dot" />
+              <span
+                v-if="r.state !== 'done' && (waitAhead(r.batch) ?? 0) >= WAIT_WARNING"
+                :class="$style.ahead"
+                >{{ t('arblog.ahead', fixed01(waitAhead(r.batch)!)) }}</span
+              >
             </span>
             <span>
               <span :class="$style.progressText"
@@ -427,7 +443,7 @@ function date(ms: number) {
 }
 
 .root {
-  min-width: 1040px;
+  min-width: 900px;
   padding: 6px 8px;
   color: var(--rpz-text);
   font-size: var(--rpz-fs-body);
@@ -447,7 +463,7 @@ function date(ms: number) {
 
 .row {
   display: grid;
-  grid-template-columns: 56px 90px 44px 80px 110px 80px 90px 70px 130px minmax(90px, 1fr);
+  grid-template-columns: 56px 110px 110px 80px 90px 70px 130px minmax(90px, 1fr);
   gap: 0 10px;
   align-items: center;
   padding: var(--rpz-space-1) var(--rpz-space-2);
@@ -496,6 +512,13 @@ function date(ms: number) {
 /* The one value of a row that the decision is made on (docs/ui-rules.md 3.5). */
 .key {
   font-weight: 600;
+}
+
+.ahead {
+  margin-left: var(--rpz-space-1);
+  color: var(--rpz-mark);
+  font-size: var(--rpz-fs-label);
+  font-weight: bold;
 }
 
 .dot {

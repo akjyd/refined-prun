@@ -39,3 +39,9 @@ R(F, """    id: 'ACT',
     label: t('set.arb.title'),
     component: ARB,
   },""")
+
+E('arblog.ahead', 'queue {0}d', '排队 {0} 天')
+E('arb.worstFailure', 'Worst risk', '最差翻车率')
+E('arb.ifListed',
+  'Offered instead: {0} units, {1} profit, {2} days, risk {3}',
+  '若全部改成挂单卖：{0} 个，利润 {1}，{2} 天，翻车率 {3}')

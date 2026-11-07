@@ -17,13 +17,16 @@ import {
 } from '@src/features/XIT/ARB/cart';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
 import { waitUntil } from '@src/utils/wait';
-import { fixed0, fixed01, fixed02, percent1 } from '@src/utils/format';
+import { fixed0, fixed01, fixed02, percent0, percent1 } from '@src/utils/format';
 import { t } from '@src/i18n';
 
 // The cart: goods for one flight, each with a slider and a number field. A good cannot take
 // more than its order books allow or than the ship has left.
 
 const $style = useCssModule();
+
+// What you set in XIT SET: how often a trade may lose money.
+const target = computed(() => userData.settings.arb.failurePercent);
 
 function setUnits(index: number, value: number | string) {
   const line = cartLines.value.at(index);
@@ -143,21 +146,19 @@ async function buyAll() {
     <div>
       <div :class="[$style.item, $style.head]">
         <span>{{ t('arb.material') }}</span>
-        <span>{{ t('arb.mode') }}</span>
         <span>{{ t('arb.units') }}</span>
         <span />
+        <span :class="$style.num">{{ t('arb.tradeDays') }}</span>
         <span :class="$style.num">{{ t('arb.weightVolume') }}</span>
         <span :class="$style.num">{{ t('arb.cost') }}</span>
-        <span :class="$style.num">{{ t('arb.profit') }}</span>
+        <span :class="$style.num">{{ t('arb.perDay') }}</span>
+        <span :class="$style.num">{{ t('arb.failure') }}</span>
         <span />
       </div>
       <div v-for="(line, i) in cartLines" :key="line.item.ticker" :class="['rpz-row', $style.item]">
         <span :class="$style.icon"
           ><MaterialIcon size="inline-table" :ticker="line.item.ticker"
         /></span>
-        <span :class="$style.muted">{{
-          line.item.mode === 'now' ? t('arb.fill') : t('arb.list')
-        }}</span>
         <RangeInput
           ink
           :model-value="line.units"
@@ -172,14 +173,21 @@ async function buyAll() {
           :max="line.max"
           :value="line.units"
           @change="onInput(i, $event)" />
+        <span :class="[$style.num, $style.muted]">{{
+          line.plan ? t('arb.days', fixed01(line.plan.days)) : '--'
+        }}</span>
         <span :class="[$style.num, $style.muted]"
           >{{ fixed01(line.units * line.weight) }}t ·
           {{ fixed01(line.units * line.volume) }}m³</span
         >
-        <span :class="$style.num">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
-        <span :class="[$style.num, C.ColoredValue.positive]">{{
-          formatProfit(line.plan?.profit ?? 0)
+        <span :class="[$style.num, $style.muted]">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
+        <span :class="[$style.num, $style.key]">{{
+          line.plan && line.plan.days > 0 ? formatProfit(line.plan.profit / line.plan.days) : '--'
         }}</span>
+        <span
+          :class="[$style.num, (line.plan?.failure ?? 0) > target ? $style.warn : $style.muted]"
+          >{{ line.plan ? percent0(line.plan.failure / 100) : '--' }}</span
+        >
         <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
       </div>
     </div>
@@ -195,6 +203,18 @@ async function buyAll() {
       <span
         ><span :class="$style.muted">{{ t('arb.return') }}</span>
         {{ percent1(cartTotals.return) }}</span
+      >
+      <span
+        ><span :class="$style.muted">{{ t('arb.perDay') }}</span>
+        <span :class="$style.key">{{
+          cartTotals.days > 0 ? formatProfit(cartTotals.profit / cartTotals.days) : '--'
+        }}</span></span
+      >
+      <span
+        ><span :class="$style.muted">{{ t('arb.worstFailure') }}</span>
+        <span :class="cartTotals.failure > target ? $style.warn : undefined">{{
+          percent0(cartTotals.failure / 100)
+        }}</span></span
       >
       <span :class="$style.spacer" />
       <button
@@ -288,7 +308,7 @@ async function buyAll() {
 
 .item {
   display: grid;
-  grid-template-columns: 44px 44px minmax(140px, 1fr) 80px 130px 90px 80px 20px;
+  grid-template-columns: 44px minmax(90px, 1fr) 64px 60px 120px 80px 76px 52px 24px;
   gap: 0 var(--rpz-space-2);
   align-items: center;
   padding: var(--rpz-space-1) 0;
@@ -324,6 +344,15 @@ async function buyAll() {
 
 .input:focus {
   border-color: var(--rpz-brand);
+}
+
+.key {
+  color: var(--rpz-text-strong);
+  font-weight: 600;
+}
+
+.warn {
+  color: var(--rpz-neg);
 }
 
 .remove {

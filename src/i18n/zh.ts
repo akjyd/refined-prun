@@ -1589,6 +1589,9 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'set.arb.minDailyHint': '低于这个数的不显示。',
   'set.arb.maxDays': '最长天数',
   'set.arb.maxDaysHint': '你愿意等几天。需要更久的不显示。',
+  'arblog.ahead': '排队 {0} 天',
+  'arb.worstFailure': '最差翻车率',
+  'arb.ifListed': '若全部改成挂单卖：{0} 个，利润 {1}，{2} 天，翻车率 {3}',
 };
 
 export default zh;

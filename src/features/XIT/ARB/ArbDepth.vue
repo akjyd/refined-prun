@@ -6,6 +6,9 @@ import { arbHistory, HISTORY_DAYS, HISTORY_SHIP } from '@src/features/XIT/ARB/ar
 import { getShipSize } from '@src/core/ship-sizes';
 import { t } from '@src/i18n';
 import { ArbPlanResult } from '@src/core/arb-plan';
+import { planOf } from '@src/features/XIT/ARB/arb-books';
+import { formatProfit } from '@src/core/daily-profit/profit-format';
+import { fixed0, fixed01, percent0 } from '@src/utils/format';
 import { startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
 
 // The two live order books of a trade, as in XIT CX4. The orders the trade takes are gold; a
@@ -49,6 +52,14 @@ const history = computed(
 );
 const shipLabel = getShipSize(HISTORY_SHIP)?.label ?? HISTORY_SHIP;
 
+// What the same goods would make if every unit were offered instead of sold to the requests.
+// Shown when this trade sells everything at once, so you can see what waiting would be worth.
+const listOnly = computed(() =>
+  plan.listUnits === 0 && plan.fillUnits > 0
+    ? planOf(ticker, from, to, Math.max(plan.units, 1), true)?.plan
+    : undefined,
+);
+
 const takes = computed(() => {
   const map = new Map<string, number>();
   for (const fill of [...plan.fillsA, ...plan.fillsB]) {
@@ -69,6 +80,17 @@ const ghost = computed(() =>
 
 <template>
   <div :class="$style.depth">
+    <div v-if="listOnly && listOnly.units > 0" :class="$style.alt">
+      {{
+        t(
+          'arb.ifListed',
+          fixed0(listOnly.units),
+          formatProfit(listOnly.profit),
+          fixed01(listOnly.days),
+          percent0(listOnly.failure / 100),
+        )
+      }}
+    </div>
     <div :class="$style.chartTitle">{{ t('arb.chartTitle', shipLabel, HISTORY_DAYS) }}</div>
     <ProfitChart :points="history" />
     <PriceLadder
@@ -89,6 +111,11 @@ const ghost = computed(() =>
   padding: 8px 8px 12px 102px;
   background-color: var(--rpz-bg-raised);
   border-top: 1px solid var(--rpz-stroke-weak);
+}
+
+.alt {
+  color: var(--rpz-text-weak);
+  font-size: var(--rpz-fs-label);
 }
 
 .chartTitle {

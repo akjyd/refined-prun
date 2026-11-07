@@ -33,7 +33,15 @@ export function bookData(cxTicker: string): { book: OrderBookData; live: boolean
 }
 
 // The trade this material and route allows at the failure rate you set, as two parts.
-export function planOf(ticker: string, from: string, to: string, maxUnits: number) {
+export function planOf(
+  ticker: string,
+  from: string,
+  to: string,
+  maxUnits: number,
+  // Leaves out the requests of the end exchange, to show what the same goods would make if you
+  // offered all of them instead (player, 2026-11-07).
+  listOnly = false,
+) {
   const a = bookData(`${ticker}.${from}`);
   const b = bookData(`${ticker}.${to}`);
   if (!a || !b) {
@@ -42,7 +50,7 @@ export function planOf(ticker: string, from: string, to: string, maxUnits: numbe
   const closes = dailyCloses.get(`${ticker}.${to}`);
   const plan = planTrade({
     asksA: a.book.asks,
-    bidsB: b.book.bids,
+    bidsB: listOnly ? [] : b.book.bids,
     asksB: b.book.asks,
     flightDays: flightDays(from, to),
     dailyTrade: dailyTrade(ticker, to),

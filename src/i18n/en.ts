@@ -1670,4 +1670,7 @@ export default {
   'set.arb.minDailyHint': 'Trades under this are not shown.',
   'set.arb.maxDays': 'Longest wait',
   'set.arb.maxDaysHint': 'Days you are willing to wait. A trade that needs longer is not shown.',
+  'arblog.ahead': 'queue {0}d',
+  'arb.worstFailure': 'Worst risk',
+  'arb.ifListed': 'Offered instead: {0} units, {1} profit, {2} days, risk {3}',
 };
