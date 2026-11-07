@@ -143,8 +143,9 @@ export const initialUserData = deepFreeze({
       to: string;
       mode: 'now' | 'listed';
       units: number;
-      // True when you pressed 挂单 on this good: it is offered, never sold to the requests.
-      listOnly?: boolean;
+      // Units the requests of the end exchange may take. Undefined lets them take all they can;
+      // 0 offers everything instead (player, 2026-11-07).
+      fillUnits?: number;
     }[],
   },
   // XIT ORDERS: books you pinned, as 'RAT.NC1'. A pinned card stays when the orders are gone.

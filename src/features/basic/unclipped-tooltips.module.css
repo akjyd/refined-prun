@@ -9,6 +9,11 @@
   }
 }
 
+.locked {
+  pointer-events: auto !important;
+  user-select: text;
+}
+
 .wide {
   max-width: min(340px, calc(100vw - 28px)) !important;
   line-height: 1.45 !important;

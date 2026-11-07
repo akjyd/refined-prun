@@ -7,19 +7,24 @@ import { getShipSize } from '@src/core/ship-sizes';
 import { t } from '@src/i18n';
 import { ArbPlanResult } from '@src/core/arb-plan';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
-import { percent1 } from '@src/utils/format';
-import { isListOnly, toggleListOnly } from '@src/features/XIT/ARB/cart';
+import { fixed0, percent1 } from '@src/utils/format';
 import { startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
 
 // The two live order books of a trade, as in XIT CX4. The orders the trade takes are gold; a
 // part-taken order shows taken/amount. For "listed", your offer shows in the offers of the end
 // exchange. The whole books show, with the trader names as in the game's CXOB.
-const { ticker, from, to, plan } = defineProps<{
+const { ticker, from, to, plan, canFill, listed, daily } = defineProps<{
   ticker: string;
   from: string;
   to: string;
   plan: ArbPlanResult;
+  // True when the requests of the end exchange can take a part at once.
+  canFill: boolean;
+  listed: boolean;
+  daily: number;
 }>();
+
+const emit = defineEmits<{ mode: [listed: boolean] }>();
 
 // A buy placed from the CXPO of the start exchange becomes an arbitrage batch (XIT ARBLOG).
 function onCxpo(exchange: string) {
@@ -52,8 +57,6 @@ const history = computed(
 );
 const shipLabel = getShipSize(HISTORY_SHIP)?.label ?? HISTORY_SHIP;
 
-const listed = computed(() => isListOnly(ticker, from, to));
-
 const takes = computed(() => {
   const map = new Map<string, number>();
   for (const fill of [...plan.fillsA, ...plan.fillsB]) {
@@ -75,21 +78,31 @@ const ghost = computed(() =>
 <template>
   <div :class="$style.depth">
     <div :class="$style.alt">
-      <button
-        :class="[$style.toggle, listed ? undefined : $style.toggleOn]"
-        @click="listed && toggleListOnly(ticker, from, to)">
-        {{ t('arb.modeFill') }}
-      </button>
-      <button
-        :class="[$style.toggle, listed ? $style.toggleOn : undefined]"
-        @click="!listed && toggleListOnly(ticker, from, to)">
-        {{ t('arb.modeList') }}
-      </button>
+      <span v-if="canFill" :class="$style.modes">
+        <button
+          :class="[$style.toggle, listed ? undefined : $style.toggleOn]"
+          @click="emit('mode', false)">
+          {{ t('arb.modeFill') }}
+        </button>
+        <button
+          :class="[$style.toggle, listed ? $style.toggleOn : undefined]"
+          @click="emit('mode', true)">
+          {{ t('arb.modeList') }}
+        </button>
+      </span>
       <span :class="$style.sum">
-        <span :class="$style.muted">{{ t('arb.profit') }}</span>
-        <span :class="$style.key">{{ formatProfit(plan.profit) }}</span>
-        <span :class="$style.muted">{{ t('arb.return') }}</span>
-        <span>{{ percent1(plan.margin) }}</span>
+        <span :class="$style.pair"
+          ><span :class="$style.muted">{{ t('arb.profit') }}</span>
+          <span :class="$style.key">{{ formatProfit(plan.profit) }}</span></span
+        >
+        <span :class="$style.pair"
+          ><span :class="$style.muted">{{ t('arb.return') }}</span>
+          <span>{{ percent1(plan.margin) }}</span></span
+        >
+        <span :class="$style.pair"
+          ><span :class="$style.muted">{{ t('arb.daily') }}</span>
+          <span>{{ fixed0(daily) }}</span></span
+        >
       </span>
     </div>
     <div :class="$style.chartTitle">{{ t('arb.chartTitle', shipLabel, HISTORY_DAYS) }}</div>
@@ -138,11 +151,23 @@ const ghost = computed(() =>
   color: var(--rpz-text-strong);
 }
 
+.modes {
+  display: flex;
+  gap: 2px;
+}
+
 .sum {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px var(--rpz-space-1);
+  gap: 2px var(--rpz-space-3);
+}
+
+/* Label and number stay together; the space between pairs is wider than inside one. */
+.pair {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
 }
 
 .muted {

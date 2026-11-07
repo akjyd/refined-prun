@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ArbBatch } from '@src/core/arb-batches';
+import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { fixed0, fixed02 } from '@src/utils/format';
 import { t } from '@src/i18n';
 
@@ -9,6 +10,23 @@ import { t } from '@src/i18n';
 const { batch } = defineProps<{ batch: ArbBatch }>();
 
 const $style = useCssModule();
+
+// Whether an order the plan was going to take is still in the book. Undefined when the book is
+// not open, or for a batch bought before the ids were kept (player, 2026-11-07).
+function liveIds(cxTicker: string) {
+  const book = cxobStore.getByTicker(cxTicker);
+  if (!book) {
+    return undefined;
+  }
+  return new Set([...book.sellingOrders, ...book.buyingOrders].map(x => x.id));
+}
+
+const buyIds = computed(() => liveIds(`${batch.ticker}.${batch.from}`));
+const sellIds = computed(() => liveIds(`${batch.ticker}.${batch.to}`));
+
+function gone(ids: Set<string> | undefined, level: { take: number; id?: string }) {
+  return ids !== undefined && level.take > 0 && level.id !== undefined && !ids.has(level.id);
+}
 
 function amount(level: { amount?: number; take: number }) {
   const all = level.amount === undefined ? '∞' : fixed0(level.amount);
@@ -30,7 +48,10 @@ function amount(level: { amount?: number; take: number }) {
         v-for="(x, i) in batch.snapshot.buys"
         :key="i"
         :class="[$style.line, x.take > 0 ? $style.taken : $style.out]">
-        <span>{{ fixed02(x.price) }}</span>
+        <span
+          >{{ fixed02(x.price)
+          }}<span v-if="gone(buyIds, x)" :class="$style.gone"> {{ t('arblog.gone') }}</span></span
+        >
         <span :class="$style.num">{{ amount(x) }}</span>
       </div>
     </div>
@@ -48,7 +69,12 @@ function amount(level: { amount?: number; take: number }) {
           v-for="(x, i) in batch.snapshot.sells"
           :key="i"
           :class="[$style.line, x.take > 0 ? $style.taken : $style.out]">
-          <span>{{ fixed02(x.price) }}</span>
+          <span
+            >{{ fixed02(x.price)
+            }}<span v-if="gone(sellIds, x)" :class="$style.gone">
+              {{ t('arblog.gone') }}</span
+            ></span
+          >
           <span :class="$style.num">{{ amount(x) }}</span>
         </div>
       </template>
@@ -106,5 +132,10 @@ function amount(level: { amount?: number; take: number }) {
 
 .out {
   color: var(--rpz-text-off);
+}
+
+.gone {
+  color: var(--rpz-text-weak);
+  font-size: var(--rpz-fs-label);
 }
 </style>

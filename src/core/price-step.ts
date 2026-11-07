@@ -58,3 +58,14 @@ export function dropTargetPrice(book: BookOrder[], dragged: BookOrder, at: numbe
   }
   return price;
 }
+
+// A price written with one digit more than the exchange allows. Prices move in steps of
+// three significant digits, so more digits than that are noise (player, 2026-11-07).
+export function stepPrice(price: number) {
+  const step = priceStep(price);
+  const digits = Math.max(0, Math.min(6, -Math.floor(Math.log10(step)) + 1));
+  return price.toLocaleString(undefined, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}

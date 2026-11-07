@@ -1615,6 +1615,8 @@ export default {
   'cxdel.side': 'Side',
   'cxdel.left': 'Units left',
   'cxdel.partly': 'Partly filled',
+  'arblog.split': 'Fill / offer planned',
+  'arblog.gone': 'gone',
 
   // ARB：利润/天
   'arb.perDay': 'Profit/day',
@@ -1694,4 +1696,5 @@ export default {
   'arb.saleDays': 'Sale days',
   'arb.unitsFill': 'Can fill / total',
   'arb.reload': 'Reload',
+  'arb.daily': 'Daily trade',
 };

@@ -21,6 +21,9 @@ export interface ArbPlan {
   profit: number;
   return: number;
   safety?: number;
+  // What the plan meant to sell at once and what it meant to offer. Not kept before 2026-11-07.
+  fillUnits?: number;
+  listUnits?: number;
   // Expected days: flight, plus units / daily trade for a listed sale. Not kept before 2026-11-06.
   days?: number;
 }
@@ -28,9 +31,9 @@ export interface ArbPlan {
 // The orders the plan was going to take when you bought, for comparing later.
 export interface ArbSnapshot {
   // Offers on the start exchange, cheapest first: price, amount (undefined = no limit), taken.
-  buys: { price: number; amount?: number; take: number }[];
+  buys: { price: number; amount?: number; take: number; id?: string }[];
   // "now": the requests on the end exchange you would sell to. "listed": empty.
-  sells: { price: number; amount?: number; take: number }[];
+  sells: { price: number; amount?: number; take: number; id?: string }[];
   // "listed": the price you would list at.
   listPrice?: number;
 }

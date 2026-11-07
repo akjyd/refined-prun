@@ -12,9 +12,7 @@ import {
   cartShip,
   cartTotals,
   clearCart,
-  isListOnly,
   removeFromCart,
-  toggleListOnly,
   snapshotOf,
 } from '@src/features/XIT/ARB/cart';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
@@ -43,6 +41,38 @@ function onInput(index: number, event: Event) {
   const input = event.target as HTMLInputElement;
   setUnits(index, input.value);
   input.value = String(userData.arbCart.items[index].units);
+}
+
+// The split of a good: what the requests take the moment the ship lands, and the rest, offered.
+// The two sliders move against each other, because together they are the units you buy
+// (player, 2026-11-07).
+function fillOf(line: (typeof cartLines.value)[number]) {
+  return line.plan?.fillUnits ?? 0;
+}
+
+function listOf(line: (typeof cartLines.value)[number]) {
+  return line.plan?.listUnits ?? 0;
+}
+
+function setFill(index: number, value: number) {
+  const line = cartLines.value.at(index);
+  if (line === undefined) {
+    return;
+  }
+  const fill = Math.max(0, Math.min(Math.floor(value), line.fillRoom));
+  const item = userData.arbCart.items[index];
+  item.fillUnits = fill;
+  // The whole trade grows with the fill, up to what the ship and the books allow.
+  item.units = Math.max(item.units, Math.min(fill + listOf(line), line.max));
+}
+
+function setList(index: number, value: number) {
+  const line = cartLines.value.at(index);
+  if (line === undefined) {
+    return;
+  }
+  const list = Math.max(0, Math.floor(value));
+  setUnits(index, fillOf(line) + list);
 }
 
 // The highest offer the buy takes: the limit price of the buy order.
@@ -90,6 +120,8 @@ async function buyAll() {
           return: result.margin,
           safety: undefined,
           days: result.days,
+          fillUnits: result.fillUnits,
+          listUnits: result.listUnits,
         },
       });
       const error = await placeCxOrder(
@@ -163,12 +195,28 @@ async function buyAll() {
           <span :class="$style.icon"
             ><MaterialIcon size="inline-table" :ticker="line.item.ticker"
           /></span>
-          <RangeInput
-            ink
-            :model-value="line.units"
-            :min="0"
-            :max="Math.max(1, line.max)"
-            @update:model-value="setUnits(i, $event ?? 0)" />
+          <span :class="$style.sliders">
+            <span :class="$style.slider">
+              <span :class="$style.sliderLabel">{{ t('arb.modeFill') }}</span>
+              <RangeInput
+                ink
+                :model-value="fillOf(line)"
+                :min="0"
+                :max="Math.max(1, line.fillRoom)"
+                @update:model-value="setFill(i, $event ?? 0)" />
+              <span :class="$style.sliderNum">{{ fixed0(fillOf(line)) }}</span>
+            </span>
+            <span :class="$style.slider">
+              <span :class="$style.sliderLabel">{{ t('arb.modeList') }}</span>
+              <RangeInput
+                ink
+                :model-value="listOf(line)"
+                :min="0"
+                :max="Math.max(1, line.max - fillOf(line))"
+                @update:model-value="setList(i, $event ?? 0)" />
+              <span :class="$style.sliderNum">{{ fixed0(listOf(line)) }}</span>
+            </span>
+          </span>
           <input
             :id="`arb-cart-${line.item.ticker}`"
             :class="$style.input"
@@ -191,34 +239,6 @@ async function buyAll() {
             :class="[$style.num, (line.plan?.failure ?? 0) > target ? $style.warn : $style.muted]"
             >{{ line.plan ? percent0(line.plan.failure / 100) : '--' }}</span
           >
-          <span :class="$style.modes">
-            <button
-              :class="[
-                $style.mode,
-                isListOnly(line.item.ticker, line.item.from, line.item.to)
-                  ? undefined
-                  : $style.modeOn,
-              ]"
-              @click="
-                isListOnly(line.item.ticker, line.item.from, line.item.to) &&
-                toggleListOnly(line.item.ticker, line.item.from, line.item.to)
-              ">
-              {{ t('arb.modeFill') }}
-            </button>
-            <button
-              :class="[
-                $style.mode,
-                isListOnly(line.item.ticker, line.item.from, line.item.to)
-                  ? $style.modeOn
-                  : undefined,
-              ]"
-              @click="
-                !isListOnly(line.item.ticker, line.item.from, line.item.to) &&
-                toggleListOnly(line.item.ticker, line.item.from, line.item.to)
-              ">
-              {{ t('arb.modeList') }}
-            </button>
-          </span>
           <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
         </div>
       </template>
@@ -340,7 +360,7 @@ async function buyAll() {
 
 .item {
   display: grid;
-  grid-template-columns: 40px minmax(110px, 1fr) 70px 58px 76px 72px 62px 50px 78px 22px;
+  grid-template-columns: 40px minmax(180px, 1fr) 70px 58px 76px 72px 62px 50px 22px;
   gap: 0 var(--rpz-space-2);
   align-items: center;
   padding: var(--rpz-space-1) 0;
@@ -378,9 +398,25 @@ async function buyAll() {
   border-color: var(--rpz-brand);
 }
 
-.modes {
-  display: flex;
+.sliders {
+  display: grid;
   gap: 2px;
+}
+
+.slider {
+  display: grid;
+  grid-template-columns: 30px minmax(60px, 1fr) 52px;
+  align-items: center;
+  gap: var(--rpz-space-1);
+}
+
+.sliderLabel {
+  color: var(--rpz-text-weak);
+  font-size: var(--rpz-fs-label);
+}
+
+.sliderNum {
+  text-align: right;
 }
 
 .mode {

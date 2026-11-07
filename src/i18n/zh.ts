@@ -1535,6 +1535,8 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'cxdel.side': '方向',
   'cxdel.left': '剩余数量',
   'cxdel.partly': '部分成交',
+  'arblog.split': '计划 填单 / 挂单',
+  'arblog.gone': '已消失',
 
   // ARB：利润/天
   'arb.perDay': '利润/天',
@@ -1611,6 +1613,7 @@ const zh: Partial<Record<keyof typeof en, string>> = {
   'arb.saleDays': '售卖天数',
   'arb.unitsFill': '可填 / 总量',
   'arb.reload': '刷新',
+  'arb.daily': '日交易量',
 };
 
 export default zh;

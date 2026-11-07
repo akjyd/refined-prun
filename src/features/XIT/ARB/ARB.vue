@@ -18,7 +18,6 @@ import {
   cartRoute,
   dailyTrade,
   inCart,
-  isListOnly,
   unitCap,
 } from '@src/features/XIT/ARB/cart';
 import { ageText } from '@src/features/XIT/ARB/age';
@@ -92,10 +91,21 @@ interface Row {
   from: string;
   to: string;
   plan: ArbPlanResult;
-  // Average units traded per day on the end exchange (7-day trade / 7).
+  // True when the requests of the end exchange can take a part of this trade at once, so you
+  // have a choice between filling and offering.
+  canFill: boolean;
+  // Units of this material the end exchange trades per day.
   daily: number;
   live: boolean;
   time?: number;
+}
+
+// Rows you switched to "offer only" while the row is open. Closing the row forgets it, so the
+// list always goes back to the better of the two plans (player, 2026-11-07).
+const listedRows = reactive(new Set<string>());
+
+function perDay(plan: ArbPlanResult) {
+  return plan.days > 0 ? plan.profit / plan.days : 0;
 }
 
 // Every route of every material, at the size the failure rate you set allows. With goods in the
@@ -117,18 +127,31 @@ const allRows = computed(() => {
       if (!line && cap <= 0) {
         continue;
       }
+      const key = `${ticker}.${r}`;
       const trade = line?.plan
         ? { plan: line.plan, live: true, time: undefined }
-        : planOf(ticker, from, to, cap, isListOnly(ticker, from, to));
+        : planOf(ticker, from, to, cap);
       if (!trade) {
         continue;
       }
-      const plan = trade.plan;
+      // A trade that can fill can also be offered whole. Of the two the one that makes more a
+      // day is shown, unless you switched this row over yourself (player, 2026-11-07).
+      let plan = trade.plan;
+      let canFill = plan.fillUnits > 0;
+      if (!line && canFill) {
+        const listed = planOf(ticker, from, to, cap, 0)?.plan;
+        if (listed && (listedRows.has(key) || perDay(listed) > perDay(plan))) {
+          plan = listed;
+        }
+      } else {
+        canFill = false;
+      }
       if (!line && (plan.units <= 0 || plan.profit / plan.days < minDaily)) {
         continue;
       }
       rows.push({
-        key: `${ticker}.${r}`,
+        key,
+        canFill,
         ticker,
         from,
         to,
@@ -273,6 +296,14 @@ function add(row: Row) {
   );
 }
 
+function setMode(key: string, listed: boolean) {
+  if (listed) {
+    listedRows.add(key);
+  } else {
+    listedRows.delete(key);
+  }
+}
+
 function onRowClick(row: Row) {
   if (editingBlacklist.value) {
     if (row.ticker in userData.arbBlacklist) {
@@ -283,7 +314,12 @@ function onRowClick(row: Row) {
     return;
   }
   markRead(hKey(row));
-  open.value = open.value === row.key ? undefined : row.key;
+  if (open.value === row.key) {
+    open.value = undefined;
+    listedRows.delete(row.key);
+  } else {
+    open.value = row.key;
+  }
 }
 
 // New chances (player, 2026-11-06): a chance not in the list for a day gets a mark until you
@@ -491,7 +527,16 @@ function toggleBlacklistMode() {
           </button>
         </span>
       </div>
-      <ArbDepth v-if="open === r.key" :ticker="r.ticker" :from="r.from" :to="r.to" :plan="r.plan" />
+      <ArbDepth
+        v-if="open === r.key"
+        :ticker="r.ticker"
+        :from="r.from"
+        :to="r.to"
+        :plan="r.plan"
+        :can-fill="r.canFill"
+        :daily="r.daily"
+        :listed="listedRows.has(r.key)"
+        @mode="setMode(r.key, $event)" />
     </template>
   </div>
 </template>

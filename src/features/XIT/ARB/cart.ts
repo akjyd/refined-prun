@@ -14,34 +14,8 @@ export { dailyTrade };
 
 export type CartItem = (typeof userData.arbCart.items)[number];
 
-// Goods you switched to "offer only" with the button in the depth view or the cart. Kept by
-// material and route, so the list and the cart agree (player, 2026-11-07).
-const listOnlyRows = reactive(new Set<string>());
-
 export function routeKey(ticker: string, from: string, to: string) {
   return `${ticker}.${from}>${to}`;
-}
-
-export function isListOnly(ticker: string, from: string, to: string) {
-  const item = userData.arbCart.items.find(x => x.ticker === ticker);
-  if (item?.listOnly === true) {
-    return true;
-  }
-  return listOnlyRows.has(routeKey(ticker, from, to));
-}
-
-export function toggleListOnly(ticker: string, from: string, to: string) {
-  const key = routeKey(ticker, from, to);
-  const on = !isListOnly(ticker, from, to);
-  if (on) {
-    listOnlyRows.add(key);
-  } else {
-    listOnlyRows.delete(key);
-  }
-  const item = userData.arbCart.items.find(x => x.ticker === ticker);
-  if (item) {
-    item.listOnly = on;
-  }
 }
 
 // What the ship can hold of this material. Nothing else caps a trade: buying more makes the
@@ -83,18 +57,15 @@ export const cartLines = computed(() => {
   const items = userData.arbCart.items;
   const goods = items.map(item => {
     const material = materialsStore.getByTicker(item.ticker);
-    const market = planOf(
-      item.ticker,
-      item.from,
-      item.to,
-      unitCap(item.ticker),
-      isListOnly(item.ticker, item.from, item.to),
-    );
+    const market = planOf(item.ticker, item.from, item.to, unitCap(item.ticker), item.fillUnits);
+    // What the requests could take if you let them, for the top of the fill slider.
+    const open = planOf(item.ticker, item.from, item.to, unitCap(item.ticker));
     return {
       item,
       weight: material?.weight ?? 0,
       volume: material?.volume ?? 0,
       market: market?.plan.units ?? 0,
+      fillRoom: open?.plan.fillUnits ?? 0,
     };
   });
   const fits = fitCart(
@@ -110,13 +81,7 @@ export const cartLines = computed(() => {
     const { units, max } = fits[i];
     const trade =
       units > 0
-        ? planOf(
-            good.item.ticker,
-            good.item.from,
-            good.item.to,
-            units,
-            isListOnly(good.item.ticker, good.item.from, good.item.to),
-          )
+        ? planOf(good.item.ticker, good.item.from, good.item.to, units, good.item.fillUnits)
         : undefined;
     return { ...good, units, max, plan: trade?.plan };
   });
@@ -143,8 +108,10 @@ export const cartTotals = computed(() => {
 export function snapshotOf(plan: ArbPlanResult): ArbSnapshot {
   const keep = <T extends { take: number }>(fills: T[]) =>
     fills.slice(0, fills.filter(x => x.take > 0).length + 2);
-  const plain = (fills: { price: number; amount?: number; take: number }[]) =>
-    keep(fills).map(x => ({ price: x.price, amount: x.amount, take: x.take }));
+  // The order id goes in too, so the log can later say whether that order is still there
+  // (player, 2026-11-07).
+  const plain = (fills: { price: number; amount?: number; take: number; id?: string }[]) =>
+    keep(fills).map(x => ({ price: x.price, amount: x.amount, take: x.take, id: x.id }));
   return {
     buys: plain(plan.fillsA),
     sells: plan.fillUnits > 0 ? plain(plan.fillsB) : [],

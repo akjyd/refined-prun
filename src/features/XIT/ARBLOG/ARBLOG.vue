@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { cxLabel } from '@src/core/exchange-label';
+import { stepPrice } from '@src/core/price-step';
 import { dailyTrade } from '@src/features/XIT/ARB/arb-books';
 import dayjs from 'dayjs';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
@@ -28,7 +29,7 @@ import { companyStore } from '@src/infrastructure/prun-api/data/company';
 import { HiddenOrderBooks } from '@src/infrastructure/prun-ui/hidden-order-books';
 import { userData } from '@src/store/user-data';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
-import { fixed0, fixed01, fixed02, percent1 } from '@src/utils/format';
+import { fixed0, fixed01, percent1 } from '@src/utils/format';
 import { timestampEachMinute } from '@src/utils/dayjs';
 import { t } from '@src/i18n';
 
@@ -242,10 +243,6 @@ function remove(id: string) {
   opened.value = undefined;
 }
 
-function avg(total: number, units: number) {
-  return units > 0 ? fixed02(total / units) : '--';
-}
-
 function date(ms: number) {
   return dayjs(ms).format('MM-DD');
 }
@@ -381,31 +378,31 @@ function date(ms: number) {
             <div :class="$style.stats">
               <span :class="$style.stat">
                 <span :class="$style.label">{{ t('arblog.buy') }}</span>
-                <span>{{ fixed0(r.units) }} × {{ avg(buyCost(r.batch), r.units) }}</span>
+                <span
+                  >{{ fixed0(r.units) }} ×
+                  {{ stepPrice(buyCost(r.batch) / Math.max(r.units, 1)) }}</span
+                >
               </span>
               <span :class="$style.stat">
                 <span :class="$style.label">{{ t('arblog.sell') }}</span>
                 <span
-                  >{{ fixed0(r.soldUnits) }} × {{ avg(revenue(r.batch), r.soldUnits) }}
-                  <span :class="$style.muted"
-                    >/ {{ t('arblog.plan') }} {{ fixed02(r.batch.plan.sellPrice) }}</span
-                  ></span
+                  >{{ r.soldUnits > 0 ? stepPrice(revenue(r.batch) / r.soldUnits) : '--' }}
+                  <span :class="$style.muted">/ {{ stepPrice(r.batch.plan.sellPrice) }}</span></span
                 >
               </span>
               <span :class="$style.stat">
                 <span :class="$style.label">{{ t('arb.return') }}</span>
                 <span
                   >{{ r.ret !== undefined ? percent1(r.ret) : '--' }}
-                  <span :class="$style.muted"
-                    >/ {{ t('arblog.plan') }} {{ percent1(r.batch.plan.return) }}</span
-                  ></span
+                  <span :class="$style.muted">/ {{ percent1(r.batch.plan.return) }}</span></span
                 >
               </span>
-              <span :class="$style.stat">
-                <span :class="$style.label">{{ t('arb.safety') }}</span>
-                <span>{{
-                  r.batch.plan.safety !== undefined ? fixed01(r.batch.plan.safety) : '--'
-                }}</span>
+              <span v-if="r.batch.plan.fillUnits !== undefined" :class="$style.stat">
+                <span :class="$style.label">{{ t('arblog.split') }}</span>
+                <span
+                  >{{ fixed0(r.batch.plan.fillUnits) }}
+                  <span :class="$style.muted">/ {{ fixed0(r.batch.plan.listUnits ?? 0) }}</span>
+                </span>
               </span>
             </div>
             <template v-if="r.open.length > 0">
@@ -413,7 +410,6 @@ function date(ms: number) {
               <BatchOrders :batch="r.batch" :orders="r.open" />
             </template>
             <!-- The live book of the end exchange, to watch the market you sell in. -->
-            <div :class="$style.title">{{ t('arblog.destBook', cxLabel(r.batch.to)) }}</div>
             <PriceLadder
               :class="$style.ladder"
               :ticker="r.batch.ticker"

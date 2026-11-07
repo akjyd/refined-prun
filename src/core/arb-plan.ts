@@ -20,6 +20,9 @@ export interface ArbPlanInput {
   volatility?: number;
   failurePercent: number;
   maxUnits: number;
+  // Units the requests may take at most. Undefined lets the requests take all they can.
+  // The cart sets it when you move the split yourself (player, 2026-11-07).
+  maxFillUnits?: number;
   // Days you are willing to tie the money up, flight and sale together
   // (player, 2026-11-07).
   maxDays: number;
@@ -70,9 +73,13 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
   const fillNeed = requiredMargin(failurePercent, volatility, flightDays);
   let j = 0;
   let leftB = bids[0]?.amount ?? Infinity;
+  const fillCap = Math.min(maxUnits, input.maxFillUnits ?? maxUnits);
   while (i < asks.length && j < bids.length) {
     if (units >= maxUnits) {
       limit = 'ship';
+      break;
+    }
+    if (fillUnits >= fillCap) {
       break;
     }
     const ask = asks[i].price;
@@ -81,7 +88,7 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
       limit = 'risk';
       break;
     }
-    const take = Math.min(leftA, leftB, maxUnits - units);
+    const take = Math.min(leftA, leftB, maxUnits - units, fillCap - fillUnits);
     units += take;
     fillUnits += take;
     cost += take * ask;

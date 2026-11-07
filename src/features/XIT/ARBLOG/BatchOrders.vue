@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { cxLabel } from '@src/core/exchange-label';
 import { ArbBatch } from '@src/core/arb-batches';
-import { dropPrice } from '@src/core/price-step';
 import { cxobStore } from '@src/infrastructure/prun-api/data/cxob';
 import { companyStore } from '@src/infrastructure/prun-api/data/company';
-import { repriceOrder } from '@src/infrastructure/prun-ui/utils/reprice-order';
-import { startChase } from '@src/features/XIT/ARBLOG/arb-batch-store';
-import { fixed0, fixed02 } from '@src/utils/format';
+import { fixed0 } from '@src/utils/format';
+import { stepPrice } from '@src/core/price-step';
 import { t } from '@src/i18n';
 
-// The open orders of a batch, each with the best price of the other traders and a chase button
-// that places this one order one price step past it.
-const { batch, orders } = defineProps<{ batch: ArbBatch; orders: PrunApi.CXOrder[] }>();
+// The open orders of a batch, each with the best price of the other traders.
+const { orders } = defineProps<{ batch: ArbBatch; orders: PrunApi.CXOrder[] }>();
 
 const $style = useCssModule();
 
@@ -28,31 +25,9 @@ const lines = computed(() =>
     const best = prices.length > 0 ? (ask ? Math.min(...prices) : Math.max(...prices)) : undefined;
     const price = order.limit.amount;
     const beaten = best !== undefined && (ask ? best <= price : best >= price);
-    const chaseTo = beaten
-      ? ask
-        ? dropPrice(true, best)
-        : dropPrice(false, undefined, best)
-      : undefined;
-    return { order, best, chaseTo, beaten };
+    return { order, best, beaten };
   }),
 );
-
-const busy = ref(false);
-
-async function chase(event: MouseEvent, line: (typeof lines.value)[number]) {
-  if (busy.value || line.chaseTo === undefined) {
-    return;
-  }
-  busy.value = true;
-  try {
-    if (line.order.type === 'BUYING') {
-      startChase(batch.id, line.order.material.ticker, line.order.exchange.code);
-    }
-    await repriceOrder(event.currentTarget as Element, line.order, line.chaseTo);
-  } finally {
-    busy.value = false;
-  }
-}
 </script>
 
 <template>
@@ -62,7 +37,6 @@ async function chase(event: MouseEvent, line: (typeof lines.value)[number]) {
       <span :class="$style.num">{{ t('cx4.amount') }}</span>
       <span :class="$style.num">{{ t('arblog.yourPrice') }}</span>
       <span :class="$style.num">{{ t('arblog.othersBest') }}</span>
-      <span />
     </div>
     <div v-for="l in lines" :key="l.order.id" :class="['rpz-row', $style.line]">
       <span>
@@ -72,23 +46,13 @@ async function chase(event: MouseEvent, line: (typeof lines.value)[number]) {
       <span :class="[$style.num, $style.own]"
         >{{ fixed0(l.order.amount) }}/{{ fixed0(l.order.initialAmount) }}</span
       >
-      <span :class="[$style.num, $style.own]">{{ fixed02(l.order.limit.amount) }}</span>
+      <span :class="[$style.num, $style.own]">{{ stepPrice(l.order.limit.amount) }}</span>
       <span :class="[$style.num, l.beaten ? $style.beaten : $style.muted]">
-        {{ l.best !== undefined ? fixed02(l.best) : '--' }}
-      </span>
-      <span :class="$style.action">
-        <button
-          v-if="l.chaseTo !== undefined"
-          :class="$style.button"
-          :disabled="busy"
-          @click="chase($event, l)">
-          {{ t('arblog.chase', fixed02(l.chaseTo)) }}
-        </button>
+        {{ l.best !== undefined ? stepPrice(l.best) : '--' }}
       </span>
     </div>
   </div>
 </template>
-
 <style module>
 .orders {
   display: grid;
@@ -96,7 +60,7 @@ async function chase(event: MouseEvent, line: (typeof lines.value)[number]) {
 
 .line {
   display: grid;
-  grid-template-columns: 80px 100px 90px 90px minmax(0, 1fr);
+  grid-template-columns: 80px 100px 90px minmax(90px, 1fr);
   gap: 0 var(--rpz-space-2);
   align-items: center;
   padding: 3px 0;

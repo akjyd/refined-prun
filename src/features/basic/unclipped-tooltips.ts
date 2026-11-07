@@ -10,6 +10,10 @@ function prepareTooltips() {
   tooltip.classList.add($style.popoverTooltip, C.fonts.fontRegular);
   document.documentElement.appendChild(tooltip);
   let activeTarget: Element | null = null;
+  // Press E while a tooltip is up to lock it: the pointer can then move onto the tooltip to
+  // read a long one, and a click outside closes every locked tooltip (player, 2026-11-07).
+  const locked: HTMLElement[] = [];
+  let locking = false;
   function showTooltip(target: Element) {
     const text = target.getAttribute('data-tooltip');
     if (!text) {
@@ -105,12 +109,63 @@ function prepareTooltips() {
     tooltip.style.setProperty('--rp-tooltip-arrow-offset', `${clampedArrowOffset}px`);
   }
   function hideTooltip(target: Element) {
-    if (target !== activeTarget) {
+    if (target !== activeTarget || locking) {
       return;
     }
     activeTarget = null;
     tooltip.hidePopover();
   }
+
+  function closeLocked() {
+    while (locked.length > 0) {
+      const element = locked.pop()!;
+      element.hidePopover();
+      element.remove();
+    }
+  }
+
+  // A copy of the tooltip as it stands, left on the screen where it is.
+  function lockTooltip() {
+    if (activeTarget === null || !tooltip.matches(':popover-open')) {
+      return;
+    }
+    const copy = tooltip.cloneNode(true) as HTMLElement;
+    copy.removeAttribute('id');
+    copy.classList.add($style.locked);
+    copy.popover = 'manual';
+    copy.style.left = tooltip.style.left;
+    copy.style.top = tooltip.style.top;
+    document.documentElement.appendChild(copy);
+    copy.showPopover();
+    locked.push(copy);
+    locking = true;
+    activeTarget = null;
+    tooltip.hidePopover();
+    locking = false;
+  }
+
+  document.addEventListener('keydown', x => {
+    if (x.key === 'e' || x.key === 'E') {
+      const element = document.activeElement;
+      if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+        return;
+      }
+      lockTooltip();
+    }
+  });
+  document.addEventListener(
+    'pointerdown',
+    x => {
+      if (locked.length === 0) {
+        return;
+      }
+      if (x.target instanceof Node && locked.some(y => y.contains(x.target as Node))) {
+        return;
+      }
+      closeLocked();
+    },
+    true,
+  );
   const observer = new MutationObserver(x => {
     for (const { target } of x) {
       if (!(target instanceof Element)) {

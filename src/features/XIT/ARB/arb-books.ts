@@ -42,9 +42,9 @@ export function planOf(
   from: string,
   to: string,
   maxUnits: number,
-  // Leaves out the requests of the end exchange, to show what the same goods would make if you
-  // offered all of them instead (player, 2026-11-07).
-  listOnly = false,
+  // Units the requests of the end exchange may take. 0 offers everything instead
+  // (player, 2026-11-07).
+  maxFillUnits?: number,
 ) {
   const a = bookData(`${ticker}.${from}`);
   const b = bookData(`${ticker}.${to}`);
@@ -54,13 +54,14 @@ export function planOf(
   const closes = dailyCloses.get(`${ticker}.${to}`);
   const plan = planTrade({
     asksA: a.book.asks,
-    bidsB: listOnly ? [] : b.book.bids,
+    bidsB: b.book.bids,
     asksB: b.book.asks,
     flightDays: flightDays(from, to),
     dailyTrade: dailyTrade(ticker, to),
     volatility: closes ? dailyVolatility(closes) : undefined,
     failurePercent: userData.settings.arb.failurePercent,
     maxUnits,
+    maxFillUnits,
     // A player whose data was saved before this setting existed has none yet.
     maxDays: userData.settings.arb.maxDays ?? 7,
   });
