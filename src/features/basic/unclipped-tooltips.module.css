@@ -9,6 +9,11 @@
   }
 }
 
+.wide {
+  max-width: min(340px, calc(100vw - 28px)) !important;
+  line-height: 1.45 !important;
+}
+
 .popoverTooltip {
   position: fixed;
   box-sizing: content-box;

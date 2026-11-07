@@ -314,6 +314,9 @@ function toggleBlacklistMode() {
 <template>
   <div :class="$style.root">
     <div :class="$style.bar">
+      <PrunButton v-if="!editingBlacklist && unreadCount > 0" dark inline @click="markAllRead">
+        {{ t('arb.allRead') }} <span :class="$style.muted">{{ unreadCount }}</span>
+      </PrunButton>
       <template v-if="!editingBlacklist">
         <span v-if="!cartRoute" :class="$style.group">
           <span :class="$style.muted">{{ t('arb.route') }}</span>
@@ -325,32 +328,22 @@ function toggleBlacklistMode() {
         </span>
       </template>
       <span :class="$style.spacer" />
-      <template v-if="!editingBlacklist">
-        <span :class="$style.reload" @click="showBuffer('XIT SET ARB')">{{
-          t('arb.settings')
-        }}</span>
-        <span :class="$style.muted">
-          {{
-            fioBooks.loading
-              ? t('arb.loading')
-              : t('arb.loaded', ageText(fioBooks.loadedAt || undefined))
-          }}
-        </span>
-        <span
-          :class="[$style.reload, fioBooks.loading ? $style.muted : undefined]"
-          @click="loadFioBooks()"
-          >↻</span
-        >
-      </template>
-      <button
-        v-if="!editingBlacklist && unreadCount > 0"
-        :class="$style.button"
-        @click="markAllRead">
-        {{ t('arb.allRead') }} <span :class="$style.muted">{{ unreadCount }}</span>
-      </button>
+      <span v-if="!editingBlacklist" :class="$style.muted">
+        {{
+          fioBooks.loading
+            ? t('arb.loading')
+            : t('arb.loaded', ageText(fioBooks.loadedAt || undefined))
+        }}
+      </span>
+      <PrunButton v-if="!editingBlacklist" dark inline @click="loadFioBooks()">
+        {{ t('arb.reload') }}
+      </PrunButton>
       <PrunButton dark inline @click="toggleBlacklistMode">
         {{ editingBlacklist ? t('bl.done') : t('bl.title') }}
         <span v-if="!editingBlacklist" :class="$style.muted">{{ blacklistCount }}</span>
+      </PrunButton>
+      <PrunButton v-if="!editingBlacklist" dark inline @click="showBuffer('XIT SET ARB')">
+        {{ t('arb.settings') }}
       </PrunButton>
     </div>
     <CartPanel v-if="cartRoute && !editingBlacklist" />

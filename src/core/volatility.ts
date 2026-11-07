@@ -19,13 +19,19 @@ export function dailyVolatility(closes: number[]) {
 // ring AI1-IC1-NC1-CI1-AI1 are 1 day, the two diagonals (AI1-NC1, CI1-IC1) 2 days.
 const DIAGONALS = new Set(['AI1>NC1', 'NC1>AI1', 'CI1>IC1', 'IC1>CI1']);
 
-// What you set in XIT SET wins over the table (player, 2026-11-07).
 export function defaultFlightDays(from: string, to: string) {
   return DIAGONALS.has(`${from}>${to}`) ? 2 : 1;
 }
 
+// A flight takes as long each way, so a pair of exchanges holds one value. The key is the two
+// codes in alphabetical order (player, 2026-11-07).
+export function routeKey(from: string, to: string) {
+  return from < to ? `${from}>${to}` : `${to}>${from}`;
+}
+
+// What you set in XIT SET wins over the table.
 export function flightDays(from: string, to: string) {
-  const set = userData.settings.arb.flightDays?.[`${from}>${to}`];
+  const set = userData.settings.arb.flightDays?.[routeKey(from, to)];
   return set !== undefined && set > 0 ? set : defaultFlightDays(from, to);
 }
 

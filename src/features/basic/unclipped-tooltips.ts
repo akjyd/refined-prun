@@ -19,9 +19,10 @@ function prepareTooltips() {
 
     activeTarget = target;
     tooltip.textContent = text;
-    const whiteSpace = getComputedStyle(target).whiteSpace;
     // Preserve explicit line breaks while allowing long tooltips to wrap.
-    tooltip.style.whiteSpace = { nowrap: 'normal', pre: 'pre-wrap' }[whiteSpace] ?? whiteSpace;
+    tooltip.style.whiteSpace = 'pre-wrap';
+    // A tooltip written in paragraphs needs room; a short one keeps its own width.
+    tooltip.classList.toggle($style.wide, text.includes('\n'));
     // Reset the tooltip position to maintain deterministic behavior.
     tooltip.style.left = '0px';
     tooltip.style.top = '0px';

@@ -1628,10 +1628,10 @@ export default {
   'arb.hurdle': 'Hurdle',
   'arb.hurdleOff': 'Off',
   'arb.tipUnits':
-    'Left: units the requests of the end exchange take the moment the ship lands. Right: the whole trade, the smallest of three numbers - what the ship holds; the daily trade times the longest sale days times the share of trade (XIT SET); and the units on offer at the start exchange that still earn enough at your risk setting.',
+    'Left: units the requests of the end exchange take the moment the ship lands.\n\nRight: the whole trade. It is the smallest of three numbers:\n\n1. What the ship holds.\n2. Daily trade x longest cycle x share of trade.\n3. The offers at the start exchange that still earn enough at your risk setting.\n\nDaily trade: the 30-day trade of the end exchange over 30 days.\nShare of trade and longest cycle are in XIT SET.',
   'arb.tipCost': 'What you pay for the goods on the start exchange.',
   'arb.tipDays':
-    'Days the offered part needs to sell after the ship lands, flight not counted: the offered units over the daily trade. Flight days are in XIT SET. OLD: Flight days plus the days a listed sale waits. Flight: 1 day between neighbour exchanges, 2 otherwise. Listed days = units / daily trade of the end exchange. A fill sells at once, so 0 days. The return trip is not counted.',
+    'Days the offered part needs to sell after the ship lands. The flight is not counted here.\n\nOffered units / daily trade.\n\nThe profit a day is still counted over the flight plus the sale, because the money is tied up from the moment you buy.',
   'arb.tipPerDay':
     'Profit over the expected days: what this trade makes for each day it holds your ship and your money. Use it to compare a slow big trade with a fast small one.',
   'arb.tipReturn':
@@ -1665,26 +1665,26 @@ export default {
   'set.arb.title': 'Arbitrage',
   'set.arb.failure': 'Highest risk',
   'set.arb.failureHint':
-    '0-100. The share of trades that may end in a loss. Lower is stricter and leaves fewer chances, each of them smaller.',
+    '0-100. The share of trades that may end in a loss.\n\nEvery order the plan buys must earn enough by itself to stand the usual price moves over the days it is held. This number sets how much is enough.\n\nLower is stricter: fewer chances, and each one smaller.',
   'set.arb.minDaily': 'Least profit a day',
   'set.arb.minDailyHint': 'Trades under this are not shown.',
-  'set.arb.maxDays': 'Longest sale',
+  'set.arb.maxDays': 'Longest cycle',
   'set.arb.maxDaysHint':
-    'Days you are willing to wait for the goods to sell, flight not counted. An offer that needs longer is cut back.',
+    'Days you are willing to tie the money up, the flight and the sale together. An offer that needs longer is cut back.',
   'set.arb.groupArb': 'Arbitrage list',
   'set.arb.groupLog': 'Arbitrage log',
   'set.arb.share': 'Share of trade',
   'set.arb.shareHint':
-    '0-1. The part of the trade of the end exchange that can be yours. Not all of it is: some of it is requests you do not take, and some goes to the offers of other traders. 1 counts on all of it.',
+    '0-1. The part of the trade of the end exchange you count on getting.\n\nNot all of the trade can be yours: a part of it is requests you do not take, and a part goes to the offers of other traders that stand in front of yours.\n\n1 counts on all of the trade.',
   'set.arb.flight': 'Flight days',
   'set.arb.flightHint':
-    'Days from one exchange to the other. Change these to what your ships really take.',
+    'Days between two exchanges. A flight takes as long each way, so one value covers both.',
   'arblog.ahead': 'queue {0}d',
   'arb.worstFailure': 'Worst risk',
   'arblog.queue': 'Queue / day',
   'set.arb.queue': 'Price cut warning',
   'set.arb.queueHint':
-    'Days of trade queued in front of your order before the dot lights up. The dot says that the orders in front take this long to clear, so a price cut is worth thinking about.',
+    'The dot lights up when the orders in front of yours hold this many days of trade.\n\nUnits in front / daily trade.\n\nA lit dot means the queue takes that long to clear, so a price cut is worth thinking about.',
   'orders.pin': 'Keep this book listed',
   'arblog.profitVsPlan': 'Profit / planned',
   'arblog.perDayVsPlan': 'Profit a day / planned',
@@ -1693,4 +1693,5 @@ export default {
   'arb.settings': 'Settings',
   'arb.saleDays': 'Sale days',
   'arb.unitsFill': 'Can fill / total',
+  'arb.reload': 'Reload',
 };

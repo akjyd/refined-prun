@@ -14,23 +14,39 @@ E('arb.chartEmpty', 'No history yet', '还没有记录')
 E('arb.hurdle', 'Hurdle', '风险门槛')
 E('arb.hurdleOff', 'Off', '关')
 E('arb.tipUnits',
-  'Left: units the requests of the end exchange take the moment the ship lands. '
-  'Right: the whole trade, the smallest of three numbers - what the ship holds; '
-  'the daily trade times the longest sale days times the share of trade (XIT SET); '
-  'and the units on offer at the start exchange that still earn enough at your risk setting.',
-  '左边：船一落地，终点市场的买单能立刻吃掉的数量。'
-  '右边：这次倒货的总量，取三者里最小的一个——'
-  '船能装多少；日交易量 × 最长售卖天数 × 吃单比例（设置里改）；'
-  '以及起点市场上、在你的翻车率下利润仍然达标的卖单数量。')
+  'Left: units the requests of the end exchange take the moment the ship lands.\n'
+  '\n'
+  'Right: the whole trade. It is the smallest of three numbers:\n'
+  '\n'
+  '1. What the ship holds.\n'
+  '2. Daily trade x longest cycle x share of trade.\n'
+  '3. The offers at the start exchange that still earn enough at your risk setting.\n'
+  '\n'
+  'Daily trade: the 30-day trade of the end exchange over 30 days.\n'
+  'Share of trade and longest cycle are in XIT SET.',
+  '左边：船一落地，终点市场的买单立刻能吃掉的数量。\n'
+  '\n'
+  '右边：这次倒货的总量。取下面三个数里最小的一个：\n'
+  '\n'
+  '1. 船能装多少\n'
+  '2. 日交易量 × 最长周期 × 吃单比例\n'
+  '3. 起点市场上，在你设的翻车率下利润仍然达标的卖单数量\n'
+  '\n'
+  '日交易量：终点市场 30 日成交量 ÷ 30。\n'
+  '吃单比例和最长周期在设置里改。')
 E('arb.tipCost', 'What you pay for the goods on the start exchange.', '在起点买入这些货要花的钱。')
 E('arb.tipDays',
-  'Days the offered part needs to sell after the ship lands, flight not counted: the offered '
-  'units over the daily trade. Flight days are in XIT SET. OLD: '
-  'Flight days plus the days a listed sale waits. Flight: 1 day between neighbour exchanges, '
-  '2 otherwise. Listed days = units / daily trade of the end exchange. A fill sells at once, so '
-  '0 days. The return trip is not counted.',
-  '运输天数 + 预计挂单天数。运输：相邻交易所 1 天，不相邻 2 天。挂单天数 = 数量 ÷ 终点每日成交量。'
-  '填单到了当场卖出，算 0 天。回程不算。')
+  'Days the offered part needs to sell after the ship lands. The flight is not counted here.\n'
+  '\n'
+  'Offered units / daily trade.\n'
+  '\n'
+  'The profit a day is still counted over the flight plus the sale, because the money is tied '
+  'up from the moment you buy.',
+  '货到之后，挂单部分卖完需要几天。这里不含运输时间。\n'
+  '\n'
+  '挂单数量 ÷ 日交易量。\n'
+  '\n'
+  '天利润仍然按「运输 + 售卖」的总天数算，因为钱从买入那一刻就被占住了。')
 E('arb.tipPerDay',
   'Profit over the expected days: what this trade makes for each day it holds your ship and your '
   'money. Use it to compare a slow big trade with a fast small one.',

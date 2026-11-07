@@ -12,29 +12,43 @@ E('arb.tipFailure',
 E('set.arb.title', 'Arbitrage', '倒货')
 E('set.arb.failure', 'Highest risk', '最高翻车率')
 E('set.arb.failureHint',
-  '0-100. The share of trades that may end in a loss. Lower is stricter and leaves fewer '
-  'chances, each of them smaller.',
-  '0–100。允许多大比例的交易最后是亏的。越低越严，机会更少，每笔也更小。')
+  '0-100. The share of trades that may end in a loss.\n'
+  '\n'
+  'Every order the plan buys must earn enough by itself to stand the usual price moves over '
+  'the days it is held. This number sets how much is enough.\n'
+  '\n'
+  'Lower is stricter: fewer chances, and each one smaller.',
+  '0–100。允许多大比例的交易最后是亏的。\n'
+  '\n'
+  '方案买进的每一张单，都要自己赚够钱，撑得住持有期间的常见价格波动。这个数值决定「赚够」是多少。\n'
+  '\n'
+  '越低越严：机会更少，每笔的量也更小。')
 E('set.arb.minDaily', 'Least profit a day', '最低天利润')
 E('set.arb.minDailyHint', 'Trades under this are not shown.', '低于这个数的不显示。')
-E('set.arb.maxDays', 'Longest sale', '最长售卖天数')
+E('set.arb.maxDays', 'Longest cycle', '最长周期')
 E('set.arb.maxDaysHint',
-  'Days you are willing to wait for the goods to sell, flight not counted. '
+  'Days you are willing to tie the money up, the flight and the sale together. '
   'An offer that needs longer is cut back.',
-  '货到之后你愿意等几天卖完，不含运输。需要更久的部分会被砍掉。')
+  '你愿意让这笔钱被占住几天，运输 + 售卖一起算。需要更久的部分会被砍掉。')
 E('set.arb.groupArb', 'Arbitrage list', '倒货')
 E('set.arb.groupLog', 'Arbitrage log', '倒货记录')
 E('set.arb.share', 'Share of trade', '吃单比例')
 E('set.arb.shareHint',
-  '0-1. The part of the trade of the end exchange that can be yours. Not all of it is: some '
-  'of it is requests you do not take, and some goes to the offers of other traders. '
-  '1 counts on all of it.',
-  '0–1。终点市场的成交量里，你能吃到的那一部分。并不是全部：其中有你不会去接的买单，'
-  '也有被别人的挂单先吃掉的。填 1 表示全部算你的。')
+  '0-1. The part of the trade of the end exchange you count on getting.\n'
+  '\n'
+  'Not all of the trade can be yours: a part of it is requests you do not take, and a part '
+  'goes to the offers of other traders that stand in front of yours.\n'
+  '\n'
+  '1 counts on all of the trade.',
+  '0–1。终点市场的成交量里，你预计能吃到的那一部分。\n'
+  '\n'
+  '成交量不会全是你的：其中有一部分是你不会去接的买单，还有一部分被排在你前面的别人的挂单吃掉。\n'
+  '\n'
+  '填 1 表示把成交量全部算成你的。')
 E('set.arb.flight', 'Flight days', '运输天数')
 E('set.arb.flightHint',
-  'Days from one exchange to the other. Change these to what your ships really take.',
-  '每条路线的飞行天数。按你的船实际用时填写。')
+  'Days between two exchanges. A flight takes as long each way, so one value covers both.',
+  '两个交易所之间的飞行天数。来回用时相同，所以一个值管两个方向。')
 
 F = 'src/features/XIT/SET/SET.vue'
 R(F, "import ACT from '@src/features/XIT/SET/ACT.vue';",
@@ -59,10 +73,16 @@ E('arb.worstFailure', 'Worst risk', '最差翻车率')
 E('arblog.queue', 'Queue / day', '排队量 / 日成交')
 E('set.arb.queue', 'Price cut warning', '压价提醒')
 E('set.arb.queueHint',
-  'Days of trade queued in front of your order before the dot lights up. The dot says that '
-  'the orders in front take this long to clear, so a price cut is worth thinking about.',
-  '你的单子前面排队的量，够市场成交这么多天时，亮起小圆点。'
-  '圆点的意思是：前面的单子要这么久才能清完，可以考虑压价。')
+  'The dot lights up when the orders in front of yours hold this many days of trade.\n'
+  '\n'
+  'Units in front / daily trade.\n'
+  '\n'
+  'A lit dot means the queue takes that long to clear, so a price cut is worth thinking about.',
+  '当你的单子前面排着的量，够市场成交这么多天时，亮起小圆点。\n'
+  '\n'
+  '前面的数量 ÷ 日交易量。\n'
+  '\n'
+  '圆点亮起表示：前面的单子要这么久才清得完，可以考虑压价。')
 E('orders.pin', 'Keep this book listed', '固定这个订单簿，没有单子也不消失')
 
 E('arblog.profitVsPlan', 'Profit / planned', '利润 / 期望利润')
@@ -72,3 +92,4 @@ E('arb.modeList', 'Offer', '挂单')
 E('arb.settings', 'Settings', '设置')
 E('arb.saleDays', 'Sale days', '售卖天数')
 E('arb.unitsFill', 'Can fill / total', '可填 / 总量')
+E('arb.reload', 'Reload', '刷新')

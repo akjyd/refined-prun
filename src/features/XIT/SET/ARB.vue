@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { userData } from '@src/store/user-data';
 import { t } from '@src/i18n';
-import { defaultFlightDays } from '@src/core/volatility';
+import { defaultFlightDays, routeKey } from '@src/core/volatility';
 import { cxLabel } from '@src/core/exchange-label';
 
 // XIT ARB (player, 2026-11-06): you set how often a trade may lose money; the size of every
@@ -16,10 +16,10 @@ arb.queueDays ??= 0.5;
 arb.tradeShare ??= 1;
 arb.flightDays ??= {};
 
-// The four main exchanges, both ways.
+// A flight takes as long each way, so the four exchanges make six routes.
 const EXCHANGES = ['AI1', 'CI1', 'IC1', 'NC1'];
-const routes = EXCHANGES.flatMap(from =>
-  EXCHANGES.filter(to => to !== from).map(to => ({ from, to, key: `${from}>${to}` })),
+const routes = EXCHANGES.flatMap((from, i) =>
+  EXCHANGES.slice(i + 1).map(to => ({ from, to, key: routeKey(from, to) })),
 );
 
 function routeDays(key: string) {
@@ -113,7 +113,7 @@ function setMinDaily(value: string) {
     <div :class="$style.routes">
       <span v-for="r in routes" :key="r.key" :class="$style.route">
         <span :class="$style.routeName"
-          >{{ cxLabel(r.from) }} <span :class="$style.weak">→</span> {{ cxLabel(r.to) }}</span
+          >{{ cxLabel(r.from) }} <span :class="$style.weak">↔</span> {{ cxLabel(r.to) }}</span
         >
         <input
           :class="[$style.input, $style.small]"

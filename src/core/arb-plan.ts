@@ -20,7 +20,7 @@ export interface ArbPlanInput {
   volatility?: number;
   failurePercent: number;
   maxUnits: number;
-  // Days you are willing to wait for the goods to sell, flight not counted
+  // Days you are willing to tie the money up, flight and sale together
   // (player, 2026-11-07).
   maxDays: number;
 }
@@ -110,7 +110,7 @@ export function planTrade(input: ArbPlanInput): ArbPlanResult | undefined {
   let listUnits = 0;
   let listCost = 0;
   // The most units that can be offered without waiting longer than you want.
-  const listRoom = Math.max(0, Math.floor(maxDays * dailyTrade));
+  const listRoom = Math.max(0, Math.floor((maxDays - flightDays) * dailyTrade));
   if (listPrice !== undefined && dailyTrade > 0 && listRoom > 0) {
     const daysAt = (extra: number) => flightDays + (listUnits + extra) / dailyTrade;
     const fits = (ask: number, extra: number) =>
