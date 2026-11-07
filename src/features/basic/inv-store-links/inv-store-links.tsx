@@ -60,7 +60,7 @@ function linksOf(tile: PrunTile): Link[] {
   // A docked ship at a base of yours: unload its supplies and load the goods in one window
   // (player, 2026-11-07).
   if (tile.command === 'SHPI' && base) {
-    links.push({ label: t('resup.title'), command: `RESUP ${tile.parameter}` });
+    links.push({ label: t('resup.title'), command: `XIT RESUP ${tile.parameter}` });
   }
   return links;
 }
