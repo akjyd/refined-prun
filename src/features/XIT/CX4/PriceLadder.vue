@@ -152,9 +152,15 @@ const columns = computed(() => {
         taken: take > 0,
       };
     };
-    let asks = book.sellingOrders.map(x => toCell(x, true));
+    // The game gives the offers best first. We show them with the best at the bottom, so we
+    // sort by price and then turn the list around. At one price this keeps the sequence of the
+    // game: the offer that is served first stays nearest the spread (player, 2026-11-07).
+    let asks = [...book.sellingOrders]
+      .sort((a, b) => a.limit.amount - b.limit.amount)
+      .map(x => toCell(x, true))
+      .reverse();
     if (ghost && ghost.exchange === exchanges[i]) {
-      asks.push({
+      const cell: Cell = {
         id: 'ghost',
         ask: true,
         price: ghost.price,
@@ -162,17 +168,14 @@ const columns = computed(() => {
         profit: profitAt(ghost.price),
         own: false,
         ghost: true,
-      });
+      };
+      // The offers at this price are served before yours, so yours goes over them.
+      const at = asks.findIndex(x => x.price <= ghost.price);
+      asks.splice(at < 0 ? asks.length : at, 0, cell);
     }
-    // At the same price the order already there is served first, so the offer you would place
-    // sits above them, further from the spread (player, 2026-11-07).
-    asks.sort((a, b) => {
-      if (a.price !== b.price) {
-        return b.price - a.price;
-      }
-      return (a.ghost === true ? -1 : 0) + (b.ghost === true ? 1 : 0);
-    });
-    let bids = book.buyingOrders.map(x => toCell(x, false)).sort((a, b) => b.price - a.price);
+    let bids = [...book.buyingOrders]
+      .sort((a, b) => b.limit.amount - a.limit.amount)
+      .map(x => toCell(x, false));
     if (trim !== undefined) {
       // Offers: the best are last. Requests: the best are first.
       const keepAsks = asks.filter(x => x.taken === true || x.ghost === true).length + trim;

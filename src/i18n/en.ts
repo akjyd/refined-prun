@@ -1680,5 +1680,4 @@ export default {
   'arblog.perDayVsPlan': 'Profit a day / planned',
   'arb.modeFill': 'Fill',
   'arb.modeList': 'Offer',
-  'arb.split': 'At once / offered',
 };
