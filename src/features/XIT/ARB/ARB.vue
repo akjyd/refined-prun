@@ -18,6 +18,7 @@ import {
   cartRoute,
   dailyTrade,
   inCart,
+  isListOnly,
   unitCap,
 } from '@src/features/XIT/ARB/cart';
 import { ageText } from '@src/features/XIT/ARB/age';
@@ -103,7 +104,7 @@ const allRows = computed(() => {
       }
       const trade = line?.plan
         ? { plan: line.plan, live: true, time: undefined }
-        : planOf(ticker, from, to, cap);
+        : planOf(ticker, from, to, cap, isListOnly(ticker, from, to));
       if (!trade) {
         continue;
       }

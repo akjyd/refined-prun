@@ -105,7 +105,11 @@ const rows = computed(() =>
     .sort((a, b) => b.createdAt - a.createdAt)
     .map(batch => {
       const open = openOrders(batch);
-      const state = status(batch, open.filter(x => x.type === 'BUYING').length);
+      const state = status(
+        batch,
+        open.filter(x => x.type === 'BUYING').length,
+        open.filter(x => x.type === 'SELLING').length,
+      );
       const units = bought(batch);
       const soldUnits = sold(batch);
       const profit = realizedProfit(batch);
@@ -213,6 +217,13 @@ watch(
     const trip = trips.value.find(x => x.id === selling.value);
     for (const row of trip?.rows ?? []) {
       keys.push(`${row.batch.ticker}.${row.batch.to}`);
+    }
+    // The queue column needs the live book of every order still open, not only the row you
+    // opened (player, 2026-11-07).
+    for (const row of rows.value) {
+      for (const order of row.open) {
+        keys.push(`${order.material.ticker}.${order.exchange.code}`);
+      }
     }
     return [...new Set(keys)].sort().join(',');
   },

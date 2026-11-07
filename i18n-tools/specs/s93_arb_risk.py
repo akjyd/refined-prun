@@ -42,10 +42,9 @@ R(F, """    id: 'ACT',
 
 E('arblog.ahead', 'queue {0}d', '排队 {0} 天')
 E('arb.worstFailure', 'Worst risk', '最差翻车率')
-E('arb.ifListed',
-  'Offered instead: {0} units, {1} profit, {2} days, risk {3}',
-  '若全部改成挂单卖：{0} 个，利润 {1}，{2} 天，翻车率 {3}')
-E('arblog.queue', 'Queue / day', '前面 / 日成交')
+E('arb.toListed', 'Offer all', '全部改挂单')
+E('arb.toFill', 'Sell what the requests take', '恢复落地先卖')
+E('arblog.queue', 'Queue / day', '排队量 / 日成交')
 E('set.arb.queue', 'Queue warning', '排队提醒')
 E('set.arb.queueHint',
   'Days of trade queued in front of your order before the dot lights up.',

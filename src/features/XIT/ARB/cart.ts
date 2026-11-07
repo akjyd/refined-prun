@@ -14,6 +14,36 @@ export { dailyTrade };
 
 export type CartItem = (typeof userData.arbCart.items)[number];
 
+// Goods you switched to "offer only" with the button in the depth view or the cart. Kept by
+// material and route, so the list and the cart agree (player, 2026-11-07).
+const listOnlyRows = reactive(new Set<string>());
+
+export function routeKey(ticker: string, from: string, to: string) {
+  return `${ticker}.${from}>${to}`;
+}
+
+export function isListOnly(ticker: string, from: string, to: string) {
+  const item = userData.arbCart.items.find(x => x.ticker === ticker);
+  if (item?.listOnly === true) {
+    return true;
+  }
+  return listOnlyRows.has(routeKey(ticker, from, to));
+}
+
+export function toggleListOnly(ticker: string, from: string, to: string) {
+  const key = routeKey(ticker, from, to);
+  const on = !isListOnly(ticker, from, to);
+  if (on) {
+    listOnlyRows.add(key);
+  } else {
+    listOnlyRows.delete(key);
+  }
+  const item = userData.arbCart.items.find(x => x.ticker === ticker);
+  if (item) {
+    item.listOnly = on;
+  }
+}
+
 // What the ship can hold of this material. Nothing else caps a trade: buying more makes the
 // wait longer, which the failure rate stops by itself (player, 2026-11-06).
 export function unitCap(ticker: string) {
@@ -44,14 +74,6 @@ export function removeFromCart(ticker: string) {
   userData.arbCart.items = userData.arbCart.items.filter(x => x.ticker !== ticker);
 }
 
-// Offer this good instead of selling it to the requests, or go back to both.
-export function setListOnly(ticker: string, listOnly: boolean) {
-  const item = userData.arbCart.items.find(x => x.ticker === ticker);
-  if (item) {
-    item.listOnly = listOnly;
-  }
-}
-
 export function clearCart() {
   userData.arbCart.items = [];
 }
@@ -61,7 +83,13 @@ export const cartLines = computed(() => {
   const items = userData.arbCart.items;
   const goods = items.map(item => {
     const material = materialsStore.getByTicker(item.ticker);
-    const market = planOf(item.ticker, item.from, item.to, unitCap(item.ticker), item.listOnly);
+    const market = planOf(
+      item.ticker,
+      item.from,
+      item.to,
+      unitCap(item.ticker),
+      isListOnly(item.ticker, item.from, item.to),
+    );
     return {
       item,
       weight: material?.weight ?? 0,
@@ -82,7 +110,13 @@ export const cartLines = computed(() => {
     const { units, max } = fits[i];
     const trade =
       units > 0
-        ? planOf(good.item.ticker, good.item.from, good.item.to, units, good.item.listOnly)
+        ? planOf(
+            good.item.ticker,
+            good.item.from,
+            good.item.to,
+            units,
+            isListOnly(good.item.ticker, good.item.from, good.item.to),
+          )
         : undefined;
     return { ...good, units, max, plan: trade?.plan };
   });

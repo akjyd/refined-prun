@@ -53,7 +53,7 @@ export interface ArbBatch {
   trades: ArbTrade[];
 }
 
-export type ArbStatus = 'buying' | 'holding' | 'selling' | 'done';
+export type ArbStatus = 'buying' | 'holding' | 'listed' | 'selling' | 'done';
 
 export interface OrderTrades {
   id: string;
@@ -99,7 +99,7 @@ export function realizedProfit(batch: ArbBatch) {
   return revenue(batch) - (buyCost(batch) / units) * soldUnits;
 }
 
-export function status(batch: ArbBatch, openBuyOrders: number): ArbStatus {
+export function status(batch: ArbBatch, openBuyOrders: number, openSellOrders = 0): ArbStatus {
   const units = bought(batch);
   const soldUnits = sold(batch);
   if (units > 0 && soldUnits >= units && openBuyOrders === 0) {
@@ -108,7 +108,11 @@ export function status(batch: ArbBatch, openBuyOrders: number): ArbStatus {
   if (soldUnits > 0) {
     return 'selling';
   }
-  return openBuyOrders > 0 ? 'buying' : 'holding';
+  if (openBuyOrders > 0) {
+    return 'buying';
+  }
+  // Bought and offered, but nothing sold yet (player, 2026-11-07: it still said "bought").
+  return openSellOrders > 0 ? 'listed' : 'holding';
 }
 
 // Adds the new trades of the orders to the batches. Returns true when something changed.

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
+import ArbDepth from '@src/features/XIT/ARB/ArbDepth.vue';
 import RangeInput from '@src/components/forms/RangeInput.vue';
 import { userData } from '@src/store/user-data';
 import { createId } from '@src/store/create-id';
@@ -12,8 +13,9 @@ import {
   cartShip,
   cartTotals,
   clearCart,
+  isListOnly,
   removeFromCart,
-  setListOnly,
+  toggleListOnly,
   snapshotOf,
 } from '@src/features/XIT/ARB/cart';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
@@ -25,6 +27,14 @@ import { t } from '@src/i18n';
 // more than its order books allow or than the ship has left.
 
 const $style = useCssModule();
+
+// Click a good to see its two books, so you set the amount against the real orders
+// (player, 2026-11-07).
+const opened = ref<string>();
+
+function toggleOpen(ticker: string) {
+  opened.value = opened.value === ticker ? undefined : ticker;
+}
 
 // What you set in XIT SET: how often a trade may lose money.
 const target = computed(() => userData.settings.arb.failurePercent);
@@ -157,45 +167,63 @@ async function buyAll() {
         <span />
         <span />
       </div>
-      <div v-for="(line, i) in cartLines" :key="line.item.ticker" :class="['rpz-row', $style.item]">
-        <span :class="$style.icon"
-          ><MaterialIcon size="inline-table" :ticker="line.item.ticker"
-        /></span>
-        <RangeInput
-          ink
-          :model-value="line.units"
-          :min="0"
-          :max="Math.max(1, line.max)"
-          @update:model-value="setUnits(i, $event ?? 0)" />
-        <input
-          :id="`arb-cart-${line.item.ticker}`"
-          :class="$style.input"
-          type="number"
-          min="0"
-          :max="line.max"
-          :value="line.units"
-          @change="onInput(i, $event)" />
-        <span :class="[$style.num, $style.muted]">{{
-          line.plan ? t('arb.days', fixed01(line.plan.days)) : '--'
-        }}</span>
-        <span :class="[$style.num, $style.muted]">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
-        <span :class="[$style.num, $style.key]">{{
-          line.plan && line.plan.days > 0 ? formatProfit(line.plan.profit / line.plan.days) : '--'
-        }}</span>
-        <span :class="[$style.num, $style.muted]">{{
-          line.plan && line.plan.days > 0 ? percent1(line.plan.margin / line.plan.days) : '--'
-        }}</span>
-        <span
-          :class="[$style.num, (line.plan?.failure ?? 0) > target ? $style.warn : $style.muted]"
-          >{{ line.plan ? percent0(line.plan.failure / 100) : '--' }}</span
-        >
-        <span
-          :class="[$style.listed, line.item.listOnly === true ? $style.listedOn : undefined]"
-          @click="setListOnly(line.item.ticker, line.item.listOnly !== true)"
-          >{{ t('arb.list') }}</span
-        >
-        <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
-      </div>
+      <template v-for="(line, i) in cartLines" :key="line.item.ticker">
+        <div
+          :class="[
+            'rpz-row',
+            $style.item,
+            opened === line.item.ticker ? $style.opened : undefined,
+          ]">
+          <span :class="$style.icon" @click="toggleOpen(line.item.ticker)"
+            ><MaterialIcon size="inline-table" :ticker="line.item.ticker"
+          /></span>
+          <RangeInput
+            ink
+            :model-value="line.units"
+            :min="0"
+            :max="Math.max(1, line.max)"
+            @update:model-value="setUnits(i, $event ?? 0)" />
+          <input
+            :id="`arb-cart-${line.item.ticker}`"
+            :class="$style.input"
+            type="number"
+            min="0"
+            :max="line.max"
+            :value="line.units"
+            @change="onInput(i, $event)" />
+          <span :class="[$style.num, $style.muted]">{{
+            line.plan ? t('arb.days', fixed01(line.plan.days)) : '--'
+          }}</span>
+          <span :class="[$style.num, $style.muted]">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
+          <span :class="[$style.num, $style.key]">{{
+            line.plan && line.plan.days > 0 ? formatProfit(line.plan.profit / line.plan.days) : '--'
+          }}</span>
+          <span :class="[$style.num, $style.muted]">{{
+            line.plan && line.plan.days > 0 ? percent1(line.plan.margin / line.plan.days) : '--'
+          }}</span>
+          <span
+            :class="[$style.num, (line.plan?.failure ?? 0) > target ? $style.warn : $style.muted]"
+            >{{ line.plan ? percent0(line.plan.failure / 100) : '--' }}</span
+          >
+          <span
+            :class="[
+              $style.listed,
+              isListOnly(line.item.ticker, line.item.from, line.item.to)
+                ? $style.listedOn
+                : undefined,
+            ]"
+            @click="toggleListOnly(line.item.ticker, line.item.from, line.item.to)"
+            >{{ t('arb.list') }}</span
+          >
+          <button :class="$style.remove" @click="removeFromCart(line.item.ticker)">×</button>
+        </div>
+        <ArbDepth
+          v-if="opened === line.item.ticker && line.plan"
+          :ticker="line.item.ticker"
+          :from="line.item.from"
+          :to="line.item.to"
+          :plan="line.plan" />
+      </template>
     </div>
     <div :class="$style.totals">
       <span
@@ -326,8 +354,13 @@ async function buyAll() {
   border-top: none;
 }
 
+.opened {
+  background-color: var(--rpz-bg-overlay) !important;
+}
+
 .icon {
   display: inline-flex;
+  cursor: pointer;
 }
 
 .num {

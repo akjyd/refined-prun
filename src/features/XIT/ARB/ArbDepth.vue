@@ -6,9 +6,7 @@ import { arbHistory, HISTORY_DAYS, HISTORY_SHIP } from '@src/features/XIT/ARB/ar
 import { getShipSize } from '@src/core/ship-sizes';
 import { t } from '@src/i18n';
 import { ArbPlanResult } from '@src/core/arb-plan';
-import { planOf } from '@src/features/XIT/ARB/arb-books';
-import { formatProfit } from '@src/core/daily-profit/profit-format';
-import { fixed0, fixed01, percent0 } from '@src/utils/format';
+import { isListOnly, toggleListOnly } from '@src/features/XIT/ARB/cart';
 import { startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
 
 // The two live order books of a trade, as in XIT CX4. The orders the trade takes are gold; a
@@ -52,13 +50,7 @@ const history = computed(
 );
 const shipLabel = getShipSize(HISTORY_SHIP)?.label ?? HISTORY_SHIP;
 
-// What the same goods would make if every unit were offered instead of sold to the requests.
-// Shown when this trade sells everything at once, so you can see what waiting would be worth.
-const listOnly = computed(() =>
-  plan.listUnits === 0 && plan.fillUnits > 0
-    ? planOf(ticker, from, to, Math.max(plan.units, 1), true)?.plan
-    : undefined,
-);
+const listed = computed(() => isListOnly(ticker, from, to));
 
 const takes = computed(() => {
   const map = new Map<string, number>();
@@ -80,16 +72,10 @@ const ghost = computed(() =>
 
 <template>
   <div :class="$style.depth">
-    <div v-if="listOnly && listOnly.units > 0" :class="$style.alt">
-      {{
-        t(
-          'arb.ifListed',
-          fixed0(listOnly.units),
-          formatProfit(listOnly.profit),
-          fixed01(listOnly.days),
-          percent0(listOnly.failure / 100),
-        )
-      }}
+    <div :class="$style.alt">
+      <button :class="$style.toggle" @click="toggleListOnly(ticker, from, to)">
+        {{ listed ? t('arb.toFill') : t('arb.toListed') }}
+      </button>
     </div>
     <div :class="$style.chartTitle">{{ t('arb.chartTitle', shipLabel, HISTORY_DAYS) }}</div>
     <ProfitChart :points="history" />
@@ -114,8 +100,22 @@ const ghost = computed(() =>
 }
 
 .alt {
-  color: var(--rpz-text-weak);
-  font-size: var(--rpz-fs-label);
+  display: flex;
+  align-items: center;
+  gap: var(--rpz-space-2);
+}
+
+.toggle {
+  padding: 2px 10px;
+  border: 1px solid var(--rpz-stroke);
+  background: none;
+  color: var(--rpz-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background-color: var(--rpz-hover);
 }
 
 .chartTitle {
