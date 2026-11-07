@@ -20,6 +20,13 @@ export interface WatchRecord {
   to: string;
   mode: 'now' | 'listed';
   at: number;
+  // The two parts of the plan. Not kept before 2026-11-07.
+  fillUnits?: number;
+  listUnits?: number;
+  // The price the offered part was going to sit at.
+  listPrice?: number;
+  // How often a trade of this margin ends in a loss, as the measured table says.
+  failure?: number;
   // FIO time of the older of the two books the plan used.
   bookAt?: number;
   units: number;

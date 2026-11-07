@@ -38,7 +38,7 @@ const summary = computed(() => {
 const groups = computed(() => {
   const map = new Map<string, WatchRecord[]>();
   for (const record of checked.value) {
-    const key = `${record.mode}:${record.ticker}.${record.from}>${record.to}`;
+    const key = `${record.ticker}.${record.from}>${record.to}`;
     map.set(key, [...(map.get(key) ?? []), record]);
   }
   return [...map.entries()]
@@ -76,8 +76,12 @@ function noteOf(record: WatchRecord) {
   return '';
 }
 
-function modeLabel(mode: WatchRecord['mode']) {
-  return mode === 'now' ? t('arb.fill') : t('arb.list');
+// A record is one plan in two parts now, so the column says how it was split
+// (player, 2026-11-07).
+function splitLabel(record: WatchRecord) {
+  const fill = record.fillUnits ?? (record.mode === 'now' ? record.units : 0);
+  const list = record.listUnits ?? record.units - fill;
+  return `${fixed0(fill)} / ${fixed0(list)}`;
 }
 
 function time(ms: number) {
@@ -109,7 +113,7 @@ function profitClass(value: number | undefined) {
       <div v-else :class="[$style.group, $style.head]">
         <span>{{ t('arb.material') }}</span>
         <span>{{ t('arb.route') }}</span>
-        <span>{{ t('arb.mode') }}</span>
+        <span>{{ t('arblog.split') }}</span>
         <span :class="$style.num">{{ t('arblog.hitRate') }}</span>
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
         <span :class="$style.num">{{ t('arblog.estimateProfit') }}</span>
@@ -122,7 +126,7 @@ function profitClass(value: number | undefined) {
           >{{ cxLabel(g.first.from) }} <span :class="$style.muted">→</span>
           {{ cxLabel(g.first.to) }}</span
         >
-        <span :class="$style.muted">{{ modeLabel(g.first.mode) }}</span>
+        <span :class="$style.muted">{{ splitLabel(g.first) }}</span>
         <span :class="$style.num"
           >{{ g.hits }}/{{ g.count }}
           <span :class="$style.muted">{{ percent0(g.hits / g.count) }}</span></span
@@ -136,7 +140,7 @@ function profitClass(value: number | undefined) {
         <span>{{ t('arblog.recordedAt') }}</span>
         <span>{{ t('arb.material') }}</span>
         <span>{{ t('arb.route') }}</span>
-        <span>{{ t('arb.mode') }}</span>
+        <span>{{ t('arblog.split') }}</span>
         <span :class="$style.num">{{ t('arb.units') }}</span>
         <span :class="$style.num">{{ t('arblog.planProfit') }}</span>
         <span>{{ t('arblog.status') }}</span>
@@ -148,7 +152,7 @@ function profitClass(value: number | undefined) {
         <span :class="$style.muted">{{ time(r.at) }}</span>
         <span :class="$style.icon"><MaterialIcon size="inline-table" :ticker="r.ticker" /></span>
         <span>{{ cxLabel(r.from) }} <span :class="$style.muted">→</span> {{ cxLabel(r.to) }}</span>
-        <span :class="$style.muted">{{ modeLabel(r.mode) }}</span>
+        <span :class="$style.muted">{{ splitLabel(r) }}</span>
         <span :class="$style.num">{{ fixed0(r.units) }}</span>
         <span :class="$style.num">{{ formatProfit(r.profit) }}</span>
         <span :class="r.check ? undefined : $style.muted">{{ stateOf(r) }}</span>

@@ -24,6 +24,7 @@ import { ageText } from '@src/features/XIT/ARB/age';
 import BlacklistPanel from '@src/components/BlacklistPanel.vue';
 import { arbReasons } from '@src/core/blacklist-reasons';
 import { userData } from '@src/store/user-data';
+import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { percent0, percent1 } from '@src/utils/format';
 import { formatProfit } from '@src/core/daily-profit/profit-format';
 import { requestCloses } from '@src/infrastructure/fio/cxpc';
@@ -106,6 +107,12 @@ const listedRows = reactive(new Set<string>());
 
 // The order of the keys as it stood when a row was opened; undefined while none is open.
 const frozenKeys = ref<string[]>();
+
+// Money is not the same on every exchange, so the cost says which one it is
+// (player, 2026-11-07).
+function currencyOf(code: string) {
+  return exchangesStore.getByCode(code)?.currency.code ?? '';
+}
 
 function perDay(plan: ArbPlanResult) {
   return plan.days > 0 ? plan.profit / plan.days : 0;
@@ -313,18 +320,16 @@ function add(row: Row) {
   );
 }
 
-// Clicking an offer in the book of the start exchange buys up to there, as far as the trade
-// allows (player, 2026-11-07).
+// Clicking an offer in the book of the start exchange sets the units of a good already in the
+// cart to everything up to there, as far as the ship and the books allow. It does not put the
+// good in the cart (player, 2026-11-07).
 function setTotal(row: Row, units: number) {
-  const capped = Math.max(0, Math.min(units, row.plan.units));
-  if (capped <= 0) {
+  const item = userData.arbCart.items.find(x => x.ticker === row.ticker);
+  const line = cartLines.value.find(x => x.item.ticker === row.ticker);
+  if (!item || !line) {
     return;
   }
-  add(row);
-  const item = userData.arbCart.items.find(x => x.ticker === row.ticker);
-  if (item) {
-    item.units = capped;
-  }
+  item.units = Math.max(0, Math.min(units, line.max));
 }
 
 function setMode(key: string, listed: boolean) {
@@ -524,7 +529,9 @@ function toggleBlacklistMode() {
                 width: `${r.plan.units > 0 ? (r.plan.fillUnits / r.plan.units) * 100 : 0}%`,
               }" /></span
         ></span>
-        <span :class="[$style.num, $style.muted]">{{ formatProfit(r.plan.cost) }}</span>
+        <span :class="[$style.num, $style.muted]"
+          >{{ formatProfit(r.plan.cost) }} {{ currencyOf(r.from) }}</span
+        >
         <span :class="[$style.num, $style.muted]">{{
           t('arb.days', fixed01(r.plan.saleDays))
         }}</span>

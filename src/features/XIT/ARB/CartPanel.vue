@@ -3,7 +3,6 @@ import { cxLabel } from '@src/core/exchange-label';
 import MaterialIcon from '@src/components/MaterialIcon.vue';
 import RangeInput from '@src/components/forms/RangeInput.vue';
 import { userData } from '@src/store/user-data';
-import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
 import { createId } from '@src/store/create-id';
 import { placeCxOrder } from '@src/infrastructure/prun-ui/utils/place-cx-order';
 import { isArbBatchLinked, startArbBatch } from '@src/features/XIT/ARBLOG/arb-batch-store';
@@ -82,12 +81,6 @@ function setList(index: number, value: number) {
   }
   const list = Math.max(0, Math.min(Math.floor(value), listMax(line)));
   setFill(index, line.units - list);
-}
-
-// Money is not the same on every exchange, so the cost says which one it is
-// (player, 2026-11-07).
-function currencyOf(code: string) {
-  return exchangesStore.getByCode(code)?.currency.code ?? '';
 }
 
 // The highest offer the buy takes: the limit price of the buy order.
@@ -253,9 +246,7 @@ async function buyAll() {
           <span :class="[$style.num, $style.muted]">{{
             line.plan ? t('arb.days', fixed01(line.plan.saleDays)) : '--'
           }}</span>
-          <span :class="[$style.num, $style.muted]"
-            >{{ formatProfit(line.plan?.cost ?? 0) }} {{ currencyOf(line.item.from) }}</span
-          >
+          <span :class="[$style.num, $style.muted]">{{ formatProfit(line.plan?.cost ?? 0) }}</span>
           <span :class="[$style.num, $style.key]">{{
             line.plan && line.plan.days > 0 ? formatProfit(line.plan.profit / line.plan.days) : '--'
           }}</span>
