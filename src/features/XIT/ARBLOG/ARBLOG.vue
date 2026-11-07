@@ -81,7 +81,9 @@ function queueAhead(batch: ArbBatch) {
     // measured against the daily trade of its own exchange (player, 2026-11-07).
     const daily = dailyTrade(ticker, code);
     const days = daily > 0 ? ahead / daily : 0;
-    if (ahead > 0 && (worst === undefined || days > worst.days)) {
+    // Nothing in front is worth showing too: 0 / trade says the order is first in line
+    // (player, 2026-11-07).
+    if (worst === undefined || days > worst.days) {
       worst = { ahead, daily, days };
     }
   }
@@ -537,7 +539,7 @@ function date(ms: number) {
   display: inline-block;
   width: 6px;
   height: 6px;
-  margin-left: var(--rpz-space-1);
+  margin-right: 5px;
   border-radius: 50%;
   background-color: var(--rpz-brand);
   vertical-align: middle;
